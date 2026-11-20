@@ -413,3 +413,17 @@ body.in-session #app { padding-bottom: calc(var(--safe-b) + 24px); }
 .mic-hint { color: var(--muted); font-weight: 600; text-align: center; min-height: 22px; }
 @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--warm) 50%, transparent), 0 6px 0 color-mix(in srgb, var(--warm) 60%, #000); } 50% { box-shadow: 0 0 0 18px transparent, 0 6px 0 color-mix(in srgb, var(--warm) 60%, #000); } }
 .fb .skip, .s-foot .skip { margin-top: 10px; }
+
+/* ---------- Dialoge ---------- */
+.dlg-ctrl { display: flex; gap: 10px; }
+.dlg-ctrl .btn.ghost.small { width: auto; }
+.chat { display: flex; flex-direction: column; gap: 10px; }
+.bubble { align-self: flex-start; max-width: 86%; text-align: left; padding: 10px 14px; border-radius: 18px 18px 18px 6px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .15s, border-color .15s; }
+.bubble.r { align-self: flex-end; border-radius: 18px 18px 6px 18px; background: var(--accent-soft); border-color: transparent; }
+.bubble small { display: block; font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 2px; }
+.bubble b { display: block; font-weight: 600; font-size: 16px; }
+.bubble span { display: block; color: var(--muted); font-size: 14px; margin-top: 3px; }
+.bubble.live { border: 2px solid var(--warm); transform: scale(1.02); }
+.chat.hide .bubble b { color: transparent; text-shadow: 0 0 9px color-mix(in srgb, var(--ink) 55%, transparent); user-select: none; }
+textarea.answer-input { resize: none; font-size: 18px; line-height: 1.4; }
+#selfok { color: var(--good); }

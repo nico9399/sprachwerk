@@ -38,6 +38,7 @@ const DEFAULT = {
   words: {},     // Wort-ID -> { b, due, seen, wrong, learned, quick }
   gram: {},      // Grammatik-ID -> { done, b, due, seen, wrong, best }
   units: {},     // Einheit-ID -> { done, score, date }
+  dialogs: {},   // Einheit-ID -> { done, best }
   custom: [],
   days: {},
   reports: [],
@@ -63,6 +64,7 @@ if (navigator.storage && navigator.storage.persist) navigator.storage.persist().
 
 const L = () => window.SW_LANGS[S.lang];
 const G = () => window.SW_GRAMMAR[S.lang];
+const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
 
 // ---------- Inhalte ----------
 let WORDS = [], WMAP = {}, UNITS = [], GMAP = {};
@@ -92,6 +94,7 @@ function migrate() {
     delete S.words[k]; changed = true;
   }
   if (S.packsOff) { delete S.packsOff; changed = true; }
+  if (!S.dialogs) { S.dialogs = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -191,7 +194,44 @@ function bestVoice(code) {
   for (const p of prefer) { const v = pool.find((x) => x.name.includes(p)); if (v) return v; }
   return pool.find((v) => v.localService) || pool[0] || null;
 }
+function twoVoices() {
+  const code = voiceCode().toLowerCase();
+  const pool = voices.filter((v) => v.lang.replace("_", "-").toLowerCase() === code);
+  const all = pool.length ? pool : voices.filter((v) => v.lang.toLowerCase().startsWith("en"));
+  const a = bestVoice(voiceCode());
+  const male = ["Daniel", "Alex", "Fred", "Arthur", "Aaron", "Tom", "Google UK English Male", "Rishi"];
+  const female = ["Samantha", "Karen", "Serena", "Moira", "Tessa", "Martha", "Google US English", "Google UK English Female"];
+  const aMale = a && male.some((m) => a.name.includes(m));
+  const want = aMale ? female : male;
+  let b = all.find((v) => v !== a && want.some((m) => v.name.includes(m))) || all.find((v) => v !== a && v.localService) || null;
+  return [a, b];
+}
+let SEQ = null;
+function stopSeq() { if (SEQ) { SEQ.stop = true; SEQ = null; } if (window.speechSynthesis) speechSynthesis.cancel(); }
+function speakLines(lines, people, onLine, onEnd, slow = false) {
+  if (!window.speechSynthesis) return;
+  stopSeq();
+  const seq = SEQ = { stop: false };
+  const [va, vb] = twoVoices();
+  const next = (i) => {
+    if (seq.stop) return;
+    if (i >= lines.length) { SEQ = null; onLine && onLine(-1); onEnd && onEnd(); return; }
+    const [who, en] = lines[i];
+    const second = people.indexOf(who) === 1;
+    const u = new SpeechSynthesisUtterance(en);
+    u.lang = voiceCode();
+    const v = second ? (vb || va) : va; if (v) u.voice = v;
+    u.pitch = second && !vb ? 0.75 : 1;
+    u.rate = slow ? 0.65 : S.settings.rate;
+    u.onend = () => setTimeout(() => next(i + 1), 350);
+    u.onerror = () => { if (!seq.stop) next(i + 1); };
+    onLine && onLine(i);
+    speechSynthesis.speak(u);
+  };
+  next(0);
+}
 function speak(text, slow = false) {
+  SEQ && (SEQ.stop = true); SEQ = null;
   if (!window.speechSynthesis || !text) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text.replace(/…/g, ""));
@@ -252,12 +292,14 @@ function render() {
   if (!S.onboarded) return renderWelcome();
   if (view && view.type === "unit") return renderUnit(view.id);
   if (view && view.type === "grammar") return renderGrammar(view.id);
+  if (view && view.type === "dialog") return renderDialog(view.id);
   setTabbar(true);
   ({ home: renderHome, path: renderPath, words: renderWords, more: renderMore })[tab]();
 }
 function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scrollTo(0, 0); }
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
-function back() { view = view && view.from ? { type: "unit", id: view.from } : null; render(); window.scrollTo(0, 0); }
+function back() { stopSeq(); view = view && view.from ? { type: "unit", id: view.from } : null; render(); window.scrollTo(0, 0); }
+function openDialog(uid, from) { view = { type: "dialog", id: uid, from }; render(); window.scrollTo(0, 0); }
 
 // ---------- Onboarding ----------
 function renderWelcome() {
@@ -378,6 +420,11 @@ function renderHome() {
   const stepWords = cp.seen >= cp.total
     ? `<div class="step done"><i>✓</i><div><b>Wörter</b><span>alle ${cp.total} gelernt</span></div></div>`
     : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>2</i><div><b>Wörter</b><span>${cp.seen} von ${cp.total} – kommen in der Tageslektion</span></div></div>`;
+  const dl = DLG()[cu.id];
+  const dDone = S.dialogs[cu.id] && S.dialogs[cu.id].done;
+  const stepDialog = !dl ? "" : dDone
+    ? `<div class="step done"><i>✓</i><div><b>Dialog</b><span>${esc(dl.title)}</span></div><button class="link small" data-dialog="${cu.id}">Anhören</button></div>`
+    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>🎧</i><div><b>Dialog hören</b><span>${esc(dl.title)} · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}" style="width:auto">Hören</button></div>`;
   const stepTest = `<div class="step ${ready ? "now" : ""}"><i>3</i><div><b>Einheitentest</b><span>${ready ? "Bereit! 80 % zum Bestehen" : "nach Grammatik & Wörtern"}</span></div>${ready ? `<button class="btn small" id="unit-test" style="width:auto">Start</button>` : ""}</div>`;
 
   app.innerHTML = `
@@ -412,7 +459,7 @@ function renderHome() {
         <div class="info"><div class="small muted">Einheit ${ci + 1} von ${UNITS.length} · <span class="tag">${cu.level}</span></div><h3>${esc(cu.title)}</h3></div>
         <span class="chev">›</span>
       </button>
-      <div class="steps">${stepGrammar}${stepWords}${stepTest}</div>
+      <div class="steps">${stepGrammar}${stepWords}${stepDialog}${stepTest}</div>
     </div>
 
     <div class="stats">
@@ -440,6 +487,7 @@ function renderHome() {
   $("#all-units").onclick = () => { tab = "path"; render(); window.scrollTo(0, 0); };
   app.querySelectorAll("[data-gram]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.gram)));
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
+  app.querySelectorAll("[data-dialog]").forEach((b) => (b.onclick = () => openDialog(b.dataset.dialog)));
   const ut = $("#unit-test"); if (ut) ut.onclick = () => startSession("test", { unit: cu.id });
 }
 
@@ -495,6 +543,12 @@ function renderUnit(uid) {
       <span class="pill ${p.grammarDone ? "ok" : ""}">${p.grammarDone ? "✓ gelernt" : "Lernen"}</span>
     </button>
 
+    ${DLG()[u.id] ? `<div class="section-h"><h3>🎧 Dialog</h3></div>
+    <button class="card gcard" id="d-open">
+      <div><b>${esc(DLG()[u.id].title)}</b><span>Gespräch anhören, mitlesen, Fragen beantworten</span></div>
+      <span class="pill ${S.dialogs[u.id] && S.dialogs[u.id].done ? "ok" : ""}">${S.dialogs[u.id] && S.dialogs[u.id].done ? "✓ " + S.dialogs[u.id].best + " %" : "Hören"}</span>
+    </button>` : ""}
+
     <div class="section-h"><h3>📚 Wörter</h3><span class="small muted">${p.seen}/${p.total} gelernt</span></div>
     ${wordListHtml(p.ws)}
 
@@ -508,7 +562,47 @@ function renderUnit(uid) {
   </div>`;
   $("#back").onclick = back;
   $("#g-open").onclick = () => openGrammar(g.id, u.id);
+  const dop = $("#d-open"); if (dop) dop.onclick = () => openDialog(u.id, u.id);
   const t = $("#u-test"); if (t) t.onclick = () => startSession("test", { unit: u.id });
+}
+
+let dlgHide = false, dlgTrans = false;
+function renderDialog(uid) {
+  setTabbar(false);
+  const d = DLG()[uid];
+  const u = unitById(uid);
+  const rec = S.dialogs[uid];
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${u.level}</span></div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🎧 DIALOG · ${esc(u.title)}</div>
+    <h1 class="page-title">${esc(d.title)}</h1>
+    <p class="sub">Erst nur zuhören, dann mitlesen. Tippe auf eine Zeile, um sie nochmal zu hören.</p>
+    <div class="dlg-ctrl">
+      <button class="btn" id="play">▶ Abspielen</button>
+      <button class="btn ghost" id="slow" style="width:auto">🐢</button>
+    </div>
+    <div class="seg" style="margin:12px 0 14px">
+      <button id="t-hide" class="${dlgHide ? "on" : ""}">${dlgHide ? "🙈 Text verborgen" : "Text verbergen"}</button>
+      <button id="t-trans" class="${dlgTrans ? "on" : ""}">Übersetzung</button>
+    </div>
+    <div class="chat ${dlgHide ? "hide" : ""}">
+      ${d.lines.map(([who, en, de], i) => `<button class="bubble ${d.people.indexOf(who) === 1 ? "r" : ""}" data-line="${i}">
+        <small>${esc(who)}</small><b>${esc(en)}</b>${dlgTrans ? `<span>${esc(de)}</span>` : ""}</button>`).join("")}
+    </div>
+    <div class="stack" style="margin-top:20px">
+      <button class="btn" id="d-go">Fragen beantworten (${d.questions.length + 3})</button>
+      <p class="small muted center">${rec && rec.done ? `Bestes Ergebnis: ${rec.best} %` : "Verständnisfragen, Diktat und ein Satz zum Übersetzen"}</p>
+    </div>
+  </div>`;
+  const mark = (i) => app.querySelectorAll(".bubble").forEach((b) => b.classList.toggle("live", +b.dataset.line === i));
+  const play = (slow) => speakLines(d.lines, d.people, mark, null, slow);
+  $("#back").onclick = back;
+  $("#play").onclick = () => play(false);
+  $("#slow").onclick = () => play(true);
+  $("#t-hide").onclick = () => { dlgHide = !dlgHide; stopSeq(); renderDialog(uid); };
+  $("#t-trans").onclick = () => { dlgTrans = !dlgTrans; stopSeq(); renderDialog(uid); };
+  app.querySelectorAll(".bubble").forEach((b) => (b.onclick = () => { const l = d.lines[+b.dataset.line]; speakLines([l], d.people, mark); }));
+  $("#d-go").onclick = () => { stopSeq(); startSession("dialog", { uid }); };
 }
 
 function renderGrammar(gid) {
@@ -548,6 +642,7 @@ function exerciseFor(w) {
   const isPhrase = w.en.split(" ").length >= 3;
   const canBuild = !!buildSource(w);
   if (s.b >= 2 && speakingAllowed() && Math.random() < 0.18) return "speak";
+  if (s.b >= 3 && w.ex && w.ex.split(" ").length <= 12) { const r = Math.random(); if (r < 0.15) return "dict"; if (r < 0.3) return "tsent"; }
   if (s.b <= 1) return pick(["mc_en", "listen"]);
   if (s.b === 2) return pick(["mc_de", "listen", "mc_en"]);
   if (isPhrase) return canBuild ? pick(["build", "mc_de"]) : "mc_de";
@@ -585,6 +680,12 @@ function startSession(mode, opt = {}) {
   } else if (mode === "grammar") {
     const g = GMAP[opt.gid];
     tasks = grammarTasks(g, g.drills.length, { lesson: true });
+  } else if (mode === "dialog") {
+    const d = DLG()[opt.uid];
+    tasks = shuffle(d.questions.map((q, k) => ({ dq: opt.uid, k, t: "dq" })));
+    const lines = shuffle(d.lines.filter((l) => l[1].split(" ").length <= 12));
+    lines.slice(0, 2).forEach((l) => tasks.push({ t: "dict", en: l[1], de: l[2], dlg: true }));
+    if (lines[2]) tasks.push({ t: "tsent", en: lines[2][1], de: lines[2][2], dlg: true });
   } else if (mode === "test") {
     const u = unitById(opt.unit);
     const ws = shuffle(unitWords(u.id)).slice(0, 6);
@@ -610,7 +711,7 @@ function sessionTop() {
 function bindClose() {
   $("#s-x").onclick = () => {
     if (Q.pos === 0 || confirm(Q.mode === "test" ? "Test abbrechen? Er zählt dann nicht." : "Beenden? Dein Fortschritt bis hier bleibt gespeichert.")) {
-      stopRec(); save(); Q = null; render();
+      stopRec(); stopSeq(); save(); Q = null; render();
     }
   };
 }
@@ -641,9 +742,11 @@ function distractors(w, field, n = 3) {
 function renderTask() {
   setTabbar(false);
   window.scrollTo(0, 0);
-  stopRec();
+  stopRec(); stopSeq();
   if (Q.pos >= Q.tasks.length) return renderResult();
   const task = Q.tasks[Q.pos];
+  if (task.dq) return tDQ(task);
+  if (task.dlg) return tSentence(task, { en: task.en, de: task.de }, (ok) => sFeedback(task, ok));
   if (task.gid) {
     const g = GMAP[task.gid];
     if (!g) { Q.pos++; return renderTask(); }
@@ -653,6 +756,8 @@ function renderTask() {
   const w = WMAP[task.id];
   if (!w) { Q.pos++; return renderTask(); }
   if (task.t === "speak" && !speakingAllowed()) task.t = "mc_de";
+  if ((task.t === "dict" || task.t === "tsent") && !w.ex) task.t = "mc_de";
+  if (task.t === "dict" || task.t === "tsent") return tSentence(task, { en: w.ex, de: w.exde }, (ok, typo) => feedback(task, w, ok, ok ? (typo ? `Fast! Genau: ${w.ex}` : null) : `Richtig: ${w.ex}`, { soft: true, hideEx: true, say: w.ex, selfOk: !ok && task.t === "tsent" }));
   ({ intro: tIntro, mc_en: tMc, mc_de: tMc, listen: tMc, type: tType, build: tBuild, speak: tSpeak })[task.t](task, w);
 }
 
@@ -808,6 +913,68 @@ function tBuild(task, w) {
   buildUI(src, "Bilde den Satz", (ok) => feedback(task, w, ok, ok ? null : `Richtig: ${src.en}`, { say: src.en, hideEx: true }));
 }
 
+// ----- Dialog & Sätze -----
+function tDQ(task) {
+  const d = DLG()[task.dq];
+  const [q, right, wrongs] = d.questions[task.k];
+  const opts = shuffle([right, ...wrongs]);
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">🎧 ${esc(d.title)} · Hörverständnis</div>
+    <div class="prompt"><div class="big" style="font-size:25px">${esc(q)}</div></div>
+    <div class="dlg-ctrl" style="margin-bottom:16px"><button class="btn ghost small" id="re">▶ Gespräch nochmal hören</button></div>
+    ${optionsHtml(opts)}
+  </div>${footCheck}`;
+  bindClose();
+  $("#re").onclick = () => speakLines(d.lines, d.people);
+  bindOptions(right, (ok) => { stopSeq(); sFeedback(task, ok, ok ? null : `Richtig: ${right}`); });
+}
+function sentenceCheck(input, target) {
+  const a = expand(norm(input)), b = expand(norm(target));
+  if (a === b) return "ok";
+  const d = lev(a, b);
+  return d <= Math.max(2, Math.round(b.length * 0.08)) ? "typo" : "no";
+}
+function tSentence(task, item, onDone) {
+  const dict = task.t === "dict";
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">${dict ? "✍️ Diktat · Hör zu und schreib mit" : "🔁 Übersetze den Satz"}</div>
+    ${dict ? `<div class="listen-big">${speakBtn(item.en)}<button class="speak slow" data-say="${esc(item.en)}" data-slow="1" aria-label="Langsam">🐢</button></div>`
+           : `<div class="prompt"><div class="big" style="font-size:24px">${esc(item.de)}</div></div>`}
+    <textarea class="answer-input" id="ans" rows="3" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" placeholder="${dict ? "Was hörst du?" : "Auf Englisch …"}"></textarea>
+    <button class="skip" id="dunno">Weiß ich nicht</button>
+  </div>${footCheck}`;
+  bindClose();
+  if (dict) setTimeout(() => speak(item.en), 300);
+  const inp = $("#ans");
+  inp.oninput = () => ($("#check").disabled = !inp.value.trim());
+  inp.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey && inp.value.trim()) { e.preventDefault(); $("#check").click(); } };
+  const go = (val) => {
+    inp.disabled = true; $("#dunno")?.remove();
+    const r = val == null ? "no" : sentenceCheck(val, item.en);
+    task.typed = val;
+    onDone(r !== "no", r === "typo");
+  };
+  $("#check").onclick = () => go(inp.value);
+  $("#dunno").onclick = () => go(null);
+}
+function sFeedback(task, ok, msg) {
+  award(ok, "s:" + (task.dq || task.en), false);
+  let body = "";
+  if (task.en) body += `<p class="sol">${ok ? "" : "Richtig: "}${esc(task.en)}</p><p class="muted">${esc(task.de)}</p>`;
+  else if (msg) body += `<p class="sol">${esc(msg)}</p>`;
+  footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Nicht ganz", body);
+  $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Dialog ${task.dq || ""}: ${task.en || DLG()[task.dq].questions[task.k][0]}` }); save(); toast("Gemeldet – danke!"); };
+  if (!ok && task.t === "tsent" && task.typed) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
+  if (task.en && S.settings.autoplay) setTimeout(() => speak(task.en), 200);
+}
+function addSelfOk(onOk) {
+  const nx = $("#next");
+  const b = document.createElement("button");
+  b.className = "skip"; b.id = "selfok"; b.textContent = "✓ Meine Version stimmt auch";
+  nx.after(b);
+  b.onclick = () => { onOk(); toast("Als richtig gewertet"); Q.pos++; renderTask(); };
+}
+
 // ----- Grammatik-Aufgaben -----
 function tGap(task, g, d) {
   const [, sent, right, wrongs, de] = d;
@@ -946,10 +1113,11 @@ function feedback(task, w, ok, msg, o = {}) {
   if (o.heard) body += `<p class="muted">Erkannt: „${esc(o.heard)}“</p>`;
   if (msg) body += `<p class="sol">${esc(msg)}</p>`;
   if (w.ex && !o.hideEx) body += `<p>${esc(w.ex)} <span class="muted">– ${esc(w.exde)}</span></p>`;
-  const title = ok ? (o.typo ? "✓ Fast perfekt" : "✓ " + pick(PRAISE)) : o.soft ? "🙂 Fast – hör nochmal genau hin" : "✗ Nicht ganz";
+  const title = ok ? (o.typo ? "✓ Fast perfekt" : "✓ " + pick(PRAISE)) : o.soft ? "🙂 Nicht ganz – vergleiche mal" : "✗ Nicht ganz";
   footFeedback(ok || !!o.soft, title, body);
   $("#rep").onclick = () => report(task, w);
-  if (S.settings.autoplay && ["type", "build", "mc_de", "speak"].includes(task.t)) setTimeout(() => speak(o.say || w.en), 200);
+  if (o.selfOk && task.typed) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
+  if (S.settings.autoplay && ["type", "build", "mc_de", "speak", "dict", "tsent"].includes(task.t)) setTimeout(() => speak(o.say || w.en), 200);
 }
 function gFeedback(task, g, ok, full, heard) {
   const soft = task.t === "gspeak";
@@ -1056,6 +1224,12 @@ function renderResult() {
     title = wasDone ? "Gut geübt!" : "Grammatik gelernt!";
     sub = `„${g.title}“ – ${acc} % beim ersten Versuch. Die Regel kommt jetzt regelmäßig in deinen Wiederholungen.`;
   }
+  if (Q.mode === "dialog") {
+    const prev = S.dialogs[Q.opt.uid];
+    S.dialogs[Q.opt.uid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
+    title = "Dialog geschafft!";
+    sub = `„${DLG()[Q.opt.uid].title}“ – ${acc} % richtig.`;
+  }
   if (Q.mode === "test") {
     const u = unitById(Q.opt.unit);
     const pass = acc >= TEST_PASS * 100;
@@ -1089,7 +1263,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "test" || mode === "grammar") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
@@ -1186,7 +1360,7 @@ function renderMore() {
     </ul>
     <input type="file" id="file" accept="application/json,.json" hidden>
 
-    <p class="small muted center" style="margin-top:22px">Sprachwerk · ${UNITS.length} Einheiten · ${G().length} Grammatik-Lektionen · ${WORDS.length} Wörter<br>Alles bleibt auf diesem Gerät, kein Konto, keine Werbung.<br>Tipp: In Safari über „Teilen → Zum Home-Bildschirm“ als App speichern.</p>
+    <p class="small muted center" style="margin-top:22px">Sprachwerk · ${UNITS.length} Einheiten · ${G().length} Grammatik-Lektionen · ${Object.keys(DLG()).length} Dialoge · ${WORDS.length} Wörter<br>Alles bleibt auf diesem Gerät, kein Konto, keine Werbung.<br>Tipp: In Safari über „Teilen → Zum Home-Bildschirm“ als App speichern.</p>
   </div>`;
   app.querySelectorAll("[data-set]").forEach((b) => (b.onclick = () => {
     const k = b.dataset.set; let v = b.dataset.v;
