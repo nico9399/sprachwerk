@@ -1,0 +1,15 @@
+{
+  "name": "Sprachwerk",
+  "short_name": "Sprachwerk",
+  "description": "Sprachen lernen – zuerst Englisch",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F1EA",
+  "theme_color": "#2B50E8",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#2B50E8"/>
+  <circle cx="420" cy="80" r="150" fill="#fff" opacity=".10"/>
+  <circle cx="110" cy="470" r="120" fill="#fff" opacity=".07"/>
+  <!-- Sprechblase 1 -->
+  <path d="M96 150c0-28 22-50 50-50h150c28 0 50 22 50 50v86c0 28-22 50-50 50h-92l-58 46v-46h0c-28 0-50-22-50-50z" fill="#fff"/>
+  <!-- Sprechblase 2 -->
+  <path d="M236 270c0-24 20-44 44-44h102c24 0 44 20 44 44v74c0 24-20 44-44 44h0v40l-50-40h-52c-24 0-44-20-44-44z" fill="#FF7A3D"/>
+  <text x="221" y="218" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="92" fill="#2B50E8" text-anchor="middle">Hi</text>
+  <text x="331" y="340" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="64" fill="#fff" text-anchor="middle">Ja</text>
+</svg>
