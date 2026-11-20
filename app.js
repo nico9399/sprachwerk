@@ -11,6 +11,7 @@ const MAX_REVIEWS = 20;
 const MAX_QUICK = 8;
 const MAX_GRAMMAR_REVIEWS = 3;
 const TEST_PASS = 0.8;
+const CORE = 30; // Kernwörter je Einheit (reichen für den Einheitentest)
 
 // ---------- Helpers ----------
 const $ = (s, r = document) => r.querySelector(s);
@@ -72,8 +73,8 @@ function buildContent() {
   UNITS = L().units;
   GMAP = Object.fromEntries(G().map((g) => [g.id, g]));
   WORDS = [];
-  UNITS.forEach((u, ui) => u.words.forEach((w) => {
-    WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
+  UNITS.forEach((u, ui) => u.words.forEach((w, wi) => {
+    WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
   }));
   S.custom.forEach((c) => WORDS.push({ id: "custom:" + c.id, unit: "custom", ui: -1, level: "A1", en: c.en, de: c.de, ex: c.ex || "", exde: c.exde || "" }));
   WMAP = Object.fromEntries(WORDS.map((w) => [w.id, w]));
@@ -124,12 +125,14 @@ function unitProgress(i) {
   const u = UNITS[i];
   const ws = unitWords(u.id);
   const seen = ws.filter((w) => st(w.id)).length;
+  const coreTotal = ws.filter((w) => w.core).length;
+  const coreSeen = ws.filter((w) => w.core && st(w.id)).length;
   const g = S.gram[u.grammar];
-  return { ws, seen, total: ws.length, grammarDone: !!(g && g.done), done: unitDone(i), quick: isQuickLevel(u.level) };
+  return { ws, seen, total: ws.length, coreSeen, coreTotal, grammarDone: !!(g && g.done), done: unitDone(i), quick: isQuickLevel(u.level) };
 }
 function testReady(i) {
   const p = unitProgress(i);
-  return p.quick || p.done || (p.grammarDone && p.seen >= p.total);
+  return p.quick || p.done || (p.grammarDone && p.coreSeen >= p.coreTotal);
 }
 
 // ---------- Tagesplan ----------
@@ -148,24 +151,28 @@ function learnedToday() {
   return Object.values(S.words).filter((s) => s.learned === t && !s.quick).length;
 }
 function newCandidates() {
-  const before = [], after = [], quick = [];
-  WORDS.filter((w) => w.unit === "custom" && !st(w.id)).forEach((w) => before.push(w));
-  const cur = currentUnitIndex();
+  const custom = WORDS.filter((w) => w.unit === "custom" && !st(w.id));
+  const core = [], extra = [], quick = [];
   for (let i = 0; i < UNITS.length; i++) {
     if (!unitUnlocked(i)) continue;
     const ws = unitWords(UNITS[i].id).filter((w) => !st(w.id));
-    if (isQuickLevel(UNITS[i].level)) quick.push(...ws);
-    else if (i < cur) before.push(...ws);
-    else after.push(...ws);
+    if (isQuickLevel(UNITS[i].level)) { quick.push(...ws.filter((w) => w.core)); extra.push(...ws.filter((w) => !w.core)); }
+    else { core.push(...ws.filter((w) => w.core)); extra.push(...ws.filter((w) => !w.core)); }
   }
-  return { real: before.concat(after), quick };
+  return { custom, core, extra, quick };
 }
 function todayPlan() {
   const due = dueWords().slice(0, MAX_REVIEWS);
   const gram = dueGrammar().slice(0, MAX_GRAMMAR_REVIEWS);
-  const { real, quick } = newCandidates();
+  const { custom, core, extra, quick } = newCandidates();
   const nNew = Math.max(0, S.settings.newPerDay - learnedToday());
-  return { due, gram, fresh: real.slice(0, nNew), quick: quick.slice(0, MAX_QUICK) };
+  // ca. 70 % Kernwörter der aktuellen Einheit, Rest Zusatzwörter
+  const nExtra = core.length ? Math.min(extra.length, Math.floor(nNew * 0.3)) : nNew;
+  const fresh = custom.slice(0, nNew);
+  fresh.push(...core.slice(0, Math.max(0, nNew - fresh.length - nExtra)));
+  fresh.push(...extra.slice(0, Math.max(0, nNew - fresh.length)));
+  if (fresh.length < nNew) fresh.push(...core.slice(fresh.filter((w) => w.core).length, fresh.filter((w) => w.core).length + nNew - fresh.length));
+  return { due, gram, fresh, quick: quick.slice(0, MAX_QUICK) };
 }
 
 // ---------- Statistik ----------
@@ -417,9 +424,9 @@ function renderHome() {
   const stepGrammar = cp.grammarDone
     ? `<div class="step done"><i>✓</i><div><b>Grammatik</b><span>${esc(cg.title)}</span></div><button class="link small" data-gram="${cg.id}">Ansehen</button></div>`
     : `<div class="step now"><i>1</i><div><b>Grammatik lernen</b><span>${esc(cg.title)}</span></div><button class="btn small" data-gram="${cg.id}" style="width:auto">Los</button></div>`;
-  const stepWords = cp.seen >= cp.total
-    ? `<div class="step done"><i>✓</i><div><b>Wörter</b><span>alle ${cp.total} gelernt</span></div></div>`
-    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>2</i><div><b>Wörter</b><span>${cp.seen} von ${cp.total} – kommen in der Tageslektion</span></div></div>`;
+  const stepWords = cp.coreSeen >= cp.coreTotal
+    ? `<div class="step done"><i>✓</i><div><b>Kernwörter</b><span>alle ${cp.coreTotal} gelernt · ${cp.seen}/${cp.total} insgesamt</span></div></div>`
+    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>2</i><div><b>Kernwörter</b><span>${cp.coreSeen} von ${cp.coreTotal} – kommen in der Tageslektion</span></div></div>`;
   const dl = DLG()[cu.id];
   const dDone = S.dialogs[cu.id] && S.dialogs[cu.id].done;
   const stepDialog = !dl ? "" : dDone
@@ -506,7 +513,7 @@ function renderPath() {
       const open = unitUnlocked(i);
       const state = p.done ? "done" : i === ci ? "now" : !open ? "locked" : p.quick ? "quick" : "open";
       const icon = { done: "✓", now: u.emoji, locked: "🔒", quick: "⚡", open: u.emoji }[state];
-      const pctW = p.total ? Math.round((p.seen / p.total) * 100) : 0;
+      const pctW = p.coreTotal ? Math.round((p.coreSeen / p.coreTotal) * 100) : 0;
       html += `<button class="node ${state}" data-unit="${u.id}">
         <span class="dot">${icon}</span>
         <span class="node-t"><b>${i + 1}. ${esc(u.title)}</b><small>${esc(GMAP[u.grammar].title)}</small>
@@ -549,14 +556,17 @@ function renderUnit(uid) {
       <span class="pill ${S.dialogs[u.id] && S.dialogs[u.id].done ? "ok" : ""}">${S.dialogs[u.id] && S.dialogs[u.id].done ? "✓ " + S.dialogs[u.id].best + " %" : "Hören"}</span>
     </button>` : ""}
 
-    <div class="section-h"><h3>📚 Wörter</h3><span class="small muted">${p.seen}/${p.total} gelernt</span></div>
-    ${wordListHtml(p.ws)}
+    <div class="section-h"><h3>📚 Kernwörter</h3><span class="small muted">${p.coreSeen}/${p.coreTotal} gelernt</span></div>
+    ${wordListHtml(p.ws.filter((w) => w.core))}
+    ${p.total > p.coreTotal ? `<div class="section-h"><h3>➕ Zusatzwörter</h3><span class="small muted">${p.seen - p.coreSeen}/${p.total - p.coreTotal}</span></div>
+    <p class="small muted" style="margin:-4px 2px 8px">Kommen nach und nach in der Tageslektion dazu – für den Test nicht nötig.</p>
+    ${wordListHtml(p.ws.filter((w) => !w.core))}` : ""}
 
     <div class="section-h"><h3>🏁 Einheitentest</h3></div>
     <div class="card">
       <p style="margin:0 0 12px">10 Aufgaben aus Wörtern und Grammatik dieser Einheit. Ab 80 % ist die Einheit geschafft${p.quick ? "" : " und die nächste wird freigeschaltet"}.</p>
       ${testReady(i) && open ? `<button class="btn" id="u-test">${p.done ? "Test wiederholen" : "Test starten"}</button>`
-        : `<button class="btn" disabled>Test starten</button><p class="small muted center" style="margin:8px 0 0">${!open ? "Einheit noch gesperrt" : !p.grammarDone ? "Erst die Grammatik lernen" : "Erst alle Wörter lernen (kommen in der Tageslektion)"}</p>`}
+        : `<button class="btn" disabled>Test starten</button><p class="small muted center" style="margin:8px 0 0">${!open ? "Einheit noch gesperrt" : !p.grammarDone ? "Erst die Grammatik lernen" : `Erst die ${p.coreTotal} Kernwörter lernen (${p.coreSeen} geschafft)`}</p>`}
       ${!p.done && p.quick ? `<p class="small muted" style="margin:10px 0 0">Tipp: Diese Stufe kannst du laut Einstufungstest schon. Mit dem Test hakst du die Einheit direkt ab.</p>` : ""}
     </div>
   </div>`;
@@ -688,7 +698,7 @@ function startSession(mode, opt = {}) {
     if (lines[2]) tasks.push({ t: "tsent", en: lines[2][1], de: lines[2][2], dlg: true });
   } else if (mode === "test") {
     const u = unitById(opt.unit);
-    const ws = shuffle(unitWords(u.id)).slice(0, 6);
+    const ws = shuffle(unitWords(u.id).filter((w) => w.core || st(w.id))).slice(0, 6);
     ws.forEach((w) => tasks.push({ id: w.id, t: pick(w.en.split(" ").length >= 3 ? ["mc_de", "build"] : ["mc_de", "type", "listen"]), exam: true }));
     tasks.push(...grammarTasks(GMAP[u.grammar], 10 - ws.length, { exam: true }).map((t) => (t.t === "gspeak" ? { ...t, t: "gbuild" } : t)));
     tasks = shuffle(tasks);
