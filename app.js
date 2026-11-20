@@ -615,6 +615,9 @@ function bindClose() {
   };
 }
 
+const deParts = (w) => w.de.toLowerCase().split(/\s*\/\s*|\s*\(|\)/).map((x) => x.replace(/^(der|die|das|sich) /, "").trim()).filter(Boolean);
+function sameMeaning(a, b) { const pa = deParts(a); return deParts(b).some((x) => pa.includes(x)); }
+function synonyms(w) { return WORDS.filter((x) => x.id !== w.id && sameMeaning(x, w)); }
 function distractors(w, field, n = 3) {
   const same = shuffle(WORDS.filter((x) => x.unit === w.unit && x.id !== w.id));
   const near = shuffle(WORDS.filter((x) => x.unit !== w.unit && Math.abs(x.ui - w.ui) <= 3));
@@ -626,6 +629,7 @@ function distractors(w, field, n = 3) {
   for (const strict of [true, false]) {
     for (const pool of [same, near, other]) for (const x of pool) {
       if (out.length >= n) break;
+      if (sameMeaning(x, w)) continue;
       if (strict && ((x.en.split(" ").length >= 3) !== isPhrase || x.en.startsWith("to ") !== isVerb)) continue;
       const v = x[field]; if (seen.has(v.toLowerCase())) continue;
       seen.add(v.toLowerCase()); out.push(v);
@@ -764,7 +768,8 @@ function tType(task, w) {
   inp.oninput = () => ($("#check").disabled = !inp.value.trim());
   const go = (val) => {
     inp.disabled = true; $("#dunno").remove();
-    const r = val == null ? "no" : checkTyped(val, w.en);
+    let r = val == null ? "no" : checkTyped(val, w.en);
+    if (r === "no" && val != null) { const syn = synonyms(w).find((x) => checkTyped(val, x.en) === "ok"); if (syn) { r = "ok"; return feedback(task, w, true, `Auch richtig! Gesucht war hier: ${w.en}`); } }
     feedback(task, w, r !== "no", r === "typo" ? `Fast! Richtig geschrieben: ${w.en}` : r === "no" ? `Richtig: ${w.en}` : null, { typo: r === "typo" });
   };
   inp.onkeydown = (e) => { if (e.key === "Enter" && inp.value.trim()) { e.preventDefault(); go(inp.value); } };
