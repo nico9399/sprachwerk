@@ -44,6 +44,7 @@ const DEFAULT = {
   packs: {},     // Themenpaket-ID -> true (neue Wörter im Tagesplan)
   reading: {},   // Einheit-ID -> { done, best } (Lesetexte)
   sounds: {},    // Aussprache-Lektion -> { done, best }
+  writing: {},   // Schreibaufgabe -> { draft, checks, done, score, date }
   custom: [],
   days: {},
   reports: [],
@@ -73,6 +74,7 @@ const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
 const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(x) ? x : [x]; };
 const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
 const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
+const WR = () => (window.SW_WRITING || {})[S.lang] || [];
 const SND = () => (window.SW_SOUNDS || {})[S.lang] || [];
 const sndGet = (id) => SND().find((x) => x.id === id);
 const MK = () => (window.SW_MISTAKES || {})[S.lang] || [];
@@ -125,6 +127,7 @@ function migrate() {
   if (!S.packs) { S.packs = {}; changed = true; }
   if (!S.reading) { S.reading = {}; changed = true; }
   if (!S.sounds) { S.sounds = {}; changed = true; }
+  if (!S.writing) { S.writing = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -349,6 +352,8 @@ function render() {
   if (view && view.type === "plist") return renderPackList();
   if (view && view.type === "mlist") return renderMistakeList();
   if (view && view.type === "slist") return renderSoundList();
+  if (view && view.type === "wlist") return renderWriteList();
+  if (view && view.type === "write") return renderWrite(view.id);
   if (view && view.type === "sound") return renderSound(view.id);
   if (view && view.type === "read") return renderReading(view.id);
   if (view && view.type === "pack") return renderPack(view.id);
@@ -359,7 +364,7 @@ function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scro
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
 function back() {
   stopSeq();
-  view = view && view.type === "pack" ? { type: "plist" } : view && view.type === "sound" ? { type: "slist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
+  view = view && view.type === "pack" ? { type: "plist" } : view && view.type === "sound" ? { type: "slist" } : view && view.type === "write" ? { type: "wlist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
 function openReading(uid, from) { view = { type: "read", id: uid, from }; render(); window.scrollTo(0, 0); }
@@ -575,6 +580,10 @@ function renderPath() {
       <div><b>⚠️ Fehlertrainer „Typisch deutsch“</b><span>${MK().length} Lektionen · ${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} gelernt</span></div>
       <span class="chev">›</span>
     </button>` : ""}
+    ${WR().length ? `<button class="card gcard" id="wlist" style="margin-bottom:6px">
+      <div><b>✍️ Schreibwerkstatt</b><span>${WR().length} Aufgaben · ${WR().filter((x) => S.writing[x.id] && S.writing[x.id].done).length} geschrieben</span></div>
+      <span class="chev">›</span>
+    </button>` : ""}
     ${SND().length ? `<button class="card gcard" id="slist" style="margin-bottom:6px">
       <div><b>🗣️ Aussprache-Trainer</b><span>${SND().length} Lektionen · ${SND().filter((x) => S.sounds[x.id] && S.sounds[x.id].done).length} geübt</span></div>
       <span class="chev">›</span>
@@ -606,9 +615,88 @@ function renderPath() {
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
   $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
+  const wl = $("#wlist"); if (wl) wl.onclick = () => { view = { type: "wlist" }; render(); window.scrollTo(0, 0); };
   const sl = $("#slist"); if (sl) sl.onclick = () => { view = { type: "slist" }; render(); window.scrollTo(0, 0); };
   const ml = $("#mlist"); if (ml) ml.onclick = () => { view = { type: "mlist" }; render(); window.scrollTo(0, 0); };
   const pl = $("#plist"); if (pl) pl.onclick = () => { view = { type: "plist" }; render(); window.scrollTo(0, 0); };
+}
+
+// ---------- Schreibwerkstatt ----------
+const wordCount = (t) => (t.trim().match(/[A-Za-z0-9'’-]+/g) || []).length;
+function renderWriteList() {
+  setTabbar(false);
+  let html = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Schreibwerkstatt</h1>
+    <p class="sub">Echte Alltagstexte selbst schreiben. Danach vergleichst du mit einer Musterlösung und hakst eine Checkliste ab.</p>`;
+  LEVELS.forEach((lv) => {
+    const list = WR().filter((x) => x.level === lv);
+    if (!list.length) return;
+    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((x) => S.writing[x.id] && S.writing[x.id].done).length}/${list.length}</span></div><div class="stack">`;
+    list.forEach((x) => { const r = S.writing[x.id]; html += `<button class="card gcard" data-w="${x.id}">
+      <div><b>${esc(x.title)}</b><span>${esc(x.kind)} · ${x.words[0]}–${x.words[1]} Wörter</span></div>
+      <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.score + " %" : r && r.draft ? "Entwurf" : "Schreiben"}</span></button>`; });
+    html += `</div>`;
+  });
+  app.innerHTML = html + `<p class="small muted" style="margin-top:14px">Ohne KI-Korrektur: Die Checkliste erkennt manche Punkte automatisch (vorab abgehakt), den Rest prüfst du selbst anhand der Musterlösung.</p></div>`;
+  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  app.querySelectorAll("[data-w]").forEach((b) => (b.onclick = () => { view = { type: "write", id: b.dataset.w }; render(); window.scrollTo(0, 0); }));
+}
+let wReveal = {}, wDe = false;
+function renderWrite(id) {
+  setTabbar(false);
+  const x = WR().find((y) => y.id === id);
+  const r = S.writing[id] || (S.writing[id] = { draft: "", checks: null, done: false, score: 0 });
+  const shown = wReveal[id] || r.done;
+  const text = r.draft || "";
+  const auto = x.check.map(([, re]) => { if (!re) return false; try { return new RegExp(re, "im").test(text); } catch (e) { return false; } });
+  const checks = r.checks && r.checks.length === x.check.length ? r.checks : auto;
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${x.level}</span></div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">✍️ ${esc(x.kind.toUpperCase())}</div>
+    <h1 class="page-title">${esc(x.title)}</h1>
+    <div class="card note">${esc(x.task)}<br><span class="small muted">Umfang: ${x.words[0]}–${x.words[1]} Wörter</span></div>
+    <div class="section-h"><h3>🧩 Bausteine</h3></div>
+    <div class="stack">${x.hints.map(([en, de]) => `<div class="example card"><div class="t"><b>${esc(en)}</b><span>${esc(de)}</span></div>${speakBtn(en)}</div>`).join("")}</div>
+    <div class="section-h"><h3>📝 Dein Text</h3><span class="small muted" id="w-count"></span></div>
+    <textarea id="w-text" class="wtext" placeholder="Schreib hier auf Englisch …" autocapitalize="sentences" spellcheck="true">${esc(text)}</textarea>
+    <div class="dlg-ctrl" style="margin-top:10px"><button class="btn ghost" id="w-say">🔊 Meinen Text vorlesen</button></div>
+    ${!shown ? `<button class="btn" id="w-show" style="margin-top:16px">Fertig – mit Musterlösung vergleichen</button>
+      <p class="small muted center">Tipp: Erst selbst schreiben, dann vergleichen. Dein Entwurf wird automatisch gespeichert.</p>` : `
+    <div class="section-h"><h3>✅ Checkliste</h3><span class="small muted">${checks.filter(Boolean).length}/${x.check.length}</span></div>
+    <ul class="set wcheck">${x.check.map(([t, re], i) => `<li class="tap" data-c="${i}"><span class="cb ${checks[i] ? "on" : ""}">${checks[i] ? "✓" : ""}</span><span>${esc(t)}${re && auto[i] ? `<small>automatisch erkannt</small>` : ""}</span></li>`).join("")}</ul>
+    <div class="section-h"><h3>💡 Musterlösung</h3>${speakBtn(x.model)}</div>
+    <div class="card model">${esc(wDe ? x.modelDe : x.model).replace(/\n/g, "<br>")}</div>
+    <div class="seg" style="margin:10px 0 0"><button id="w-de" class="${wDe ? "on" : ""}">${wDe ? "Deutsch an" : "Deutsch zeigen"}</button></div>
+    <p class="small muted" style="margin-top:10px">Vergleiche: Welche Bausteine hast du benutzt? Was würdest du übernehmen? Du kannst deinen Text oben weiter verbessern.</p>
+    <button class="btn" id="w-done" style="margin-top:12px">${r.done ? "Aktualisieren" : "Abschließen"}</button>`}
+  </div>`;
+  const ta = $("#w-text"), cnt = $("#w-count");
+  const upd = () => { const n = wordCount(ta.value); cnt.textContent = `${n} Wörter`; cnt.style.color = n >= x.words[0] && n <= x.words[1] ? "var(--good)" : ""; };
+  upd();
+  let tm = null;
+  ta.oninput = () => { upd(); clearTimeout(tm); tm = setTimeout(() => { r.draft = ta.value; save(); }, 400); };
+  ta.onblur = () => { r.draft = ta.value; save(); };
+  $("#back").onclick = () => { r.draft = ta.value; save(); back(); };
+  $("#w-say").onclick = () => { if (ta.value.trim()) speak(ta.value); else toast("Noch kein Text"); };
+  const sh = $("#w-show");
+  if (sh) sh.onclick = () => {
+    r.draft = ta.value;
+    if (wordCount(ta.value) < Math.ceil(x.words[0] / 2) && !confirm("Dein Text ist noch sehr kurz. Trotzdem die Musterlösung ansehen?")) return;
+    r.checks = null; save(); wReveal[id] = true; renderWrite(id);
+  };
+  app.querySelectorAll("[data-c]").forEach((li) => (li.onclick = () => { r.draft = ta.value; const c = checks.slice(); c[+li.dataset.c] = !c[+li.dataset.c]; r.checks = c; save(); const y = window.scrollY; renderWrite(id); window.scrollTo(0, y); }));
+  const de = $("#w-de"); if (de) de.onclick = () => { r.draft = ta.value; save(); wDe = !wDe; const y = window.scrollY; renderWrite(id); window.scrollTo(0, y); };
+  const dn = $("#w-done");
+  if (dn) dn.onclick = () => {
+    r.draft = ta.value; r.checks = checks;
+    const first = !r.done;
+    r.score = Math.round((checks.filter(Boolean).length / x.check.length) * 100);
+    r.done = true; r.date = today();
+    if (first) addXp(20);
+    save(); toast(first ? `Geschafft – ${r.score} % der Checkliste · +20 XP` : "Aktualisiert");
+    view = { type: "wlist" }; render(); window.scrollTo(0, 0);
+  };
 }
 
 // ---------- Aussprache-Trainer ----------

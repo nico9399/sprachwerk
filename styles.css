@@ -449,3 +449,12 @@ textarea.answer-input { resize: none; font-size: 18px; line-height: 1.4; }
 .stress-ex { text-align: left; padding: 12px 16px; }
 .stress-ex b { font-size: 19px; letter-spacing: .02em; }
 .stress-ex u { text-decoration: none; color: var(--accent); }
+
+/* Schreibwerkstatt */
+.wtext { width: 100%; min-height: 220px; padding: 14px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 17px; line-height: 1.55; resize: vertical; }
+.wtext:focus { outline: none; border-color: var(--accent); }
+.wcheck li { gap: 12px; justify-content: flex-start; }
+.wcheck .cb { flex: 0 0 26px; height: 26px; border-radius: 8px; border: 2px solid var(--line); display: grid; place-items: center; font-weight: 800; color: #fff; }
+.wcheck .cb.on { background: var(--good); border-color: var(--good); }
+.card.model { font-size: 16px; line-height: 1.6; }
+.wcheck li.tap::after { content: none; }
