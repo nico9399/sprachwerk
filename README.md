@@ -2,11 +2,10 @@
 
 Eigene App zum Sprachenlernen – zuerst Englisch. Läuft im Browser (iPhone: Safari → Teilen → Zum Home-Bildschirm), offline nutzbar.
 
-- Einstufungstest (A1–B2), danach Schnellcheck für bekannte Stufen
-- Lernpfad mit 37 Einheiten (A1–B2): Grammatik, Wörter, Einheitentest
-- 53 Grammatik-Lektionen (877 Übungen), Übersicht unter Pfad → Alle Grammatik-Lektionen
-- 37 Grammatik-Lektionen mit Übungen, Wiederholung im Abstand
-- 111 Dialoge (3 je Einheit) mit Hörverständnis, Diktat und Satz-Übersetzung
+- Einstufungstest (A1–C1), danach Schnellcheck für bekannte Stufen
+- Lernpfad mit 45 Einheiten (A1–C1), 3.135 Wörter: Grammatik, Wörter, Einheitentest
+- 61 Grammatik-Lektionen (973 Übungen), Übersicht unter Pfad → Alle Grammatik-Lektionen
+- 135 Dialoge (3 je Einheit) mit Hörverständnis, Diktat und Satz-Übersetzung
 - Vokabeltrainer mit Lernfächern, Sprechübungen (abschaltbar), Fehler melden
 - Übungen: Bedeutung wählen, Hören, Schreiben, Sätze bauen
 - Aussprache über die Sprachausgabe des Geräts

@@ -3,8 +3,8 @@
 "use strict";
 
 const STORE_KEY = "sprachwerk-v1";
-const LEVELS = ["A1", "A2", "B1", "B2"];
-const LEVEL_NAMES = { A1: "Einstieg", A2: "Grundlagen", B1: "Alltag sicher", B2: "Selbstständig" };
+const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
+const LEVEL_NAMES = { A1: "Einstieg", A2: "Grundlagen", B1: "Alltag sicher", B2: "Selbstständig", C1: "Kompetent" };
 const INTERVALS = [0, 1, 2, 4, 8, 16, 35, 80]; // Tage je Fach
 const MAX_BOX = INTERVALS.length - 1;
 const MAX_REVIEWS = 20;
@@ -328,7 +328,7 @@ function renderWelcome() {
     <h1>Willkommen bei Sprachwerk</h1>
     <p>Wir starten mit ${esc(L().name)}. Mach zuerst den kurzen Einstufungstest – dann weiß die App, wo du stehst, und du langweilst dich nicht mit Sachen, die du schon kannst.</p>
     <div class="card stack" style="margin:26px 0">
-      <div>⏱️ <b>ca. 3–5 Minuten</b>, bis zu 20 Fragen</div>
+      <div>⏱️ <b>ca. 3–6 Minuten</b>, bis zu 25 Fragen</div>
       <div>🎯 Wortschatz und Grammatik, von leicht bis schwer</div>
       <div>🤷 Ehrlich „Weiß ich nicht“ drücken statt raten – dann wird das Ergebnis genauer</div>
     </div>
@@ -403,7 +403,7 @@ function finishTest() {
     <div class="lvl-result pop">${passed < 0 ? "Start" : shown}</div>
     <div class="scale">${LEVELS.map((l, i) => `<div class="${i <= passed ? "on" : ""}">${l}</div>`).join("")}</div>
     <p>${text}</p>
-    <p class="small muted">${correct} von ${T.answered} richtig. A1 = Anfänger, A2 = Grundkenntnisse, B1 = Alltag klappt, B2 = selbstständig.</p>
+    <p class="small muted">${correct} von ${T.answered} richtig. A1 = Anfänger, A2 = Grundkenntnisse, B1 = Alltag klappt, B2 = selbstständig, C1 = kompetent.</p>
     <button class="btn" id="t-done" style="margin-top:22px">${wasOnboarded ? "Fertig" : "Zum Lernpfad"}</button>
   </div>`;
   T = null;

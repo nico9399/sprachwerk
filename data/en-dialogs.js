@@ -1295,5 +1295,274 @@ u37: [
     ["Wie lange lernt sie schon?","Etwa zwei Jahre",["Sechs Monate","Fünf Jahre","Ein Jahr"]],
     ["Welchen Test hat sie bestanden?","B2",["C1","B1","A2"]],
     ["Was macht sie in letzter Zeit?","Englische Romane lesen",["Filme schauen","Einen Kurs besuchen","In England arbeiten"]]]}
+],
+
+u38: [
+  { title: "Die Beförderung", people: ["Chef","Lena"], lines: [
+    ["Chef","Lena, by the end of next month we'll have restructured the whole department.","Lena, bis Ende nächsten Monats werden wir die ganze Abteilung umstrukturiert haben."],
+    ["Lena","I've heard rumours. What does that mean for my team?","Ich habe Gerüchte gehört. Was heißt das für mein Team?"],
+    ["Chef","We'd like you to oversee two lines instead of one. It's a promotion.","Wir möchten, dass du zwei Linien statt einer betreust. Das ist eine Beförderung."],
+    ["Lena","That's great news. Will I have more resources?","Das sind tolle Nachrichten. Bekomme ich mehr Ressourcen?"],
+    ["Chef","Yes, a deputy and a bigger budget. By June, you'll have been with us for ten years – it's well deserved.","Ja, einen Stellvertreter und mehr Budget. Im Juni bist du zehn Jahre bei uns – es ist wohlverdient."]],
+    questions: [
+    ["Was wird umstrukturiert?","Die ganze Abteilung",["Nur Lenas Team","Die Kantine","Der Schichtplan"]],
+    ["Was soll Lena künftig tun?","Zwei Linien betreuen",["Die Firma verlassen","Ins Büro wechseln","Nur noch nachts arbeiten"]],
+    ["Wie lange ist Lena im Juni bei der Firma?","Zehn Jahre",["Fünf Jahre","Ein Jahr","Zwanzig Jahre"]]]},
+  { title: "Der Engpass", people: ["Werkleiter","Teamleiter"], lines: [
+    ["Werkleiter","Throughput has dropped again. Where's the bottleneck?","Der Durchsatz ist wieder gesunken. Wo ist der Engpass?"],
+    ["Teamleiter","At the packing station. They can't keep up since we sped up the line.","An der Verpackungsstation. Seit wir die Linie beschleunigt haben, kommen sie nicht hinterher."],
+    ["Werkleiter","Have you found the root cause?","Habt ihr die Grundursache gefunden?"],
+    ["Teamleiter","Partly. The labelling machine is outdated and keeps jamming.","Teilweise. Die Etikettiermaschine ist veraltet und klemmt ständig."],
+    ["Werkleiter","Then let's replace it. By the time the new orders come in, it'll have been installed.","Dann ersetzen wir sie. Bis die neuen Aufträge kommen, wird sie installiert sein."]],
+    questions: [
+    ["Wo ist der Engpass?","An der Verpackungsstation",["Im Lager","An der Montage","Beim Versand"]],
+    ["Was ist die Ursache?","Eine veraltete Etikettiermaschine",["Zu wenig Personal","Fehlendes Material","Ein Softwarefehler"]],
+    ["Was wird entschieden?","Die Maschine wird ersetzt",["Mehr Leute einstellen","Die Linie verlangsamen","Nichts"]]]},
+  { title: "Weiterbildung", people: ["Nico","Personalerin"], lines: [
+    ["Nico","I'm thinking about doing my master craftsman course part-time.","Ich überlege, berufsbegleitend meinen Meister zu machen."],
+    ["Personalerin","That's a great idea. The company covers half the costs.","Super Idee. Die Firma übernimmt die Hälfte der Kosten."],
+    ["Nico","How would I juggle it with shift work?","Wie bekomme ich das mit Schichtarbeit unter einen Hut?"],
+    ["Personalerin","We can put you on early shifts only, so you can attend the evening classes.","Wir können dich nur in Frühschicht einteilen, damit du die Abendkurse besuchen kannst."],
+    ["Nico","In that case, I'll apply. In the long run, it'll pay off.","Dann bewerbe ich mich. Langfristig zahlt sich das aus."]],
+    questions: [
+    ["Welche Weiterbildung plant Nico?","Den Meister berufsbegleitend",["Ein Vollzeitstudium","Einen Englischkurs","Einen Staplerschein"]],
+    ["Was zahlt die Firma?","Die Hälfte der Kosten",["Alles","Nichts","Nur die Bücher"]],
+    ["Wie wird das Schichtproblem gelöst?","Nur Frühschicht",["Nur Nachtschicht","Teilzeit","Unbezahlter Urlaub"]]]}
+],
+
+u39: [
+  { title: "Vier-Tage-Woche", people: ["Paula","Simon"], lines: [
+    ["Paula","I think a four-day week would make people more productive.","Ich glaube, eine Vier-Tage-Woche würde Leute produktiver machen."],
+    ["Simon","I beg to differ. In production, someone has to be on the line every day.","Da bin ich anderer Meinung. In der Produktion muss jeden Tag jemand an der Linie sein."],
+    ["Paula","Admittedly, it's harder in production. But not only would people be happier, they'd also take fewer sick days.","Zugegeben, in der Produktion ist es schwieriger. Aber die Leute wären nicht nur zufriedener, sie würden auch seltener krank."],
+    ["Simon","That's a valid point. Is there any evidence for it?","Das ist ein berechtigter Punkt. Gibt es Belege dafür?"],
+    ["Paula","Several trials in the UK showed exactly that.","Mehrere Tests in Großbritannien haben genau das gezeigt."]],
+    questions: [
+    ["Wofür argumentiert Paula?","Für die Vier-Tage-Woche",["Für längere Schichten","Für mehr Urlaub","Für Homeoffice"]],
+    ["Was ist Simons Einwand?","In der Produktion muss täglich jemand da sein",["Es ist zu teuer","Niemand will das","Es gibt keine Belege"]],
+    ["Welchen Beleg nennt Paula?","Tests in Großbritannien",["Eine Umfrage in der Firma","Ein Buch","Gar keinen"]]]},
+  { title: "Hitzige Besprechung", people: ["Moderatorin","Kollege"], lines: [
+    ["Kollege","Under no circumstances should we cut the safety training!","Unter keinen Umständen sollten wir die Sicherheitsschulung kürzen!"],
+    ["Moderatorin","Nobody is suggesting that. Let's not jump to conclusions.","Das schlägt niemand vor. Lasst uns keine voreiligen Schlüsse ziehen."],
+    ["Kollege","But the new plan reduces it from two days to one.","Aber der neue Plan kürzt sie von zwei Tagen auf einen."],
+    ["Moderatorin","Only the theory part. The practical part stays the same. Would that be acceptable?","Nur den Theorieteil. Der Praxisteil bleibt gleich. Wäre das akzeptabel?"],
+    ["Kollege","To a certain extent, yes. As long as nothing practical is cut.","Bis zu einem gewissen Grad, ja. Solange nichts Praktisches gekürzt wird."]],
+    questions: [
+    ["Worüber wird gestritten?","Über die Sicherheitsschulung",["Über Gehälter","Über Urlaub","Über die Kantine"]],
+    ["Was soll gekürzt werden?","Nur der Theorieteil",["Der Praxisteil","Beides","Nichts"]],
+    ["Wie reagiert der Kollege am Ende?","Teilweise einverstanden",["Völlig dagegen","Er verlässt den Raum","Begeistert"]]]},
+  { title: "Pro und Contra Elektroauto", people: ["Kai","Miriam"], lines: [
+    ["Kai","I'm in two minds about getting an electric car.","Ich bin hin- und hergerissen, ob ich ein Elektroauto kaufen soll."],
+    ["Miriam","Let me play devil's advocate: aren't they still too expensive?","Lass mich den Gegenpart spielen: Sind die nicht immer noch zu teuer?"],
+    ["Kai","The price is higher, but running costs are much lower. It's a trade-off.","Der Preis ist höher, aber die Betriebskosten viel niedriger. Es ist ein Abwägen."],
+    ["Miriam","And charging?","Und das Laden?"],
+    ["Kai","There's a charging station at work, so that's beside the point for me.","Auf der Arbeit gibt es eine Ladestation, das spielt für mich also keine Rolle."]],
+    questions: [
+    ["Was überlegt Kai?","Ein Elektroauto zu kaufen",["Umzuziehen","Den Job zu wechseln","Ein Fahrrad zu kaufen"]],
+    ["Was ist der Vorteil laut Kai?","Niedrigere Betriebskosten",["Niedriger Kaufpreis","Mehr Platz","Schneller"]],
+    ["Warum ist das Laden für Kai kein Problem?","Auf der Arbeit gibt es eine Ladestation",["Er hat eine Garage","Er fährt wenig","Laden ist kostenlos überall"]]]}
+],
+
+u40: [
+  { title: "Fachkräftemangel", people: ["Reporterin","Unternehmer"], lines: [
+    ["Reporterin","Is the skills shortage affecting your company?","Trifft der Fachkräftemangel Ihre Firma?"],
+    ["Unternehmer","Very much so. If it weren't for our apprentices, we'd have to turn down orders.","Sehr. Ohne unsere Azubis müssten wir Aufträge ablehnen."],
+    ["Reporterin","What are you doing to tackle it?","Was tun Sie dagegen?"],
+    ["Unternehmer","We've invested in vocational training and we recruit abroad.","Wir investieren in Ausbildung und rekrutieren im Ausland."],
+    ["Reporterin","And integration?","Und die Integration?"],
+    ["Unternehmer","We offer free language courses. Language is key.","Wir bieten kostenlose Sprachkurse. Sprache ist der Schlüssel."]],
+    questions: [
+    ["Was würde ohne Azubis passieren?","Aufträge müssten abgelehnt werden",["Die Firma würde schließen","Nichts","Die Preise würden sinken"]],
+    ["Was tut die Firma gegen den Mangel?","Ausbildung und Rekrutierung im Ausland",["Löhne senken","Automatisieren","Werbung im Radio"]],
+    ["Was bietet die Firma zur Integration?","Kostenlose Sprachkurse",["Wohnungen","Ein Firmenauto","Höheren Lohn"]]]},
+  { title: "Falschmeldung", people: ["Anna","Jonas"], lines: [
+    ["Anna","Did you see the post saying the factory is closing?","Hast du den Post gesehen, dass die Fabrik schließt?"],
+    ["Jonas","Yes, but I fact-checked it. It's misinformation.","Ja, aber ich habe es geprüft. Das ist eine Falschmeldung."],
+    ["Anna","Really? It went viral – everyone's sharing it.","Echt? Das ist viral gegangen – alle teilen es."],
+    ["Jonas","The local newspaper spoke to the management. They're actually expanding.","Die Lokalzeitung hat mit der Geschäftsführung gesprochen. Sie erweitern sogar."],
+    ["Anna","Wow. Had I known, I wouldn't have shared it.","Wow. Hätte ich das gewusst, hätte ich es nicht geteilt."]],
+    questions: [
+    ["Was behauptete der Post?","Die Fabrik schließt",["Die Fabrik erweitert","Es gibt Entlassungen","Neue Chefs"]],
+    ["Was hat Jonas gemacht?","Die Fakten geprüft",["Den Post geteilt","Den Chef angerufen","Nichts"]],
+    ["Was bereut Anna?","Den Post geteilt zu haben",["Nicht nachgefragt zu haben","Den Job gekündigt zu haben","Nichts"]]]},
+  { title: "Bezahlbarer Wohnraum", people: ["Bürgerin","Stadtrat"], lines: [
+    ["Bürgerin","Young families can't find affordable housing here.","Junge Familien finden hier keinen bezahlbaren Wohnraum."],
+    ["Stadtrat","We're aware of that. The council has approved 200 new flats.","Das ist uns bewusst. Die Gemeinde hat 200 neue Wohnungen genehmigt."],
+    ["Bürgerin","When will they be built?","Wann werden sie gebaut?"],
+    ["Stadtrat","Construction starts next year. A third will be reserved for low-income families.","Baubeginn ist nächstes Jahr. Ein Drittel ist für Familien mit niedrigem Einkommen reserviert."],
+    ["Bürgerin","That's a start, but the infrastructure needs to grow too – schools, buses, doctors.","Ein Anfang, aber die Infrastruktur muss mitwachsen – Schulen, Busse, Ärzte."]],
+    questions: [
+    ["Was ist das Problem?","Kein bezahlbarer Wohnraum",["Zu viel Verkehr","Zu wenig Jobs","Lärm"]],
+    ["Wie viele Wohnungen wurden genehmigt?","200",["20","2.000","120"]],
+    ["Was fordert die Bürgerin zusätzlich?","Mehr Infrastruktur",["Niedrigere Steuern","Mehr Parkplätze","Einen Park"]]]}
+],
+
+u41: [
+  { title: "Kurz vorm Burn-out", people: ["Sarah","Tom"], lines: [
+    ["Sarah","You look exhausted. Are you OK?","Du siehst erschöpft aus. Alles okay?"],
+    ["Tom","Not really. Having worked six weeks without a day off, I can't switch off any more.","Nicht wirklich. Nach sechs Wochen ohne freien Tag kann ich nicht mehr abschalten."],
+    ["Sarah","You're burning the candle at both ends. Have you talked to your boss?","Du übernimmst dich. Hast du mit deinem Chef geredet?"],
+    ["Tom","Not yet. I don't want to seem weak.","Noch nicht. Ich will nicht schwach wirken."],
+    ["Sarah","Setting boundaries isn't weak. And the company offers free counselling.","Grenzen setzen ist nicht schwach. Und die Firma bietet kostenlose Beratung an."]],
+    questions: [
+    ["Wie lange hat Tom ohne freien Tag gearbeitet?","Sechs Wochen",["Sechs Tage","Drei Monate","Zwei Wochen"]],
+    ["Warum hat er nicht mit dem Chef geredet?","Er will nicht schwach wirken",["Der Chef ist im Urlaub","Er hat keine Zeit","Er hat es vergessen"]],
+    ["Was empfiehlt Sarah?","Grenzen setzen und Beratung nutzen",["Kündigen","Mehr Kaffee","Noch mehr arbeiten"]]]},
+  { title: "Rückenschule", people: ["Physiotherapeut","Arbeiter"], lines: [
+    ["Physiotherapeut","Your back pain is probably due to repetitive strain and poor posture.","Ihre Rückenschmerzen kommen wahrscheinlich von einseitiger Belastung und schlechter Haltung."],
+    ["Arbeiter","I lift boxes all day. What should I do?","Ich hebe den ganzen Tag Kisten. Was soll ich tun?"],
+    ["Physiotherapeut","Bend your knees, keep the box close to your body, and don't twist.","Gehen Sie in die Knie, halten Sie die Kiste nah am Körper und drehen Sie sich nicht."],
+    ["Arbeiter","And outside work?","Und außerhalb der Arbeit?"],
+    ["Physiotherapeut","Do these exercises daily. Having done them for a month, you'll feel the difference.","Machen Sie diese Übungen täglich. Nach einem Monat werden Sie den Unterschied spüren."]],
+    questions: [
+    ["Woher kommen die Schmerzen?","Einseitige Belastung und Haltung",["Ein Unfall","Zu wenig Schlaf","Falsche Schuhe"]],
+    ["Was ist beim Heben wichtig?","In die Knie gehen, Kiste nah am Körper",["Schnell heben","Mit geradem Bein heben","Beim Heben drehen"]],
+    ["Wann spürt er einen Unterschied?","Nach einem Monat Übungen",["Sofort","Nach einem Jahr","Nie"]]]},
+  { title: "Mit dem Rauchen aufgehört", people: ["Ben","Ella"], lines: [
+    ["Ben","Guess what? I've given up smoking.","Rate mal! Ich habe mit dem Rauchen aufgehört."],
+    ["Ella","Seriously? How long ago?","Ernsthaft? Wie lange ist das her?"],
+    ["Ben","Three weeks. The withdrawal was tough at first, but I'm on the mend.","Drei Wochen. Der Entzug war anfangs hart, aber es wird besser."],
+    ["Ella","What made you decide?","Was hat dich dazu gebracht?"],
+    ["Ben","Feeling out of breath on the stairs at work. That was the last straw.","Dass ich auf der Treppe in der Arbeit außer Atem war. Das hat das Fass zum Überlaufen gebracht."]],
+    questions: [
+    ["Seit wann raucht Ben nicht mehr?","Seit drei Wochen",["Seit drei Monaten","Seit gestern","Seit einem Jahr"]],
+    ["Wie war der Anfang?","Hart",["Ganz leicht","Er hat es nicht gemerkt","Er hat wieder angefangen"]],
+    ["Was war der Auslöser?","Atemnot auf der Treppe",["Der Arzt","Der Preis","Seine Freundin"]]]}
+],
+
+u42: [
+  { title: "Die smarte Fabrik", people: ["Ingenieurin","Bediener"], lines: [
+    ["Ingenieurin","From next month, all machines will be monitored in real time.","Ab nächstem Monat werden alle Maschinen in Echtzeit überwacht."],
+    ["Bediener","Does that mean fewer jobs?","Heißt das weniger Jobs?"],
+    ["Ingenieurin","It's widely believed so, but here it's the opposite. We need people to analyse the data.","Das wird allgemein angenommen, aber hier ist es umgekehrt. Wir brauchen Leute, die die Daten auswerten."],
+    ["Bediener","I'm not very tech-savvy, though.","Ich bin aber nicht sehr technikaffin."],
+    ["Ingenieurin","Everyone will be trained. Predictive maintenance is expected to cut downtime by thirty percent.","Alle werden geschult. Vorausschauende Wartung soll Stillstände um dreißig Prozent senken."]],
+    questions: [
+    ["Was ändert sich nächsten Monat?","Maschinen werden in Echtzeit überwacht",["Neue Schichtzeiten","Die Fabrik schließt","Neue Kantine"]],
+    ["Wofür braucht man Leute?","Zur Datenauswertung",["Zum Putzen","Zum Verpacken","Für den Verkauf"]],
+    ["Um wie viel sollen Stillstände sinken?","30 %",["13 %","50 %","3 %"]]]},
+  { title: "Phishing-Mail", people: ["IT","Mitarbeiter"], lines: [
+    ["Mitarbeiter","I got an email asking me to confirm my password. Is it genuine?","Ich habe eine Mail bekommen, ich soll mein Passwort bestätigen. Ist die echt?"],
+    ["IT","No, that's phishing. Did you click the link?","Nein, das ist Phishing. Hast du auf den Link geklickt?"],
+    ["Mitarbeiter","No, something seemed off.","Nein, irgendwas kam mir komisch vor."],
+    ["IT","Good instinct. We never ask for passwords by email. Please forward it to us.","Gutes Gespür. Wir fragen nie per Mail nach Passwörtern. Leite sie uns bitte weiter."],
+    ["Mitarbeiter","Will do. Should I change my password anyway?","Mach ich. Soll ich mein Passwort trotzdem ändern?"],
+    ["IT","It wouldn't hurt. And activate two-factor authentication.","Schaden würde es nicht. Und aktivier die Zwei-Faktor-Authentifizierung."]],
+    questions: [
+    ["Was verlangte die Mail?","Das Passwort zu bestätigen",["Geld zu überweisen","Eine App zu installieren","Ein Formular auszufüllen"]],
+    ["Hat der Mitarbeiter geklickt?","Nein",["Ja","Er weiß es nicht","Nur einmal"]],
+    ["Was empfiehlt die IT zusätzlich?","Zwei-Faktor-Authentifizierung",["Neuen Laptop","E-Mail löschen und vergessen","Nichts"]]]},
+  { title: "KI im Alltag", people: ["Lisa","Opa"], lines: [
+    ["Opa","Is it true that computers can write letters now?","Stimmt es, dass Computer jetzt Briefe schreiben können?"],
+    ["Lisa","Yes, AI can write texts, translate, even help with learning languages.","Ja, KI kann Texte schreiben, übersetzen und sogar beim Sprachenlernen helfen."],
+    ["Opa","And can you trust it?","Und kann man ihr trauen?"],
+    ["Lisa","Mostly, but it can make mistakes. You should always check important facts.","Meistens, aber sie kann Fehler machen. Wichtige Fakten sollte man immer prüfen."],
+    ["Opa","So it's like a clever assistant, not a boss.","Also wie ein schlauer Assistent, kein Chef."],
+    ["Lisa","Exactly – you've hit the nail on the head.","Genau – du hast den Nagel auf den Kopf getroffen."]],
+    questions: [
+    ["Was kann KI laut Lisa?","Texte schreiben und übersetzen",["Autos reparieren","Kochen","Nichts Nützliches"]],
+    ["Was rät Lisa?","Wichtige Fakten prüfen",["Der KI blind vertrauen","KI nie benutzen","Nur KI fragen"]],
+    ["Womit vergleicht Opa die KI?","Mit einem schlauen Assistenten",["Mit einem Chef","Mit einem Lexikon","Mit einem Roboter"]]]}
+],
+
+u43: [
+  { title: "Das erste Haus", people: ["Bankberater","Paar"], lines: [
+    ["Paar","We'd like to buy a house. What we need to know is how much we can borrow.","Wir möchten ein Haus kaufen. Was wir wissen müssen, ist, wie viel wir leihen können."],
+    ["Bankberater","That depends on your net income and your down payment.","Das hängt von Ihrem Nettoeinkommen und Ihrem Eigenkapital ab."],
+    ["Paar","We've saved about forty thousand.","Wir haben ungefähr vierzigtausend gespart."],
+    ["Bankberater","Good. With current interest rates, your monthly instalment would be around 1,300 euros.","Gut. Bei den aktuellen Zinsen läge Ihre Monatsrate bei etwa 1.300 Euro."],
+    ["Paar","That's more than our rent. We'd have to tighten our belts.","Das ist mehr als unsere Miete. Wir müssten den Gürtel enger schnallen."]],
+    questions: [
+    ["Was will das Paar wissen?","Wie viel sie leihen können",["Wie hoch die Steuern sind","Wie man spart","Wo ein Haus frei ist"]],
+    ["Wie viel haben sie gespart?","Etwa 40.000 €",["Etwa 14.000 €","Etwa 400.000 €","Nichts"]],
+    ["Wie hoch wäre die Monatsrate?","Etwa 1.300 €",["Etwa 300 €","Etwa 3.100 €","Etwa 130 €"]]]},
+  { title: "Lieferkette", people: ["Einkauf","Produktionsleiter"], lines: [
+    ["Einkauf","Our main supplier has gone bankrupt.","Unser Hauptlieferant ist pleite."],
+    ["Produktionsleiter","What?! It's those parts that we need most!","Was?! Genau diese Teile brauchen wir am dringendsten!"],
+    ["Einkauf","I know. There's a shortage everywhere and demand is high.","Ich weiß. Überall herrscht Knappheit und die Nachfrage ist hoch."],
+    ["Produktionsleiter","How long will our stock last?","Wie lange reicht unser Bestand?"],
+    ["Einkauf","About three weeks. I've found an alternative supplier, but they're fifteen percent more expensive.","Etwa drei Wochen. Ich habe einen anderen Lieferanten, aber der ist fünfzehn Prozent teurer."],
+    ["Produktionsleiter","Better that than a standstill. Order now.","Besser als Stillstand. Bestell sofort."]],
+    questions: [
+    ["Was ist mit dem Hauptlieferanten?","Er ist pleite",["Er liefert zu spät","Er ist zu teuer","Er wurde übernommen"]],
+    ["Wie lange reicht der Bestand?","Etwa drei Wochen",["Drei Tage","Drei Monate","Gar nicht mehr"]],
+    ["Was ist der Nachteil des neuen Lieferanten?","15 % teurer",["Schlechtere Qualität","Längere Lieferzeit","Sitzt im Ausland"]]]},
+  { title: "Gehaltsabrechnung verstehen", people: ["Azubi","Meister"], lines: [
+    ["Azubi","Why is my net salary so much lower than my gross salary?","Warum ist mein Netto so viel niedriger als mein Brutto?"],
+    ["Meister","Because of deductions – income tax, health insurance, pension, unemployment insurance.","Wegen der Abzüge – Lohnsteuer, Krankenversicherung, Rente, Arbeitslosenversicherung."],
+    ["Azubi","That's a lot of money.","Das ist viel Geld."],
+    ["Meister","It is. But what you can do is claim expenses on your tax return – like travel to work.","Stimmt. Aber du kannst in der Steuererklärung Kosten geltend machen – zum Beispiel den Arbeitsweg."],
+    ["Azubi","So I might get a tax refund?","Also bekomme ich vielleicht Steuern zurück?"],
+    ["Meister","Quite possibly. Keep all your receipts.","Gut möglich. Bewahr alle Belege auf."]],
+    questions: [
+    ["Was versteht der Azubi nicht?","Warum Netto so viel niedriger ist",["Wie er Urlaub beantragt","Seinen Schichtplan","Seinen Vertrag"]],
+    ["Was kann man in der Steuererklärung geltend machen?","Zum Beispiel den Arbeitsweg",["Den Urlaub","Das Essen","Die Miete"]],
+    ["Was soll er aufbewahren?","Alle Belege",["Alte Lohnzettel wegwerfen","Nichts","Nur den Vertrag"]]]}
+],
+
+u44: [
+  { title: "Grüne Fabrik", people: ["Umweltbeauftragte","Team"], lines: [
+    ["Umweltbeauftragte","Our goal is to be climate-neutral by 2035.","Unser Ziel ist es, bis 2035 klimaneutral zu sein."],
+    ["Team","How are we going to do that?","Wie wollen wir das schaffen?"],
+    ["Umweltbeauftragte","Solar panels on the roof, a heat pump for the hall, and less packaging waste.","Solaranlage auf dem Dach, Wärmepumpe für die Halle und weniger Verpackungsmüll."],
+    ["Team","What can we do?","Was können wir tun?"],
+    ["Umweltbeauftragte","Switch off machines during breaks. It's high time we stopped wasting energy.","Maschinen in den Pausen ausschalten. Es wird höchste Zeit, dass wir keine Energie mehr verschwenden."]],
+    questions: [
+    ["Bis wann will die Fabrik klimaneutral sein?","2035",["2030","2045","2025"]],
+    ["Was ist für die Halle geplant?","Eine Wärmepumpe",["Neue Fenster","Ein Gasofen","Nichts"]],
+    ["Was sollen Mitarbeiter tun?","Maschinen in Pausen ausschalten",["Länger arbeiten","Mit dem Auto kommen","Mehr Papier drucken"]]]},
+  { title: "Fahrgemeinschaft", people: ["Max","Julia"], lines: [
+    ["Max","Petrol is so expensive. I'd rather not drive alone every day.","Benzin ist so teuer. Ich fahre lieber nicht jeden Tag allein."],
+    ["Julia","Why don't we carpool? We live in the same village.","Warum bilden wir keine Fahrgemeinschaft? Wir wohnen im selben Dorf."],
+    ["Max","Good idea. We'd halve our costs and our carbon footprint.","Gute Idee. Wir würden unsere Kosten und unseren CO₂-Fußabdruck halbieren."],
+    ["Julia","But I'd prefer it if you didn't smoke in the car.","Aber mir wäre lieber, du würdest im Auto nicht rauchen."],
+    ["Max","No problem, I gave up last year!","Kein Problem, ich habe letztes Jahr aufgehört!"]],
+    questions: [
+    ["Was schlägt Julia vor?","Eine Fahrgemeinschaft",["Mit dem Bus zu fahren","Umzuziehen","Ein E-Auto zu kaufen"]],
+    ["Was würde halbiert?","Kosten und CO₂-Fußabdruck",["Die Fahrtzeit","Die Arbeitszeit","Der Lohn"]],
+    ["Welche Bedingung stellt Julia?","Kein Rauchen im Auto",["Keine Musik","Max fährt immer","Pünktlich sein"]]]},
+  { title: "Nach der Flut", people: ["Nachbar","Familie"], lines: [
+    ["Nachbar","Was your cellar flooded too?","Ist dein Keller auch vollgelaufen?"],
+    ["Familie","Completely. The heating and the washing machine are ruined.","Komplett. Heizung und Waschmaschine sind hinüber."],
+    ["Nachbar","That's the third extreme weather event in two years.","Das ist das dritte Extremwetter in zwei Jahren."],
+    ["Familie","Exactly. You'd better check your insurance covers floods.","Genau. Du prüfst besser, ob deine Versicherung Überschwemmungen abdeckt."],
+    ["Nachbar","Good point. Mine probably doesn't.","Guter Punkt. Meine wahrscheinlich nicht."]],
+    questions: [
+    ["Was wurde beschädigt?","Heizung und Waschmaschine",["Das Auto","Das Dach","Der Garten"]],
+    ["Wie oft gab es Extremwetter in zwei Jahren?","Dreimal",["Einmal","Zweimal","Zehnmal"]],
+    ["Was soll der Nachbar prüfen?","Seine Versicherung",["Sein Dach","Den Wetterbericht","Seine Heizung"]]]}
+],
+
+u45: [
+  { title: "Neu im Team", people: ["Kollege","Neue"], lines: [
+    ["Kollege","How's your first week going?","Wie läuft deine erste Woche?"],
+    ["Neue","I've got a lot on my plate, but I'm getting the hang of it.","Ich habe viel um die Ohren, aber ich bekomme langsam den Dreh raus."],
+    ["Kollege","Don't worry, it was the same for all of us. Rome wasn't built in a day.","Keine Sorge, das ging uns allen so. Rom wurde auch nicht an einem Tag erbaut."],
+    ["Neue","Thanks. In a nutshell, what's the most important rule here?","Danke. Kurz gesagt, was ist hier die wichtigste Regel?"],
+    ["Kollege","Never cut corners on safety. It goes without saying, but some people forget.","Spar nie an der Sicherheit. Versteht sich von selbst, aber manche vergessen es."]],
+    questions: [
+    ["Wie geht es der Neuen?","Viel zu tun, aber sie kommt rein",["Sie will kündigen","Sie langweilt sich","Alles ist zu leicht"]],
+    ["Was bedeutet „Rome wasn't built in a day“?","Gute Dinge brauchen Zeit",["Rom ist schön","Man muss schnell sein","Urlaub ist wichtig"]],
+    ["Was ist die wichtigste Regel?","Nie an der Sicherheit sparen",["Immer pünktlich sein","Viele Pausen machen","Nie Fragen stellen"]]]},
+  { title: "Die Überraschung verraten", people: ["Mia","Tom"], lines: [
+    ["Mia","Who let the cat out of the bag? Anna knows about her party!","Wer hat die Katze aus dem Sack gelassen? Anna weiß von ihrer Party!"],
+    ["Tom","Don't look at me! I didn't spill the beans.","Schau mich nicht an! Ich habe nichts verraten."],
+    ["Mia","Hmm. It must have been Paul. He can't keep a secret.","Hm. Dann muss es Paul gewesen sein. Er kann kein Geheimnis bewahren."],
+    ["Tom","Well, it's a blessing in disguise. Now she can choose what to wear.","Na ja, Glück im Unglück. Jetzt kann sie aussuchen, was sie anzieht."],
+    ["Mia","True. Better late than never!","Stimmt. Besser spät als nie!"]],
+    questions: [
+    ["Was ist passiert?","Die Überraschungsparty wurde verraten",["Die Party wurde abgesagt","Anna ist krank","Tom hat Geburtstag"]],
+    ["Wen verdächtigt Mia am Ende?","Paul",["Tom","Anna","Sich selbst"]],
+    ["Was ist laut Tom der Vorteil?","Anna kann ihr Outfit wählen",["Weniger Kosten","Mehr Gäste","Keiner"]]]},
+  { title: "Entscheidung treffen", people: ["Freundin","Nico"], lines: [
+    ["Nico","I've been offered the deputy role, but I'm having second thoughts.","Mir wurde die Stellvertreterstelle angeboten, aber ich bekomme Zweifel."],
+    ["Freundin","Why? You've been wanting this for ages.","Warum? Das willst du doch schon ewig."],
+    ["Nico","I'm afraid I've bitten off more than I can chew – the course, the new role, the move …","Ich fürchte, ich nehme mir zu viel vor – der Kurs, die neue Stelle, der Umzug …"],
+    ["Freundin","Easier said than done, I know. But why don't you sleep on it?","Leichter gesagt als getan, ich weiß. Aber warum schläfst du nicht eine Nacht drüber?"],
+    ["Nico","You're right. All in all, it's a great opportunity. I'll make up my mind tomorrow.","Du hast recht. Alles in allem ist es eine tolle Chance. Ich entscheide mich morgen."]],
+    questions: [
+    ["Was wurde Nico angeboten?","Die Stellvertreterstelle",["Ein neuer Job woanders","Mehr Urlaub","Ein Kurs"]],
+    ["Warum zögert er?","Er fürchtet, sich zu viel vorzunehmen",["Zu wenig Geld","Er mag den Chef nicht","Zu weit weg"]],
+    ["Was rät die Freundin?","Eine Nacht darüber zu schlafen",["Sofort abzulehnen","Sofort zuzusagen","Den Chef zu fragen"]]]}
 ]
 };

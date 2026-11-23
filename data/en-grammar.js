@@ -1519,5 +1519,202 @@ window.SW_GRAMMAR.en = [
     ["r","At midnight, we'll be celebrating.","At midnight, we'll celebrating be.","Um Mitternacht feiern wir gerade."],
     ["b","I will be working all weekend.","Ich arbeite das ganze Wochenende."],
     ["b","Will you be home tonight?","Bist du heute Abend zu Hause?"]
+  ]},
+
+{ id: "future-perfect", level: "C1", title: "Future Perfect (Continuous)",
+  sum: "Bis dahin werde ich … haben.",
+  rules: [
+    ["Future Perfect","<b>will have + 3. Form</b>: By Friday, I'<b>ll have finished</b> the report. – Etwas ist zu einem Zeitpunkt in der Zukunft abgeschlossen."],
+    ["Future Perfect Continuous","<b>will have been + -ing</b>: By May, I'<b>ll have been working</b> here for ten years. – Dauer bis zu einem Zeitpunkt."],
+    ["Signalwörter","<b>by</b> (bis spätestens), <b>by the time</b>, <b>by then</b>, <b>in two years' time</b>"],
+    ["Verneinung","The parts <b>won't have arrived</b> by Monday."]
+  ],
+  ex: [["By the end of the year, I'll have reached C1.","Bis Ende des Jahres werde ich C1 erreicht haben."],["By the time you arrive, we'll have eaten.","Bis du ankommst, werden wir gegessen haben."],["Next month I'll have been living here for five years.","Nächsten Monat wohne ich seit fünf Jahren hier."]],
+  drills: [
+    ["c","By 6 p.m. I ___ finished my shift.","will have",["will","have"],"Bis 18 Uhr werde ich meine Schicht beendet haben."],
+    ["c","By next year, they'll have ___ the new hall.","built",["build","building"],"Bis nächstes Jahr werden sie die neue Halle gebaut haben."],
+    ["c","In June, I'll have been ___ here for ten years.","working",["worked","work"],"Im Juni arbeite ich seit zehn Jahren hier."],
+    ["c","Don't call at nine. I ___ have left the office yet.","won't",["will","haven't"],"Ruf nicht um neun an. Da bin ich noch nicht aus dem Büro raus."],
+    ["c","___ the time you read this, I'll have landed in Canada.","By",["Until","Since"],"Wenn du das liest, werde ich in Kanada gelandet sein."],
+    ["c","Will you have ___ the order by Friday?","completed",["complete","completing"],"Wirst du den Auftrag bis Freitag erledigt haben?"],
+    ["c","By midnight, we'll have been ___ for twelve hours.","driving",["drove","drive"],"Um Mitternacht werden wir zwölf Stunden gefahren sein."],
+    ["c","I'm sure she'll have ___ about it by now.","heard",["hear","hearing"],"Sicher hat sie inzwischen davon gehört."],
+    ["r","By 2030, I'll have paid off the loan.","By 2030, I'll pay off the loan already.","Bis 2030 werde ich den Kredit abbezahlt haben."],
+    ["r","By then, we'll have been married for twenty years.","By then, we'll be married since twenty years.","Dann werden wir zwanzig Jahre verheiratet sein."],
+    ["r","The film will have started by the time we get there.","The film will start already by the time we get there.","Der Film wird angefangen haben, bis wir da sind."],
+    ["b","I will have finished by five.","Bis fünf werde ich fertig sein."],
+    ["b","By then, everyone will have gone home.","Bis dahin werden alle nach Hause gegangen sein."]
+  ]},
+
+{ id: "inversion", level: "C1", title: "Inversion: Never have I …",
+  sum: "Umgestellte Wortstellung für Betonung – typisch für gehobenes Englisch.",
+  rules: [
+    ["Prinzip","Nach einem <b>negativen oder einschränkenden Ausdruck am Satzanfang</b> folgt die Wortstellung einer Frage: <b>Never have I</b> seen such chaos."],
+    ["Typische Auslöser","<b>Never</b>, <b>Rarely</b>, <b>Seldom</b>, <b>Hardly … when</b>, <b>No sooner … than</b>, <b>Not only … but also</b>, <b>Under no circumstances</b>, <b>Only then</b>, <b>Not until</b>"],
+    ["Mit do/does/did","Ohne Hilfsverb: <b>Rarely do</b> we see him. · <b>Not only did</b> he come late, he also forgot the keys."],
+    ["Konditional ohne if","<b>Had I known</b> = If I had known · <b>Should you need</b> help = If you need help · <b>Were I</b> you = If I were you"]
+  ],
+  ex: [["Never have I worked so hard.","Noch nie habe ich so hart gearbeitet."],["Not only is it cheap, but it's also reliable.","Es ist nicht nur billig, sondern auch zuverlässig."],["Should you have any questions, please call me.","Sollten Sie Fragen haben, rufen Sie mich bitte an."]],
+  drills: [
+    ["c","Never ___ such a beautiful sunset.","have I seen",["I have seen","I saw"],"Noch nie habe ich so einen schönen Sonnenuntergang gesehen."],
+    ["c","Rarely ___ he arrive on time.","does",["do","is"],"Selten kommt er pünktlich."],
+    ["c","Not only ___ late, but he also forgot the documents.","was he",["he was","he did"],"Er kam nicht nur zu spät, sondern vergaß auch die Unterlagen."],
+    ["c","___ I known, I would have helped.","Had",["If","Have"],"Hätte ich es gewusst, hätte ich geholfen."],
+    ["c","___ you need anything, just call.","Should",["Would","Did"],"Solltest du etwas brauchen, ruf einfach an."],
+    ["c","Under no circumstances ___ you open this door.","should",["you should","you"],"Unter keinen Umständen solltest du diese Tür öffnen."],
+    ["c","Hardly had I sat down ___ the phone rang.","when",["than","then"],"Kaum hatte ich mich hingesetzt, klingelte das Telefon."],
+    ["c","No sooner had we arrived ___ it started to rain.","than",["when","that"],"Kaum waren wir angekommen, fing es an zu regnen."],
+    ["c","Only then ___ I realise my mistake.","did",["I","had"],"Erst dann wurde mir mein Fehler klar."],
+    ["c","___ I you, I would accept the offer.","Were",["Was","If"],"An deiner Stelle würde ich das Angebot annehmen."],
+    ["r","Seldom have we had such a good year.","Seldom we have had such a good year.","Selten hatten wir ein so gutes Jahr."],
+    ["r","Not until I saw it did I believe it.","Not until I saw it I believed it.","Erst als ich es sah, glaubte ich es."],
+    ["b","Never have I been so tired.","Noch nie war ich so müde."]
+  ]},
+
+{ id: "mixed-conditionals", level: "C1", title: "Gemischte If-Sätze",
+  sum: "Vergangenheit und Gegenwart verbinden.",
+  rules: [
+    ["Vergangenheit → jetzt","<b>If + had + 3. Form, would + Grundform</b>: If I <b>had studied</b> harder, I <b>would have</b> a better job now."],
+    ["Jetzt → Vergangenheit","<b>If + Past Simple, would have + 3. Form</b>: If I <b>were</b> braver, I <b>would have asked</b> her out."],
+    ["Wann?","Wenn Ursache und Folge in <b>verschiedenen Zeiten</b> liegen."],
+    ["Achtung","Zeitwörter helfen: <b>now</b>, <b>today</b> → Folge in der Gegenwart; <b>yesterday</b>, <b>last year</b> → Vergangenheit."]
+  ],
+  ex: [["If I had saved more, I wouldn't be in debt now.","Hätte ich mehr gespart, hätte ich jetzt keine Schulden."],["If he weren't so lazy, he would have passed.","Wenn er nicht so faul wäre, hätte er bestanden."],["If we hadn't moved, we wouldn't know each other.","Wären wir nicht umgezogen, würden wir uns nicht kennen."]],
+  drills: [
+    ["c","If I had taken the job, I ___ in London now.","would be living",["would have lived","will live"],"Hätte ich die Stelle angenommen, würde ich jetzt in London leben."],
+    ["c","If she ___ so shy, she would have spoken up.","weren't",["hadn't been","isn't"],"Wenn sie nicht so schüchtern wäre, hätte sie etwas gesagt."],
+    ["c","If you had listened, you ___ know what to do now.","would",["will","had"],"Hättest du zugehört, wüsstest du jetzt, was zu tun ist."],
+    ["c","If I ___ my phone, I could call you now.","hadn't lost",["didn't lose","haven't lost"],"Hätte ich mein Handy nicht verloren, könnte ich dich jetzt anrufen."],
+    ["c","If he spoke English, he ___ the job last year.","would have got",["would get","had got"],"Wenn er Englisch spräche, hätte er die Stelle letztes Jahr bekommen."],
+    ["c","If we ___ left earlier, we'd be there by now.","had",["have","would have"],"Wären wir früher losgefahren, wären wir jetzt schon da."],
+    ["c","If I weren't afraid of flying, I ___ to Australia last summer.","would have flown",["would fly","had flown"],"Wenn ich keine Flugangst hätte, wäre ich letzten Sommer nach Australien geflogen."],
+    ["r","If I had slept more, I wouldn't be so tired now.","If I slept more, I wouldn't have been so tired now.","Hätte ich mehr geschlafen, wäre ich jetzt nicht so müde."],
+    ["r","If she were more careful, she wouldn't have crashed.","If she was more careful, she wouldn't crash yesterday.","Wenn sie vorsichtiger wäre, hätte sie keinen Unfall gehabt."],
+    ["r","If I hadn't met you, my life would be different.","If I didn't meet you, my life would have been different now.","Hätte ich dich nicht getroffen, wäre mein Leben anders."],
+    ["b","If I had learned English earlier, I would speak it better now.","Hätte ich früher Englisch gelernt, würde ich es jetzt besser sprechen."]
+  ]},
+
+{ id: "participle-clauses", level: "C1", title: "Partizipialsätze",
+  sum: "Having finished … – Sätze elegant verkürzen.",
+  rules: [
+    ["-ing (gleichzeitig / Grund)","<b>Feeling</b> tired, I went to bed. (= Because I felt tired …) · <b>Walking</b> home, I met Tom. (= While I was walking …)"],
+    ["Having + 3. Form (vorher)","<b>Having finished</b> the work, we went home. (= After we had finished …)"],
+    ["3. Form (passiv)","<b>Made</b> in Germany, the machine is very reliable. (= Because it is made …)"],
+    ["Wichtig","Das Subjekt muss in beiden Satzteilen <b>gleich</b> sein! Falsch: <i>Walking home, the rain started.</i>"],
+    ["Verkürzte Relativsätze","The man <b>standing</b> at the door (= who is standing) · The parts <b>delivered</b> yesterday (= which were delivered)"]
+  ],
+  ex: [["Having worked nights for years, he's used to it.","Da er jahrelang nachts gearbeitet hat, ist er es gewohnt."],["Not knowing the answer, I stayed quiet.","Da ich die Antwort nicht wusste, sagte ich nichts."],["The cars produced here are exported.","Die hier gebauten Autos werden exportiert."]],
+  drills: [
+    ["c","___ the email, she called her boss.","Having read",["Read","Having reading"],"Nachdem sie die E-Mail gelesen hatte, rief sie ihren Chef an."],
+    ["c","___ tired, I went to bed early.","Feeling",["Felt","Having feel"],"Da ich müde war, ging ich früh ins Bett."],
+    ["c","___ in 1920, the factory is one of the oldest here.","Built",["Building","Having built"],"1920 gebaut, ist die Fabrik eine der ältesten hier."],
+    ["c","The woman ___ next to the window is my boss.","sitting",["sat","sits"],"Die Frau, die am Fenster sitzt, ist meine Chefin."],
+    ["c","The parts ___ yesterday were faulty.","delivered",["delivering","deliver"],"Die gestern gelieferten Teile waren fehlerhaft."],
+    ["c","Not ___ what to say, he left the room.","knowing",["knew","known"],"Da er nicht wusste, was er sagen sollte, verließ er den Raum."],
+    ["c","___ lost my keys, I had to call a locksmith.","Having",["Being","Had"],"Da ich meine Schlüssel verloren hatte, musste ich einen Schlüsseldienst rufen."],
+    ["c","Anyone ___ to join should sign up today.","wishing",["wished","wishes"],"Wer mitmachen möchte, sollte sich heute anmelden."],
+    ["r","Walking home, I met an old friend.","Walking home, the rain started.","Auf dem Heimweg traf ich einen alten Freund."],
+    ["r","Having finished the course, she got a promotion.","Having finish the course, she got a promotion.","Nachdem sie den Kurs abgeschlossen hatte, wurde sie befördert."],
+    ["r","Asked about the plans, he refused to comment.","Asking about the plans, he refused to comment.","Nach den Plänen gefragt, lehnte er einen Kommentar ab."],
+    ["b","Having lived abroad, she speaks three languages.","Da sie im Ausland gelebt hat, spricht sie drei Sprachen."]
+  ]},
+
+{ id: "impersonal-passive", level: "C1", title: "It is said that … / He is believed to …",
+  sum: "Distanziert berichten: Passiv mit Meinungsverben.",
+  rules: [
+    ["It + Passiv + that","<b>It is said that</b> the company will close. · <b>It is believed that</b> … · <b>It was reported that</b> …"],
+    ["Person + Passiv + to","The company <b>is said to</b> be in trouble. · He <b>is believed to</b> live in Spain."],
+    ["Vergangenheit","<b>to have + 3. Form</b>: He <b>is thought to have left</b> the country. (Man glaubt, er hat das Land verlassen.)"],
+    ["Verben","say, believe, think, expect, report, know, consider, suppose, claim"],
+    ["Wofür?","Nachrichten, Berichte, formelle Texte – wenn man nicht sagt, <b>wer</b> etwas meint."]
+  ],
+  ex: [["It is expected that prices will rise.","Es wird erwartet, dass die Preise steigen."],["She is said to be the best engineer in the company.","Sie soll die beste Ingenieurin der Firma sein."],["The thief is believed to have escaped by car.","Man glaubt, dass der Dieb mit dem Auto geflohen ist."]],
+  drills: [
+    ["c","It ___ said that the factory will close.","is",["has","does"],"Es heißt, die Fabrik wird schließen."],
+    ["c","He is believed ___ in Spain now.","to live",["living","that he lives"],"Man glaubt, dass er jetzt in Spanien lebt."],
+    ["c","The company is said ___ record profits last year.","to have made",["to make","making"],"Die Firma soll letztes Jahr Rekordgewinne gemacht haben."],
+    ["c","It ___ reported that two people were injured.","was",["has","did"],"Es wurde berichtet, dass zwei Menschen verletzt wurden."],
+    ["c","The new model is expected ___ next spring.","to be launched",["launching","to launch it"],"Das neue Modell soll nächstes Frühjahr auf den Markt kommen."],
+    ["c","She is thought to ___ the country already.","have left",["leave","left"],"Man nimmt an, dass sie das Land schon verlassen hat."],
+    ["c","It is widely ___ that exercise reduces stress.","known",["knowing","know"],"Es ist allgemein bekannt, dass Sport Stress reduziert."],
+    ["r","The bridge is said to be unsafe.","The bridge is said that it is unsafe.","Die Brücke soll unsicher sein."],
+    ["r","It is believed that he was innocent.","It believes that he was innocent.","Man glaubt, dass er unschuldig war."],
+    ["r","They are reported to have agreed a deal.","They are reported to agree a deal yesterday.","Berichten zufolge haben sie eine Einigung erzielt."],
+    ["b","It is said that the boss is leaving.","Es heißt, dass der Chef geht."]
+  ]},
+
+{ id: "cleft-sentences", level: "C1", title: "Betonung: What I need is …",
+  sum: "Cleft Sentences – den wichtigen Teil hervorheben.",
+  rules: [
+    ["It is/was … that/who","<b>It was Tom who</b> found the mistake. (nicht jemand anderes) · <b>It's</b> the price <b>that</b> worries me."],
+    ["What … is/was","<b>What I need is</b> a holiday. · <b>What surprised me was</b> his answer."],
+    ["All … is","<b>All I want is</b> some peace. (= Das Einzige, was ich will …)"],
+    ["The thing/reason … is","<b>The reason why</b> I left <b>is</b> the money. · <b>The thing is</b>, I'm tired."],
+    ["Wirkung","Typisch im Gespräch, um zu korrigieren oder zu betonen."]
+  ],
+  ex: [["What I like about this job is the team.","Was mir an diesem Job gefällt, ist das Team."],["It was my girlfriend who convinced me.","Es war meine Freundin, die mich überzeugt hat."],["All we need is a bit more time.","Wir brauchen nur ein bisschen mehr Zeit."]],
+  drills: [
+    ["c","___ I need is a long holiday.","What",["That","Which"],"Was ich brauche, ist ein langer Urlaub."],
+    ["c","It was Sarah ___ found the error.","who",["what","which"],"Es war Sarah, die den Fehler gefunden hat."],
+    ["c","___ I want is some peace and quiet.","All",["Every","That"],"Ich will nur etwas Ruhe."],
+    ["c","It's the noise ___ annoys me, not the work.","that",["what","who"],"Es ist der Lärm, der mich nervt, nicht die Arbeit."],
+    ["c","What surprised me ___ his reaction.","was",["were","is it"],"Was mich überraschte, war seine Reaktion."],
+    ["c","The reason ___ I'm calling is the invoice.","why",["what","because"],"Der Grund, warum ich anrufe, ist die Rechnung."],
+    ["c","It wasn't until midnight ___ we finished.","that",["when","what"],"Erst um Mitternacht waren wir fertig."],
+    ["c","What you should do ___ talk to your boss.","is",["are","it's"],"Was du tun solltest, ist mit deinem Chef reden."],
+    ["r","What I don't understand is why he left.","What I don't understand it is why he left.","Was ich nicht verstehe, ist, warum er ging."],
+    ["r","It was in Rome that we first met.","It was in Rome where we first met it.","Es war in Rom, wo wir uns kennenlernten."],
+    ["r","The thing is, I don't have time.","The thing it is, I don't have time.","Die Sache ist die: Ich habe keine Zeit."],
+    ["b","What I need is more sleep.","Was ich brauche, ist mehr Schlaf."]
+  ]},
+
+{ id: "would-rather", level: "C1", title: "would rather, had better, it's time",
+  sum: "Vorlieben, Ratschläge und Dringlichkeit.",
+  rules: [
+    ["would rather + Grundform","Eigene Vorliebe: I'<b>d rather stay</b> at home. · I'd rather <b>not</b> say."],
+    ["would rather + Person + Past","Wunsch an andere: I'<b>d rather you didn't</b> smoke here. (Mir wäre lieber, du würdest …)"],
+    ["had better","Dringender Rat, oft mit Warnung: You'<b>d better hurry</b>, or you'll miss the bus. · You'd better <b>not</b> be late."],
+    ["It's (high) time + Past","Es wird Zeit, dass …: <b>It's time we went</b> home. · It's high time you <b>found</b> a new job."],
+    ["prefer","I <b>prefer</b> tea <b>to</b> coffee. · I <b>prefer to</b> work early."]
+  ],
+  ex: [["I'd rather walk than take the bus.","Ich gehe lieber zu Fuß, als den Bus zu nehmen."],["You'd better see a doctor.","Du solltest besser zum Arzt gehen."],["It's time we talked about the future.","Es wird Zeit, dass wir über die Zukunft reden."]],
+  drills: [
+    ["c","I'd rather ___ at home tonight.","stay",["to stay","staying"],"Ich bleibe heute Abend lieber zu Hause."],
+    ["c","You'd better ___ late again.","not be",["not to be","don't be"],"Du solltest besser nicht wieder zu spät kommen."],
+    ["c","It's time we ___ home.","went",["go","will go"],"Es wird Zeit, dass wir heimgehen."],
+    ["c","I'd rather you ___ tell anyone.","didn't",["don't","won't"],"Mir wäre lieber, du würdest es niemandem erzählen."],
+    ["c","You'd better ___ an umbrella.","take",["to take","taking"],"Du nimmst besser einen Schirm mit."],
+    ["c","It's high time you ___ a new car.","bought",["buy","will buy"],"Es wird höchste Zeit, dass du ein neues Auto kaufst."],
+    ["c","I prefer tea ___ coffee.","to",["than","from"],"Ich mag Tee lieber als Kaffee."],
+    ["c","Would you rather ___ the early or the late shift?","work",["to work","working"],"Arbeitest du lieber Früh- oder Spätschicht?"],
+    ["r","I'd rather not talk about it.","I'd rather don't talk about it.","Ich rede lieber nicht darüber."],
+    ["r","We'd better leave now.","We'd better to leave now.","Wir gehen besser jetzt."],
+    ["r","I'd rather walk than drive.","I'd rather walk that drive.","Ich gehe lieber zu Fuß als zu fahren."],
+    ["b","It is time we made a decision.","Es wird Zeit, dass wir eine Entscheidung treffen."]
+  ]},
+
+{ id: "emphasis-linking", level: "C1", title: "Betonen & verknüpfen",
+  sum: "I do like it! – Despite, whereas, provided that …",
+  rules: [
+    ["Betonung mit do/does/did","<b>I do like</b> it! (Ich mag es wirklich!) · He <b>did call</b> – I promise! · <b>Do</b> sit down."],
+    ["Gegensatz","<b>despite / in spite of</b> + Nomen/-ing: Despite the rain … · <b>although / even though</b> + Satz · <b>whereas</b> = während (Gegensatz) · <b>nevertheless</b> = trotzdem"],
+    ["Bedingung","<b>provided (that) / as long as</b> = vorausgesetzt · <b>in case</b> = für den Fall, dass · <b>unless</b> = wenn nicht"],
+    ["Zweck & Folge","<b>so as to / in order to</b> = um … zu · <b>so that</b> + can/could · <b>therefore / consequently</b> = deshalb"],
+    ["Häufiger Fehler","<b>despite</b> ohne <i>of</i>! Falsch: <i>despite of</i>"]
+  ],
+  ex: [["I do appreciate your help.","Ich weiß deine Hilfe wirklich zu schätzen."],["Despite being tired, she kept working.","Obwohl sie müde war, arbeitete sie weiter."],["You can borrow my car provided you fill it up.","Du kannst mein Auto leihen, vorausgesetzt, du tankst es voll."]],
+  drills: [
+    ["c","___ the bad weather, the event was a success.","Despite",["Although","Despite of"],"Trotz des schlechten Wetters war die Veranstaltung ein Erfolg."],
+    ["c","I ___ want to help, but I really can't.","do",["am","did"],"Ich will wirklich helfen, aber ich kann wirklich nicht."],
+    ["c","You can come ___ you're quiet.","provided that",["despite","whereas"],"Du kannst kommen, vorausgesetzt, du bist leise."],
+    ["c","Take a jacket ___ it gets cold.","in case",["unless","so that"],"Nimm eine Jacke mit, falls es kalt wird."],
+    ["c","He likes the city, ___ his wife prefers the country.","whereas",["despite","therefore"],"Er mag die Stadt, während seine Frau das Land bevorzugt."],
+    ["c","I left early ___ avoid the traffic.","so as to",["so that","in case"],"Ich bin früh los, um dem Verkehr zu entgehen."],
+    ["c","He ___ send the email – I saw it!","did",["does","was"],"Er hat die E-Mail sehr wohl geschickt – ich habe sie gesehen!"],
+    ["c","The project was difficult. ___, we finished on time.","Nevertheless",["Despite","Although"],"Das Projekt war schwierig. Trotzdem waren wir pünktlich fertig."],
+    ["c","In spite ___ the noise, I fell asleep.","of",["that","–"],"Trotz des Lärms schlief ich ein."],
+    ["r","Despite feeling ill, he came to work.","Despite of feeling ill, he came to work.","Obwohl er sich krank fühlte, kam er zur Arbeit."],
+    ["r","I spoke slowly so that everyone could understand.","I spoke slowly so as everyone could understand.","Ich sprach langsam, damit alle es verstehen konnten."],
+    ["b","I do love this song.","Ich liebe dieses Lied wirklich."]
   ]}
 ];
