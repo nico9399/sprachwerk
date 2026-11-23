@@ -72,6 +72,7 @@ const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
 const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(x) ? x : [x]; };
 const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
 const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
+const MK = () => (window.SW_MISTAKES || {})[S.lang] || [];
 const RD = () => (window.SW_READING || {})[S.lang] || {};
 const rdCount = () => Object.keys(RD()).length;
 const dlgCount = () => Object.keys(DLG()).reduce((a, u) => a + dlgList(u).length, 0);
@@ -80,7 +81,7 @@ const dlgCount = () => Object.keys(DLG()).reduce((a, u) => a + dlgList(u).length
 let WORDS = [], WMAP = {}, UNITS = [], GMAP = {}, PACKS = [], PACKW = {};
 function buildContent() {
   UNITS = L().units;
-  GMAP = Object.fromEntries(G().map((g) => [g.id, g]));
+  GMAP = Object.fromEntries([...G(), ...MK().map((g) => ({ ...g, mk: true }))].map((g) => [g.id, g]));
   WORDS = [];
   UNITS.forEach((u, ui) => u.words.forEach((w, wi) => {
     WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
@@ -342,6 +343,7 @@ function render() {
   if (view && view.type === "dialog") return renderDialog(view.id);
   if (view && view.type === "glist") return renderGrammarList();
   if (view && view.type === "plist") return renderPackList();
+  if (view && view.type === "mlist") return renderMistakeList();
   if (view && view.type === "read") return renderReading(view.id);
   if (view && view.type === "pack") return renderPack(view.id);
   setTabbar(true);
@@ -351,7 +353,7 @@ function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scro
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
 function back() {
   stopSeq();
-  view = view && view.type === "pack" ? { type: "plist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
+  view = view && view.type === "pack" ? { type: "plist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
 function openReading(uid, from) { view = { type: "read", id: uid, from }; render(); window.scrollTo(0, 0); }
@@ -563,6 +565,10 @@ function renderPath() {
       <div><b>📐 Alle Grammatik-Lektionen</b><span>${G().length} Lektionen · ${Object.values(S.gram).filter((g) => g.done).length} gelernt</span></div>
       <span class="chev">›</span>
     </button>
+    ${MK().length ? `<button class="card gcard" id="mlist" style="margin-bottom:6px">
+      <div><b>⚠️ Fehlertrainer „Typisch deutsch“</b><span>${MK().length} Lektionen · ${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} gelernt</span></div>
+      <span class="chev">›</span>
+    </button>` : ""}
     ${PACKS.length ? `<button class="card gcard" id="plist" style="margin-bottom:6px">
       <div><b>🎒 Themenpakete</b><span>${PACKS.length} Pakete · ${PACKS.filter((p) => packOn(p.id)).length} eingeschaltet</span></div>
       <span class="chev">›</span>
@@ -590,7 +596,24 @@ function renderPath() {
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
   $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
+  const ml = $("#mlist"); if (ml) ml.onclick = () => { view = { type: "mlist" }; render(); window.scrollTo(0, 0); };
   const pl = $("#plist"); if (pl) pl.onclick = () => { view = { type: "plist" }; render(); window.scrollTo(0, 0); };
+}
+
+// ---------- Fehlertrainer ----------
+function renderMistakeList() {
+  setTabbar(false);
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Fehlertrainer</h1>
+    <p class="sub">Falsche Freunde und Fehler, die Deutsche im Englischen besonders oft machen. Gelernte Lektionen kommen automatisch in deine Wiederholung.</p>
+    <div class="stack">${MK().map((g) => { const gs = S.gram[g.id]; return `<button class="card gcard" data-mk="${g.id}">
+      <div><b>${esc(g.title)}</b><span>${esc(g.sum)} · ${g.drills.length} Übungen</span></div>
+      <span class="pill ${gs && gs.done ? "ok" : ""}">${gs && gs.done ? "✓ " + (gs.best || 0) + " %" : "Lernen"}</span>
+    </button>`; }).join("")}</div>
+  </div>`;
+  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  app.querySelectorAll("[data-mk]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.mk, "mlist")));
 }
 
 // ---------- Themenpakete ----------
@@ -852,7 +875,7 @@ function renderGrammar(gid) {
   const gs = S.gram[gid];
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${g.level}</span></div>
-    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">📐 GRAMMATIK</div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${g.mk ? "⚠️ FEHLERTRAINER" : "📐 GRAMMATIK"}</div>
     <h1 class="page-title">${esc(g.title)}</h1>
     <p class="sub">${esc(g.sum)}</p>
     <div class="stack">
@@ -1537,7 +1560,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
