@@ -1564,5 +1564,144 @@ u45: [
     ["Was wurde Nico angeboten?","Die Stellvertreterstelle",["Ein neuer Job woanders","Mehr Urlaub","Ein Kurs"]],
     ["Warum zögert er?","Er fürchtet, sich zu viel vorzunehmen",["Zu wenig Geld","Er mag den Chef nicht","Zu weit weg"]],
     ["Was rät die Freundin?","Eine Nacht darüber zu schlafen",["Sofort abzulehnen","Sofort zuzusagen","Den Chef zu fragen"]]]}
+],
+
+u46: [
+  { title: "Zwei Versionen einer Absage", people: ["Leiterin","Assistent"], lines: [
+    ["Leiterin","Could you draft a reply to the applicant? Unfortunately, we've chosen someone else.","Könntest du eine Antwort an den Bewerber entwerfen? Leider haben wir jemand anderen gewählt."],
+    ["Assistent","Sure. How about: 'Sorry, mate, you didn't get it'?","Klar. Wie wär's mit: „Sorry, Kumpel, hat nicht geklappt“?"],
+    ["Leiterin","Very funny. It needs to be formal – he applied for a management role.","Sehr witzig. Es muss formell sein – er hat sich auf eine Führungsposition beworben."],
+    ["Assistent","Then: 'We regret to inform you that, on this occasion, your application has not been successful.'","Dann: „Wir bedauern, Ihnen mitteilen zu müssen, dass Ihre Bewerbung diesmal leider nicht erfolgreich war.“"],
+    ["Leiterin","Much better. And add that we'll keep his details on file, should a suitable position arise.","Viel besser. Und füg hinzu, dass wir seine Unterlagen aufbewahren, falls eine passende Stelle frei wird."]],
+    questions: [
+    ["Worum geht es?","Eine Absage an einen Bewerber",["Eine Beförderung","Eine Kündigung","Eine Einladung"]],
+    ["Warum muss die Antwort formell sein?","Es ging um eine Führungsposition",["Er ist ein Freund","Es ist ein Gesetz","Er ist Kunde"]],
+    ["Was soll noch hinzugefügt werden?","Die Unterlagen werden aufbewahrt",["Ein Gutschein","Eine Telefonnummer","Eine Entschuldigung vom Chef"]]]},
+  { title: "Feierabend-Chat", people: ["Jake","Mia"], lines: [
+    ["Jake","Cheers for covering my shift yesterday, I owe you one.","Danke, dass du gestern meine Schicht übernommen hast, ich schulde dir was."],
+    ["Mia","No worries! I was knackered by the end, though.","Kein Problem! Am Ende war ich allerdings völlig fertig."],
+    ["Jake","Fancy grabbing a pint after work? My shout.","Lust, nach der Arbeit ein Bier zu trinken? Ich lade ein."],
+    ["Mia","I reckon I could manage one. But I'm gonna bail by eight – early start tomorrow.","Ich schätze, eins geht. Aber ich verzieh mich um acht – morgen geht's früh los."],
+    ["Jake","Fair enough. See you at the pub, then!","Alles klar. Dann bis gleich im Pub!"]],
+    questions: [
+    ["Warum bedankt sich Jake?","Mia hat seine Schicht übernommen",["Sie hat ihm Geld geliehen","Sie hat ihn gefahren","Sie hat ihm geholfen umzuziehen"]],
+    ["Was bedeutet „My shout“?","Ich lade ein",["Ich rufe dich an","Ich schreie","Ich bin dran mit Fahren"]],
+    ["Warum will Mia um acht gehen?","Sie muss morgen früh anfangen",["Sie ist krank","Sie mag kein Bier","Ihr Bus fährt"]]]}
+],
+
+u47: [
+  { title: "Projekt in Schieflage", people: ["Chefin","Projektleiter"], lines: [
+    ["Chefin","We've missed two deadlines. What's going on?","Wir haben zwei Fristen verpasst. Was ist los?"],
+    ["Projektleiter","To be honest, we set the targets too high. The team has made a real effort, but the supplier keeps letting us down.","Ehrlich gesagt haben wir die Ziele zu hoch gesteckt. Das Team hat sich wirklich angestrengt, aber der Lieferant lässt uns ständig hängen."],
+    ["Chefin","Then we need to take the supplier problem into account and draw some conclusions.","Dann müssen wir das Lieferantenproblem berücksichtigen und Konsequenzen ziehen."],
+    ["Projektleiter","I'd suggest we hold a meeting with them and try to reach an agreement on fixed dates.","Ich schlage vor, wir halten eine Besprechung mit ihnen ab und versuchen, uns auf feste Termine zu einigen."],
+    ["Chefin","Agreed. But if that fails, we'll have to place our orders elsewhere.","Einverstanden. Aber wenn das scheitert, müssen wir woanders bestellen."]],
+    questions: [
+    ["Was ist das Problem?","Zwei verpasste Fristen",["Zu hohe Kosten","Ein Unfall","Krankheitsfälle"]],
+    ["Wer ist laut Projektleiter mitschuldig?","Der Lieferant",["Die Chefin","Das Team","Der Kunde"]],
+    ["Was passiert, wenn das Gespräch scheitert?","Man bestellt woanders",["Das Projekt wird gestoppt","Das Team wird verkleinert","Nichts"]]]},
+  { title: "Kaffeepause", people: ["Ali","Sophie"], lines: [
+    ["Ali","I need a strong coffee. The traffic was horrendous – heavy rain and an accident on the motorway.","Ich brauche einen starken Kaffee. Der Verkehr war furchtbar – Starkregen und ein Unfall auf der Autobahn."],
+    ["Sophie","Poor you. Did you hear they're launching the new product next month?","Du Armer. Hast du gehört, dass sie nächsten Monat das neue Produkt einführen?"],
+    ["Ali","Yes, and the boss has high expectations. I think it's highly unlikely we'll be ready.","Ja, und der Chef hat hohe Erwartungen. Ich halte es für höchst unwahrscheinlich, dass wir fertig werden."],
+    ["Sophie","Well, we'll just have to do our best and strike a balance between speed and quality.","Tja, wir müssen einfach unser Bestes geben und eine Balance zwischen Tempo und Qualität finden."]],
+    questions: [
+    ["Warum war Ali spät dran?","Starkregen und ein Unfall",["Er hat verschlafen","Sein Auto war kaputt","Der Zug fiel aus"]],
+    ["Was passiert nächsten Monat?","Ein neues Produkt wird eingeführt",["Ein Umzug","Eine Feier","Ein Audit"]],
+    ["Was meint Sophie?","Man muss Tempo und Qualität abwägen",["Man sollte kündigen","Man sollte den Chef überzeugen zu warten","Qualität ist egal"]]]}
+],
+
+u48: [
+  { title: "Die Kundenumfrage", people: ["Analystin","Geschäftsführer"], lines: [
+    ["Geschäftsführer","So, do customers love the new design or not?","Also, lieben die Kunden das neue Design oder nicht?"],
+    ["Analystin","It would seem that, for the most part, the feedback is positive. However, the sample was fairly small.","Es sieht so aus, als sei das Feedback größtenteils positiv. Allerdings war die Stichprobe recht klein."],
+    ["Geschäftsführer","Can we say it increased sales?","Können wir sagen, dass es den Umsatz gesteigert hat?"],
+    ["Analystin","Not necessarily. Sales did rise, but the figures are inconclusive – it may well have been the summer season.","Nicht unbedingt. Der Umsatz ist gestiegen, aber die Zahlen sind nicht eindeutig – es könnte gut an der Sommersaison gelegen haben."],
+    ["Geschäftsführer","So, to put it bluntly, we don't know yet.","Also, um es offen zu sagen: Wir wissen es noch nicht."],
+    ["Analystin","To some extent, yes. We'll know more in three months.","Bis zu einem gewissen Grad, ja. In drei Monaten wissen wir mehr."]],
+    questions: [
+    ["Wie ist das Feedback?","Größtenteils positiv",["Sehr negativ","Gemischt","Es gibt keins"]],
+    ["Warum ist die Analystin vorsichtig?","Die Stichprobe war klein und die Zahlen nicht eindeutig",["Sie mag das Design nicht","Die Umfrage wurde gefälscht","Sie hatte keine Zeit"]],
+    ["Wann weiß man mehr?","In drei Monaten",["Morgen","Nächstes Jahr","Nie"]]]},
+  { title: "Feedback an einen Kollegen", people: ["Teamleiterin","Kollege"], lines: [
+    ["Teamleiterin","I've read your report. On the face of it, it's very thorough.","Ich habe deinen Bericht gelesen. Auf den ersten Blick ist er sehr gründlich."],
+    ["Kollege","I sense a 'but' coming.","Ich spüre ein „Aber“ kommen."],
+    ["Teamleiterin","Granted, there's a 'but'. Some of the figures appear to be from last year, and the conclusion is arguably a bit too optimistic.","Zugegeben, es gibt ein „Aber“. Einige Zahlen scheinen vom letzten Jahr zu sein, und das Fazit ist wohl etwas zu optimistisch."],
+    ["Kollege","Fair point. In hindsight, I should have double-checked the data.","Berechtigter Punkt. Im Nachhinein hätte ich die Daten nochmal prüfen sollen."],
+    ["Teamleiterin","For what it's worth, the structure is excellent. Just update the numbers and tone down the ending.","Nur so nebenbei: Die Struktur ist hervorragend. Aktualisier nur die Zahlen und schwäch das Ende etwas ab."]],
+    questions: [
+    ["Was stimmt mit den Zahlen nicht?","Sie scheinen vom letzten Jahr zu sein",["Sie sind erfunden","Sie fehlen ganz","Sie sind zu niedrig"]],
+    ["Wie ist das Fazit?","Etwas zu optimistisch",["Zu negativ","Zu lang","Perfekt"]],
+    ["Was lobt die Teamleiterin?","Die Struktur",["Die Länge","Die Zahlen","Das Design"]]]}
+],
+
+u49: [
+  { title: "Die Studie zur Schichtarbeit", people: ["Forscherin","Betriebsrat"], lines: [
+    ["Betriebsrat","Your study claims night shifts are detrimental to health. Is that empirically proven?","Ihre Studie behauptet, Nachtschichten schaden der Gesundheit. Ist das empirisch bewiesen?"],
+    ["Forscherin","There's a strong correlation, but we can't claim a causal link yet. Our methodology has its limits.","Es gibt einen starken Zusammenhang, aber einen ursächlichen können wir noch nicht behaupten. Unsere Methodik hat Grenzen."],
+    ["Betriebsrat","What are the implications for our workers?","Was bedeutet das für unsere Beschäftigten?"],
+    ["Forscherin","Measures like longer rest periods could mitigate the risks. Rotating shifts too quickly seems to exacerbate sleep problems.","Maßnahmen wie längere Ruhezeiten könnten die Risiken mindern. Zu schneller Schichtwechsel scheint Schlafprobleme zu verschlimmern."],
+    ["Betriebsrat","That's a tangible recommendation we can work with.","Das ist eine greifbare Empfehlung, mit der wir arbeiten können."]],
+    questions: [
+    ["Was kann die Studie noch nicht belegen?","Einen ursächlichen Zusammenhang",["Einen Zusammenhang überhaupt","Dass Schichtarbeit gesund ist","Die Zahl der Teilnehmer"]],
+    ["Was könnte die Risiken mindern?","Längere Ruhezeiten",["Mehr Kaffee","Mehr Nachtschichten","Kürzere Pausen"]],
+    ["Was verschlimmert Schlafprobleme?","Zu schneller Schichtwechsel",["Lange Ruhezeiten","Feste Schichten","Urlaub"]]]},
+  { title: "Machbarkeit", people: ["Ingenieur","Controllerin"], lines: [
+    ["Controllerin","Is the automation project financially viable?","Ist das Automatisierungsprojekt finanziell tragfähig?"],
+    ["Ingenieur","Technically, it's feasible. If we extrapolate current figures, it would pay for itself within three years.","Technisch ist es machbar. Rechnet man die aktuellen Zahlen hoch, hätte es sich in drei Jahren amortisiert."],
+    ["Controllerin","That sounds rather arbitrary. Can you corroborate it with data from other plants?","Das klingt ziemlich willkürlich. Können Sie das mit Daten anderer Werke untermauern?"],
+    ["Ingenieur","Yes – two comparable sites have done it. I'll send you a comprehensive analysis by Friday.","Ja – zwei vergleichbare Standorte haben es umgesetzt. Ich schicke Ihnen bis Freitag eine umfassende Analyse."]],
+    questions: [
+    ["Was ist laut Ingenieur technisch?","Machbar",["Unmöglich","Zu teuer","Gefährlich"]],
+    ["Wann hätte sich das Projekt amortisiert?","In drei Jahren",["In drei Monaten","In zehn Jahren","Sofort"]],
+    ["Was verlangt die Controllerin?","Belege aus anderen Werken",["Einen neuen Ingenieur","Ein niedrigeres Budget","Eine Pause"]]]}
+],
+
+u50: [
+  { title: "Typisch britisch", people: ["Lukas","Emma"], lines: [
+    ["Lukas","Emma, your boss said my presentation was 'quite interesting'. That's good, right?","Emma, dein Chef meinte, meine Präsentation sei „ganz interessant“ gewesen. Das ist doch gut, oder?"],
+    ["Emma","Hmm. Depends on the tone. Did he smile?","Hm. Kommt auf den Ton an. Hat er gelächelt?"],
+    ["Lukas","Not exactly. He also said he wasn't entirely convinced by the figures.","Nicht wirklich. Er sagte auch, die Zahlen hätten ihn nicht ganz überzeugt."],
+    ["Emma","Ah. That's British for 'the figures are wrong'. And 'quite interesting' probably means 'not great'.","Ah. Das ist britisch für „die Zahlen sind falsch“. Und „ganz interessant“ heißt wahrscheinlich „nicht so toll“."],
+    ["Lukas","So much for my big day! Just my luck.","So viel zu meinem großen Tag! Typisch."],
+    ["Emma","Don't worry – it could be worse. At least he didn't say it was 'brave'!","Keine Sorge – es könnte schlimmer sein. Immerhin hat er nicht gesagt, es sei „mutig“ gewesen!"]],
+    questions: [
+    ["Was bedeutet „quite interesting“ hier wahrscheinlich?","Nicht so toll",["Hervorragend","Langweilig, aber korrekt","Sehr lustig"]],
+    ["Was meint „not entirely convinced by the figures“?","Die Zahlen sind wohl falsch",["Die Zahlen sind perfekt","Er hat sie nicht gesehen","Er will mehr Zahlen"]],
+    ["Was wäre laut Emma noch schlimmer gewesen?","Wenn er „brave“ gesagt hätte",["Wenn er gelacht hätte","Wenn er gegangen wäre","Wenn er nichts gesagt hätte"]]]},
+  { title: "Umstrukturierung", people: ["Nina","Paul"], lines: [
+    ["Nina","Did you read the memo? They're 'rightsizing' the warehouse.","Hast du das Memo gelesen? Sie „optimieren die Größe“ des Lagers."],
+    ["Paul","Charming. That's a euphemism for letting people go, isn't it?","Reizend. Das ist eine Beschönigung für Entlassungen, oder?"],
+    ["Nina","Tell me about it. Apparently ten colleagues will be 'between jobs' by spring.","Wem sagst du das. Angeblich sind bis zum Frühjahr zehn Kollegen „auf Jobsuche“."],
+    ["Paul","And management calls it an 'exciting opportunity'. You couldn't make it up.","Und die Leitung nennt es eine „spannende Chance“. Das kann man sich nicht ausdenken."],
+    ["Nina","I could hardly keep a straight face during the announcement.","Bei der Ankündigung konnte ich mir das Lachen kaum verkneifen."]],
+    questions: [
+    ["Was bedeutet „rightsizing“ hier?","Personalabbau",["Neue Regale","Mehr Personal","Umzug"]],
+    ["Wie viele Kollegen sind betroffen?","Zehn",["Zwei","Zwanzig","Keiner"]],
+    ["Wie reagieren Nina und Paul?","Ironisch und genervt",["Begeistert","Gleichgültig","Ängstlich"]]]}
+],
+
+u51: [
+  { title: "Preisverhandlung", people: ["Einkäufer","Verkäuferin"], lines: [
+    ["Einkäufer","Your price is 8% higher than last year. For us, that's a deal-breaker.","Ihr Preis liegt 8 % über dem Vorjahr. Für uns ist das ein Ausschlusskriterium."],
+    ["Verkäuferin","I understand. Our raw material costs have risen considerably, though. What would you consider fair?","Ich verstehe. Unsere Rohstoffkosten sind allerdings deutlich gestiegen. Was würden Sie als fair betrachten?"],
+    ["Einkäufer","Three percent at most.","Höchstens drei Prozent."],
+    ["Verkäuferin","Let's meet halfway: five percent, and we'll sweeten the deal with free delivery.","Treffen wir uns in der Mitte: fünf Prozent, und wir versüßen es mit kostenloser Lieferung."],
+    ["Einkäufer","Five percent with free delivery and a two-year price guarantee – then we have a deal.","Fünf Prozent mit kostenloser Lieferung und zwei Jahren Preisgarantie – dann sind wir uns einig."],
+    ["Verkäuferin","You drive a hard bargain. But in the spirit of goodwill – agreed.","Sie verhandeln hart. Aber als Zeichen guten Willens – einverstanden."]],
+    questions: [
+    ["Um wie viel wollte die Verkäuferin den Preis erhöhen?","8 %",["3 %","5 %","10 %"]],
+    ["Worauf einigen sie sich?","5 % mit Gratislieferung und Preisgarantie",["3 % ohne Extras","8 % mit Rabatt","Keine Einigung"]],
+    ["Was bedeutet „to sweeten the deal“?","Das Angebot attraktiver machen",["Den Preis erhöhen","Die Verhandlung abbrechen","Süßigkeiten anbieten"]]]},
+  { title: "Streit im Team schlichten", people: ["Personalerin","Schichtleiter"], lines: [
+    ["Personalerin","There's a lot of tension between your two operators. How did it escalate?","Zwischen Ihren beiden Bedienern herrscht viel Spannung. Wie ist das eskaliert?"],
+    ["Schichtleiter","One feels the other doesn't pull his weight. I tried to defuse it, but they both stonewalled me.","Einer findet, der andere trägt nicht seinen Teil bei. Ich habe versucht zu entschärfen, aber beide haben geblockt."],
+    ["Personalerin","Let me mediate. I'll sound them out individually first, so neither loses face.","Lassen Sie mich vermitteln. Ich spreche erst einzeln mit beiden, damit keiner das Gesicht verliert."],
+    ["Schichtleiter","Good idea. Off the record – I think they actually have a lot of common ground.","Gute Idee. Unter uns – ich glaube, die beiden haben eigentlich viel gemeinsam."],
+    ["Personalerin","Then that's where we'll start.","Dann fangen wir genau dort an."]],
+    questions: [
+    ["Was ist der Vorwurf?","Einer trägt angeblich nicht seinen Teil bei",["Einer kommt immer zu spät","Einer hat gestohlen","Einer ist unhöflich zu Kunden"]],
+    ["Warum spricht die Personalerin erst einzeln mit beiden?","Damit keiner das Gesicht verliert",["Weil es schneller geht","Weil einer krank ist","Weil das Gesetz es verlangt"]],
+    ["Was glaubt der Schichtleiter inoffiziell?","Die beiden haben viel gemeinsam",["Einer muss gehen","Das Problem löst sich nicht","Er selbst ist schuld"]]]}
 ]
 };

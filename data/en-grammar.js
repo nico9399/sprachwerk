@@ -1716,5 +1716,145 @@ window.SW_GRAMMAR.en = [
     ["r","Despite feeling ill, he came to work.","Despite of feeling ill, he came to work.","Obwohl er sich krank fühlte, kam er zur Arbeit."],
     ["r","I spoke slowly so that everyone could understand.","I spoke slowly so as everyone could understand.","Ich sprach langsam, damit alle es verstehen konnten."],
     ["b","I do love this song.","Ich liebe dieses Lied wirklich."]
+  ]},
+
+{ id: "register", level: "C2", title: "Register: formell oder locker?",
+  sum: "Dieselbe Aussage klingt je nach Situation völlig anders.",
+  rules: [
+    ["Drei Ebenen","<b>Formell</b> (Briefe, Behörden, Verträge): lange lateinische Verben, keine Kurzformen – <i>We regret to inform you …</i><br><b>Neutral</b> (Arbeit, E-Mails an Kollegen): <i>Unfortunately, …</i><br><b>Locker</b> (Freunde, Chat): Phrasal Verbs, Kurzformen, Slang – <i>Bad news, mate …</i>"],
+    ["Phrasal Verb ↔ formelles Verb","find out → <b>ascertain</b> · put off → <b>postpone</b> · go up → <b>increase</b> · get in touch → <b>contact</b> · look into → <b>investigate</b> · ask for → <b>request</b>"],
+    ["Typische Merkmale","Formell: Passiv, <i>should you …</i>, <i>prior to</i>, <i>kindly</i>.<br>Locker: <i>gonna, wanna, stuff, cheers, no worries</i> – nie in formellen Texten!"]
+  ],
+  ex: [["We regret to inform you that your application was unsuccessful.","Wir bedauern, Ihnen mitteilen zu müssen, dass Ihre Bewerbung erfolglos war."],["Sorry, mate – you didn't get the job.","Sorry, Kumpel – du hast den Job nicht bekommen."],["The meeting has been postponed.","Die Besprechung wurde verschoben."]],
+  drills: [
+    ["c","We would like to ___ whether the goods have been dispatched. (formell)","ascertain",["find out","check out","figure out"],"Wir möchten feststellen, ob die Ware versandt wurde."],
+    ["c","The meeting has been ___ until next week. (formell)","postponed",["put off","pushed back","bailed"],"Die Besprechung wurde auf nächste Woche verschoben."],
+    ["c","Prices have ___ by 5%. (formell)","increased",["gone up","shot up","jumped up"],"Die Preise sind um 5 % gestiegen."],
+    ["c","Please do not hesitate to ___ us. (formell)","contact",["get in touch with us at","ping","drop"],"Bitte zögern Sie nicht, uns zu kontaktieren."],
+    ["c","We will ___ the matter. (formell)","investigate",["look into it","dig into","sort out"],"Wir werden der Sache nachgehen."],
+    ["c","___ you require further information, please contact us.","Should",["If you","Would","Unless"],"Sollten Sie weitere Informationen benötigen, kontaktieren Sie uns bitte."],
+    ["c","– Thanks for helping! – ___ (locker)","No worries!",["You are most welcome to it.","It was my pleasure to be of service.","Thank you kindly."],"– Danke fürs Helfen! – Kein Problem!"],
+    ["r","We regret any inconvenience this may have caused.","Sorry for the hassle, guys!","Wir bedauern etwaige Unannehmlichkeiten. (formeller Brief)"],
+    ["r","I am writing to request a refund.","I wanna get my money back.","Ich schreibe, um eine Rückerstattung zu beantragen. (formell)"],
+    ["r","Fancy grabbing a bite after work?","Would you be interested in partaking of a meal subsequent to work?","Lust, nach der Arbeit was essen zu gehen? (unter Kollegen)"],
+    ["r","Kindly return the enclosed form.","Send the form back, OK?","Bitte senden Sie das beiliegende Formular zurück. (Behörde)"],
+    ["b","We regret to inform you that the position has been filled.","Wir bedauern, Ihnen mitteilen zu müssen, dass die Stelle besetzt wurde."],
+    ["b","Should you have any questions, please let us know.","Sollten Sie Fragen haben, lassen Sie es uns bitte wissen."]
+  ]},
+
+{ id: "collocations", level: "C2", title: "Kollokationen",
+  sum: "Welche Wörter im Englischen zusammengehören – oft anders als im Deutschen.",
+  rules: [
+    ["Verb + Nomen","eine Entscheidung <i>treffen</i> → <b>make</b> a decision<br>ein Risiko <i>eingehen</i> → <b>take</b> a risk<br>Aufmerksamkeit <i>schenken</i> → <b>pay</b> attention<br>einen Fehler <i>begehen</i> → <b>make</b> a mistake<br>ein Ziel <i>erreichen</i> → <b>achieve/reach</b> a goal"],
+    ["Adjektiv + Nomen","<i>starker</i> Regen → <b>heavy</b> rain · <i>starker</i> Raucher → <b>heavy</b> smoker · <i>starker</i> Kaffee → <b>strong</b> coffee · <i>hohe</i> Erwartungen → <b>high</b> expectations"],
+    ["Adverb + Adjektiv","<b>bitterly</b> disappointed · <b>highly</b> unlikely · <b>deeply</b> concerned · <b>fully</b> aware · <b>utterly</b> ridiculous"]
+  ],
+  ex: [["We need to make a decision today.","Wir müssen heute eine Entscheidung treffen."],["There was heavy traffic on the motorway.","Auf der Autobahn war dichter Verkehr."],["I'm fully aware of the risks.","Ich bin mir der Risiken voll bewusst."]],
+  drills: [
+    ["c","We have to ___ a decision by Friday.","make",["do","take","meet"],"Wir müssen bis Freitag eine Entscheidung treffen."],
+    ["c","Investing always means ___ a risk.","taking",["making","doing","having"],"Investieren heißt immer, ein Risiko einzugehen."],
+    ["c","Please ___ attention to the safety signs.","pay",["give","make","take"],"Bitte beachte die Sicherheitsschilder."],
+    ["c","There was ___ rain all night.","heavy",["strong","big","hard"],"Es hat die ganze Nacht stark geregnet."],
+    ["c","I'd like a ___ coffee, please.","strong",["heavy","hard","powerful"],"Ich hätte gern einen starken Kaffee."],
+    ["c","The fans were ___ disappointed.","bitterly",["strongly","heavily","highly"],"Die Fans waren bitter enttäuscht."],
+    ["c","It's ___ unlikely that he'll come.","highly",["strongly","deeply","heavily"],"Es ist höchst unwahrscheinlich, dass er kommt."],
+    ["c","The report ___ light on the causes of the accident.","sheds",["throws on","makes","gives off"],"Der Bericht bringt Licht in die Ursachen des Unfalls."],
+    ["c","We need to ___ a balance between speed and quality.","strike",["hit","make","find out"],"Wir müssen eine Balance zwischen Tempo und Qualität finden."],
+    ["c","Cyber attacks ___ a serious threat.","pose",["make","do","put"],"Cyberangriffe stellen eine ernste Bedrohung dar."],
+    ["r","She has high expectations.","She has tall expectations.","Sie hat hohe Erwartungen."],
+    ["r","Can you do me a favour?","Can you make me a favour?","Kannst du mir einen Gefallen tun?"],
+    ["b","We finally reached an agreement.","Wir haben endlich eine Einigung erzielt."]
+  ]},
+
+{ id: "hedging", level: "C2", title: "Hedging: vorsichtig formulieren",
+  sum: "Aussagen abschwächen, ohne unsicher zu wirken.",
+  rules: [
+    ["Warum?","Im Englischen wirken absolute Aussagen schnell arrogant oder unprofessionell. Statt <i>„This is wrong.“</i> lieber <b>„This may not be entirely accurate.“</b>"],
+    ["Werkzeuge","Modalverben: <b>may, might, could</b><br>Verben: <b>seem, appear, tend to, suggest, indicate</b><br>Adverbien: <b>arguably, presumably, possibly, to some extent</b><br>Wendungen: <b>It would seem that …, There is some evidence that …</b>"],
+    ["Nicht übertreiben","Ein bis zwei Abschwächungen pro Aussage reichen. <i>„It might possibly perhaps be …“</i> klingt unsicher."]
+  ],
+  ex: [["The results seem to suggest a link.","Die Ergebnisse scheinen auf einen Zusammenhang hinzudeuten."],["This is arguably the best solution.","Das ist wohl die beste Lösung."],["It would seem that the order was lost.","Es sieht so aus, als sei die Bestellung verloren gegangen."]],
+  drills: [
+    ["c","The new process ___ to be more efficient.","appears",["is appearing","appear","is appeared"],"Der neue Prozess scheint effizienter zu sein."],
+    ["c","People ___ to underestimate small risks.","tend",["tending","are tend","tends"],"Menschen neigen dazu, kleine Risiken zu unterschätzen."],
+    ["c","It ___ seem that the delivery has been delayed.","would",["will","is","does"],"Es scheint, dass die Lieferung verspätet ist."],
+    ["c","The figures ___ a slight improvement.","indicate",["indicates","are indicate","indicating"],"Die Zahlen deuten auf eine leichte Verbesserung hin."],
+    ["c","This is ___ the most important issue.","arguably",["argued","arguing","argumentative"],"Das ist wohl das wichtigste Thema."],
+    ["c","To some ___, I agree with you.","extent",["extend","degree of","level"],"Bis zu einem gewissen Grad stimme ich dir zu."],
+    ["c","There is some evidence ___ the drug helps.","that",["what","which","of"],"Es gibt gewisse Hinweise darauf, dass das Medikament hilft."],
+    ["r","Your figures may not be entirely accurate.","Your figures are wrong.","Deine Zahlen sind möglicherweise nicht ganz korrekt. (diplomatisch)"],
+    ["r","This approach might not be ideal for us.","This approach is stupid.","Dieser Ansatz ist für uns vielleicht nicht ideal. (diplomatisch)"],
+    ["r","It seems that there has been a misunderstanding.","You misunderstood everything.","Es scheint ein Missverständnis gegeben zu haben. (diplomatisch)"],
+    ["r","The results suggest that the plan works.","The results might possibly perhaps suggest that maybe the plan could work.","Die Ergebnisse deuten darauf hin, dass der Plan funktioniert. (nicht übertrieben)"],
+    ["b","The results seem to suggest a clear trend.","Die Ergebnisse scheinen einen klaren Trend anzudeuten."]
+  ]},
+
+{ id: "nominalisation", level: "C2", title: "Nominalisierung",
+  sum: "Aus Verben Nomen machen – typisch für Berichte und Fachtexte.",
+  rules: [
+    ["Was ist das?","Statt <i>„We analysed the data and found that sales dropped.“</i><br>→ <b>„Analysis of the data revealed a drop in sales.“</b><br>Der Satz wird kürzer, sachlicher und unpersönlicher."],
+    ["Häufige Paare","decide → <b>decision</b> · fail → <b>failure</b> · arrive → <b>arrival</b> · improve → <b>improvement</b> · reduce → <b>reduction</b> · increase → <b>increase</b> · analyse → <b>analysis</b> · implement → <b>implementation</b>"],
+    ["Vorsicht","Zu viele Nominalisierungen machen Texte schwer lesbar. In E-Mails und Gesprächen lieber Verben benutzen."]
+  ],
+  ex: [["The implementation of the new system took six months.","Die Einführung des neuen Systems dauerte sechs Monate."],["There has been a significant reduction in costs.","Die Kosten sind deutlich gesunken."],["The failure of the pump caused the delay.","Der Ausfall der Pumpe verursachte die Verzögerung."]],
+  drills: [
+    ["c","The ___ of the new software took longer than planned. (implement)","implementation",["implementing of","implement","implemented"],"Die Einführung der neuen Software dauerte länger als geplant."],
+    ["c","There has been a sharp ___ in energy costs. (increase)","increase",["increasing","increasement","increased"],"Die Energiekosten sind stark gestiegen."],
+    ["c","The ___ of the pump stopped production. (fail)","failure",["failing","fail","failment"],"Der Ausfall der Pumpe stoppte die Produktion."],
+    ["c","We expect a 10% ___ in waste. (reduce)","reduction",["reducing","reduce","reducement"],"Wir erwarten eine Verringerung des Ausschusses um 10 %."],
+    ["c","Upon ___, please report to reception. (arrive)","arrival",["arriving at","arrive","arrivement"],"Bitte melden Sie sich bei Ankunft am Empfang."],
+    ["c","A careful ___ of the data is needed. (analyse)","analysis",["analyse","analysing of","analyzation"],"Eine sorgfältige Analyse der Daten ist nötig."],
+    ["c","The ___ to close the plant was a shock. (decide)","decision",["deciding","decide","decidement"],"Die Entscheidung, das Werk zu schließen, war ein Schock."],
+    ["r","Analysis of the data revealed a drop in sales.","Analysis of the data revealed a dropping in sales.","Die Datenanalyse ergab einen Umsatzrückgang."],
+    ["r","The introduction of shift work led to complaints.","The introducing of shift work led to complaints.","Die Einführung von Schichtarbeit führte zu Beschwerden."],
+    ["r","There was a significant improvement in quality.","There was a significant improve in quality.","Die Qualität hat sich deutlich verbessert."],
+    ["b","The delay was caused by a shortage of parts.","Die Verzögerung wurde durch Teilemangel verursacht."],
+    ["b","The reduction in costs was considerable.","Die Kostensenkung war beträchtlich."]
+  ]},
+
+{ id: "subjunctive", level: "C2", title: "Konjunktiv & gehobene Strukturen",
+  sum: "Were I to …, It is essential that he be …, Had I known …",
+  rules: [
+    ["Subjunctive nach Forderungen","Nach <b>insist, demand, suggest, recommend, It is essential/vital that …</b> steht die Grundform – auch bei he/she/it:<br><i>It is essential that he <b>be</b> on time.</i><br><i>The doctor recommended that she <b>rest</b>.</i>"],
+    ["If weglassen – Inversion","<b>Were I</b> you, … (= If I were you)<br><b>Had I known</b>, … (= If I had known)<br><b>Should you</b> need help, … (= If you need help)<br><b>Were it not for</b> … (= If it weren't for …)"],
+    ["Feste Wendungen","<b>Be that as it may</b> (wie dem auch sei) · <b>Come what may</b> (komme, was wolle) · <b>So be it</b> (so sei es) · <b>God save the King</b>"]
+  ],
+  ex: [["Had I known about the problem, I would have helped.","Hätte ich von dem Problem gewusst, hätte ich geholfen."],["It is vital that everyone wear a helmet.","Es ist unerlässlich, dass jeder einen Helm trägt."],["Were it not for her help, we would have failed.","Ohne ihre Hilfe wären wir gescheitert."]],
+  drills: [
+    ["c","It is essential that he ___ on time.","be",["is","will be","was"],"Es ist unerlässlich, dass er pünktlich ist."],
+    ["c","The doctor recommended that she ___ for a week.","rest",["rests","rested","is resting"],"Der Arzt empfahl, dass sie sich eine Woche ausruht."],
+    ["c","They insisted that the contract ___ signed immediately.","be",["is","was being","will be"],"Sie bestanden darauf, dass der Vertrag sofort unterschrieben wird."],
+    ["c","___ I known, I would have come earlier.","Had",["If","Have","Would"],"Hätte ich es gewusst, wäre ich früher gekommen."],
+    ["c","___ I you, I would accept the offer.","Were",["Was","If","Am"],"An deiner Stelle würde ich das Angebot annehmen."],
+    ["c","___ you need any help, just call.","Should",["Would","Did","Shall"],"Solltest du Hilfe brauchen, ruf einfach an."],
+    ["c","___ it not for the rain, we would have finished.","Were",["Was","If","Had"],"Wäre der Regen nicht gewesen, wären wir fertig geworden."],
+    ["c","Be that as it ___, we still need a solution.","may",["might","can","is"],"Wie dem auch sei, wir brauchen trotzdem eine Lösung."],
+    ["r","I suggest that he take a break.","I suggest that he takes to a break.","Ich schlage vor, dass er eine Pause macht."],
+    ["r","Had we left earlier, we wouldn't have missed the train.","Had we left earlier, we won't miss the train.","Wären wir früher losgefahren, hätten wir den Zug nicht verpasst."],
+    ["r","Come what may, I'll finish this course.","Come what can, I'll finish this course.","Komme, was wolle, ich schließe diesen Kurs ab."],
+    ["b","Should you have any questions, please call me.","Sollten Sie Fragen haben, rufen Sie mich bitte an."]
+  ]},
+
+{ id: "ellipsis", level: "C2", title: "Ellipse & Ersetzung",
+  sum: "Wiederholungen vermeiden: so do I, I hope so, if not …",
+  rules: [
+    ["Zustimmen ohne Wiederholung","<i>I'm tired.</i> – <b>So am I.</b> / <b>Me too.</b><br><i>I don't like it.</i> – <b>Neither do I.</b> / <b>Nor do I.</b><br><i>She can swim.</i> – <b>So can he.</b>"],
+    ["so / not statt ganzer Sätze","<i>Will it rain?</i> – <b>I hope not.</b> / <b>I think so.</b> / <b>I'm afraid so.</b><br><b>If so</b>, … (wenn ja) · <b>If not</b>, … (wenn nicht)"],
+    ["Auslassen im Satz","<i>I wanted to help, but I couldn't <s>help</s>.</i> → … but I <b>couldn't</b>.<br><i>– Have you finished? – Not yet.</i><br>one/ones ersetzen Nomen: <i>I'd like the blue <b>one</b>.</i>"]
+  ],
+  ex: [["– I love this job. – So do I.","– Ich liebe diesen Job. – Ich auch."],["– Is he coming? – I'm afraid not.","– Kommt er? – Leider nicht."],["Are you free tomorrow? If so, let's meet.","Hast du morgen Zeit? Wenn ja, treffen wir uns."]],
+  drills: [
+    ["c","– I'm really tired. – So ___ I.","am",["do","have","too"],"– Ich bin echt müde. – Ich auch."],
+    ["c","– I don't eat meat. – Neither ___ I.","do",["am","don't","eat"],"– Ich esse kein Fleisch. – Ich auch nicht."],
+    ["c","– She has finished. – So ___ he.","has",["does","is","did"],"– Sie ist fertig. – Er auch."],
+    ["c","– Will the shift be cancelled? – I hope ___.","not",["no","don't","so not"],"– Fällt die Schicht aus? – Hoffentlich nicht."],
+    ["c","– Is the parcel lost? – I'm afraid ___.","so",["yes","it","that"],"– Ist das Paket verloren? – Leider ja."],
+    ["c","Are you coming tonight? If ___, bring a drink.","so",["true","it","that"],"Kommst du heute Abend? Wenn ja, bring was zu trinken mit."],
+    ["c","Check the list. If ___, call the supplier.","not",["no","isn't","don't"],"Prüf die Liste. Wenn nicht, ruf den Lieferanten an."],
+    ["c","I wanted to come, but I ___.","couldn't",["couldn't come it","couldn't to","wasn't"],"Ich wollte kommen, konnte aber nicht."],
+    ["c","I don't like the red shoes – I prefer the black ___.","ones",["one","them","shoe"],"Die roten Schuhe mag ich nicht – ich nehme lieber die schwarzen."],
+    ["r","– I can't swim. – Neither can I.","– I can't swim. – So can't I.","– Ich kann nicht schwimmen. – Ich auch nicht."],
+    ["r","– Is it true? – I think so.","– Is it true? – I think it.","– Stimmt das? – Ich glaube schon."],
+    ["b","If not, we will have to wait until Monday.","Wenn nicht, müssen wir bis Montag warten."]
   ]}
 ];
