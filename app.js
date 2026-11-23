@@ -41,6 +41,7 @@ const DEFAULT = {
   gram: {},      // Grammatik-ID -> { done, b, due, seen, wrong, best }
   units: {},     // Einheit-ID -> { done, score, date }
   dialogs: {},   // Einheit-ID -> { done, best }
+  packs: {},     // Themenpaket-ID -> true (neue Wörter im Tagesplan)
   custom: [],
   days: {},
   reports: [],
@@ -73,7 +74,7 @@ const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
 const dlgCount = () => Object.keys(DLG()).reduce((a, u) => a + dlgList(u).length, 0);
 
 // ---------- Inhalte ----------
-let WORDS = [], WMAP = {}, UNITS = [], GMAP = {};
+let WORDS = [], WMAP = {}, UNITS = [], GMAP = {}, PACKS = [], PACKW = {};
 function buildContent() {
   UNITS = L().units;
   GMAP = Object.fromEntries(G().map((g) => [g.id, g]));
@@ -82,6 +83,18 @@ function buildContent() {
     WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
   }));
   S.custom.forEach((c) => WORDS.push({ id: "custom:" + c.id, unit: "custom", ui: -1, level: "A1", en: c.en, de: c.de, ex: c.ex || "", exde: c.exde || "" }));
+  // Themenpakete: neue Wörter bekommen eigene IDs, Verweise ("englisch") nutzen das vorhandene Wort (gemeinsamer Lernstand)
+  PACKS = (window.SW_PACKS || {})[S.lang] || [];
+  const byEn = {};
+  WORDS.forEach((w) => { const k = w.en.toLowerCase(); if (w.unit !== "custom" && !byEn[k]) byEn[k] = w.id; });
+  PACKS.forEach((p, pi) => p.words.forEach((w) => {
+    if (typeof w === "string") return;
+    const id = "pack:" + p.id + ":" + w[0];
+    WORDS.push({ id, unit: "pack:" + p.id, ui: 1000 + pi * 10, level: "B1", core: false, pack: p.id, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
+    if (!byEn[w[0].toLowerCase()]) byEn[w[0].toLowerCase()] = id;
+  }));
+  PACKW = {};
+  PACKS.forEach((p) => { PACKW[p.id] = [...new Set(p.words.map((w) => byEn[(typeof w === "string" ? w : w[0]).toLowerCase()]).filter(Boolean))]; });
   WMAP = Object.fromEntries(WORDS.map((w) => [w.id, w]));
 }
 buildContent();
@@ -102,6 +115,7 @@ function migrate() {
   if (S.packsOff) { delete S.packsOff; changed = true; }
   if (!S.dialogs) { S.dialogs = {}; changed = true; }
   for (const k of Object.keys(S.dialogs)) if (!k.includes(":")) { S.dialogs[k + ":0"] = S.dialogs[k]; delete S.dialogs[k]; changed = true; }
+  if (!S.packs) { S.packs = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -154,7 +168,7 @@ function dueGrammar() {
 }
 function learnedToday() {
   const t = today();
-  return Object.values(S.words).filter((s) => s.learned === t && !s.quick).length;
+  return Object.values(S.words).filter((s) => s.learned === t && !s.quick && !s.pk).length; // Paket-Lektionen zählen nicht zum Tageslimit
 }
 function newCandidates() {
   const custom = WORDS.filter((w) => w.unit === "custom" && !st(w.id));
@@ -167,6 +181,15 @@ function newCandidates() {
   }
   return { custom, core, extra, quick };
 }
+const packOn = (pid) => !!(S.packs && S.packs[pid]);
+const packStats = (pid) => { const ids = PACKW[pid] || []; return { total: ids.length, seen: ids.filter((id) => st(id)).length, solid: ids.filter((id) => st(id) && st(id).b >= 4).length }; };
+function packCandidates() {
+  // abwechselnd aus allen eingeschalteten Paketen
+  const lists = PACKS.filter((p) => packOn(p.id)).map((p) => PACKW[p.id].filter((id) => !st(id)));
+  const out = [], seen = new Set();
+  for (let k = 0; lists.some((l) => k < l.length); k++) lists.forEach((l) => { if (l[k] && !seen.has(l[k])) { seen.add(l[k]); out.push(WMAP[l[k]]); } });
+  return out;
+}
 function todayPlan() {
   const due = dueWords().slice(0, MAX_REVIEWS);
   const gram = dueGrammar().slice(0, MAX_GRAMMAR_REVIEWS);
@@ -178,6 +201,13 @@ function todayPlan() {
   fresh.push(...core.slice(0, Math.max(0, nNew - fresh.length - nExtra)));
   fresh.push(...extra.slice(0, Math.max(0, nNew - fresh.length)));
   if (fresh.length < nNew) fresh.push(...core.slice(fresh.filter((w) => w.core).length, fresh.filter((w) => w.core).length + nNew - fresh.length));
+  // eingeschaltete Themenpakete: ca. 30 % der neuen Wörter (mind. 1)
+  const pk = packCandidates().filter((w) => !fresh.includes(w));
+  if (pk.length && nNew > 0) {
+    const nPack = Math.min(pk.length, Math.max(1, Math.round(nNew * 0.3)));
+    const keep = fresh.slice(0, Math.max(0, Math.min(fresh.length, nNew - nPack)));
+    fresh.length = 0; fresh.push(...keep, ...pk.slice(0, nNew - keep.length));
+  }
   return { due, gram, fresh, quick: quick.slice(0, MAX_QUICK) };
 }
 
@@ -307,6 +337,8 @@ function render() {
   if (view && view.type === "grammar") return renderGrammar(view.id);
   if (view && view.type === "dialog") return renderDialog(view.id);
   if (view && view.type === "glist") return renderGrammarList();
+  if (view && view.type === "plist") return renderPackList();
+  if (view && view.type === "pack") return renderPack(view.id);
   setTabbar(true);
   ({ home: renderHome, path: renderPath, words: renderWords, more: renderMore })[tab]();
 }
@@ -314,7 +346,7 @@ function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scro
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
 function back() {
   stopSeq();
-  view = view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
+  view = view && view.type === "pack" ? { type: "plist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
 function openDialog(did, from) { view = { type: "dialog", id: did, from }; render(); window.scrollTo(0, 0); }
@@ -518,7 +550,11 @@ function renderPath() {
     <button class="card gcard" id="glist" style="margin-bottom:6px">
       <div><b>📐 Alle Grammatik-Lektionen</b><span>${G().length} Lektionen · ${Object.values(S.gram).filter((g) => g.done).length} gelernt</span></div>
       <span class="chev">›</span>
-    </button>`;
+    </button>
+    ${PACKS.length ? `<button class="card gcard" id="plist" style="margin-bottom:6px">
+      <div><b>🎒 Themenpakete</b><span>${PACKS.length} Pakete · ${PACKS.filter((p) => packOn(p.id)).length} eingeschaltet</span></div>
+      <span class="chev">›</span>
+    </button>` : ""}`;
   LEVELS.forEach((lv) => {
     const list = UNITS.map((u, i) => ({ u, i })).filter((x) => x.u.level === lv);
     if (!list.length) return;
@@ -542,6 +578,54 @@ function renderPath() {
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
   $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
+  const pl = $("#plist"); if (pl) pl.onclick = () => { view = { type: "plist" }; render(); window.scrollTo(0, 0); };
+}
+
+// ---------- Themenpakete ----------
+function renderPackList() {
+  setTabbar(false);
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Themenpakete</h1>
+    <p class="sub">Extra-Wortschatz unabhängig vom Lernpfad. Eingeschaltete Pakete bringen jeden Tag ein paar neue Wörter in die Tageslektion.</p>
+    <div class="stack">${PACKS.map((p) => { const s = packStats(p.id); return `<button class="card gcard" data-pack="${p.id}">
+      <div><b>${p.emoji} ${esc(p.title)}</b><span>${esc(p.desc)} · ${s.seen}/${s.total} gelernt</span></div>
+      <span class="pill ${packOn(p.id) ? "ok" : ""}">${packOn(p.id) ? "✓ An" : "Aus"}</span>
+    </button>`; }).join("")}</div>
+  </div>`;
+  $("#back").onclick = back;
+  app.querySelectorAll("[data-pack]").forEach((b) => (b.onclick = () => { view = { type: "pack", id: b.dataset.pack }; render(); window.scrollTo(0, 0); }));
+}
+function renderPack(pid) {
+  setTabbar(false);
+  const p = PACKS.find((x) => x.id === pid);
+  const s = packStats(pid), on = packOn(pid);
+  const ws = (PACKW[pid] || []).map((id) => WMAP[id]);
+  const left = s.total - s.seen;
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <div class="unit-hero">
+      <div class="em big">${p.emoji}</div>
+      <div><div class="small muted">Themenpaket · ${s.total} Wörter</div><h1 class="page-title" style="margin:2px 0 0">${esc(p.title)}</h1></div>
+    </div>
+    <p class="sub">${esc(p.desc)}</p>
+    <div class="card">
+      <div class="bar" style="margin-bottom:8px"><i style="width:${s.total ? Math.round((s.seen / s.total) * 100) : 0}%"></i></div>
+      <p class="small muted" style="margin:0 0 12px">${s.seen} von ${s.total} gelernt · ${s.solid} sitzen sicher</p>
+      <button class="btn" id="p-go">${left ? `Jetzt ${Math.min(7, left)} neue Wörter lernen` : "Wörter wiederholen"}</button>
+    </div>
+    <ul class="set" style="margin-top:14px">
+      <li><span>Im Tagesplan<small>${on ? "Neue Wörter aus diesem Paket kommen in die Tageslektion" : "Nur lernen, wenn du hier auf den Knopf tippst"}</small></span>
+        <div class="seg"><button id="p-on" class="${on ? "on" : ""}">An</button><button id="p-off" class="${on ? "" : "on"}">Aus</button></div></li>
+    </ul>
+    <p class="small muted" style="margin:8px 2px 0">Schon gelernte Wörter werden immer wiederholt, auch wenn das Paket aus ist.</p>
+    <div class="section-h"><h3>📚 Wörter</h3><span class="small muted">${s.seen}/${s.total}</span></div>
+    ${wordListHtml(ws)}
+  </div>`;
+  $("#back").onclick = back;
+  $("#p-go").onclick = () => startSession("pack", { pid });
+  $("#p-on").onclick = () => { S.packs[pid] = true; save(); toast("Paket ist jetzt im Tagesplan"); renderPack(pid); };
+  $("#p-off").onclick = () => { delete S.packs[pid]; save(); renderPack(pid); };
 }
 
 function renderGrammarList() {
@@ -728,6 +812,16 @@ function startSession(mode, opt = {}) {
     const mixed = shuffle(B);
     for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
     tasks.push(...mixed);
+  } else if (mode === "pack") {
+    const ids = PACKW[opt.pid] || [];
+    const fresh = ids.filter((id) => !st(id)).slice(0, 7).map((id) => WMAP[id]);
+    const old = shuffle(ids.filter((id) => st(id))).slice(0, fresh.length ? 5 : 12).map((id) => WMAP[id]);
+    const A = [], B = [];
+    fresh.forEach((w) => { A.push({ id: w.id, t: "intro" }, { id: w.id, t: "mc_en", g: true }); B.push({ id: w.id, t: pick(["mc_de", "listen"]) }); });
+    old.forEach((w) => B.push({ id: w.id, t: exerciseFor(w), g: true }));
+    const mixed = shuffle(B);
+    for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
+    tasks.push(...mixed);
   } else if (mode === "free") {
     tasks = shuffle(WORDS.filter((w) => st(w.id))).slice(0, 10).map((w) => ({ id: w.id, t: exerciseFor(w), free: true }));
     shuffle(Object.keys(S.gram).filter((id) => S.gram[id].done && GMAP[id])).slice(0, 2)
@@ -834,7 +928,7 @@ function tIntro(task, w) {
   bindClose();
   if (S.settings.autoplay) setTimeout(() => speak(w.en), 250);
   const s = S.words[w.id] || (S.words[w.id] = { b: 0, due: today(), seen: 0, wrong: 0 });
-  if (!s.learned) s.learned = today();
+  if (!s.learned) { s.learned = today(); if (Q && Q.mode === "pack") s.pk = true; }
   save();
   $("#rep").onclick = () => report(task, w);
   $("#next").onclick = () => { Q.pos++; renderTask(); };
@@ -1319,7 +1413,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
