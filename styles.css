@@ -427,3 +427,14 @@ body.in-session #app { padding-bottom: calc(var(--safe-b) + 24px); }
 .chat.hide .bubble b { color: transparent; text-shadow: 0 0 9px color-mix(in srgb, var(--ink) 55%, transparent); user-select: none; }
 textarea.answer-input { resize: none; font-size: 18px; line-height: 1.4; }
 #selfok { color: var(--good); }
+
+/* Lesetexte */
+.rd { padding: 16px 16px 6px; }
+.rd-p { border-radius: 12px; margin: 0 -6px 10px; padding: 2px 6px; transition: background .2s; }
+.rd-p.live { background: var(--accent-soft); }
+.rd-p p { margin: 0 0 6px; font-size: 18px; line-height: 1.65; }
+.rd-p .rd-de { font-size: 15px; line-height: 1.5; color: var(--muted); }
+.tw { cursor: pointer; border-radius: 5px; padding: 1px 0; -webkit-tap-highlight-color: transparent; }
+.tw:active, .tw.on { background: color-mix(in srgb, var(--warm) 35%, transparent); }
+.rd-peek summary { cursor: pointer; }
+.rd-peek p { font-size: 15px; line-height: 1.5; margin: 8px 0 0; }

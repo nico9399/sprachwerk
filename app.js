@@ -42,6 +42,7 @@ const DEFAULT = {
   units: {},     // Einheit-ID -> { done, score, date }
   dialogs: {},   // Einheit-ID -> { done, best }
   packs: {},     // Themenpaket-ID -> true (neue Wörter im Tagesplan)
+  reading: {},   // Einheit-ID -> { done, best } (Lesetexte)
   custom: [],
   days: {},
   reports: [],
@@ -71,6 +72,8 @@ const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
 const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(x) ? x : [x]; };
 const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
 const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
+const RD = () => (window.SW_READING || {})[S.lang] || {};
+const rdCount = () => Object.keys(RD()).length;
 const dlgCount = () => Object.keys(DLG()).reduce((a, u) => a + dlgList(u).length, 0);
 
 // ---------- Inhalte ----------
@@ -116,6 +119,7 @@ function migrate() {
   if (!S.dialogs) { S.dialogs = {}; changed = true; }
   for (const k of Object.keys(S.dialogs)) if (!k.includes(":")) { S.dialogs[k + ":0"] = S.dialogs[k]; delete S.dialogs[k]; changed = true; }
   if (!S.packs) { S.packs = {}; changed = true; }
+  if (!S.reading) { S.reading = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -338,6 +342,7 @@ function render() {
   if (view && view.type === "dialog") return renderDialog(view.id);
   if (view && view.type === "glist") return renderGrammarList();
   if (view && view.type === "plist") return renderPackList();
+  if (view && view.type === "read") return renderReading(view.id);
   if (view && view.type === "pack") return renderPack(view.id);
   setTabbar(true);
   ({ home: renderHome, path: renderPath, words: renderWords, more: renderMore })[tab]();
@@ -349,6 +354,7 @@ function back() {
   view = view && view.type === "pack" ? { type: "plist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
+function openReading(uid, from) { view = { type: "read", id: uid, from }; render(); window.scrollTo(0, 0); }
 function openDialog(did, from) { view = { type: "dialog", id: did, from }; render(); window.scrollTo(0, 0); }
 
 // ---------- Onboarding ----------
@@ -474,6 +480,10 @@ function renderHome() {
   const dls = dlgList(cu.id);
   const dDoneN = dls.filter((d, k) => dlgDone(cu.id + ":" + k)).length;
   const nextK = dls.findIndex((d, k) => !dlgDone(cu.id + ":" + k));
+  const rdx = RD()[cu.id], rdDone = !!(S.reading[cu.id] && S.reading[cu.id].done);
+  const stepRead = !rdx ? "" : rdDone
+    ? `<div class="step done"><i>✓</i><div><b>Lesetext</b><span>„${esc(rdx.title)}“ · ${S.reading[cu.id].best} %</span></div><button class="link small" data-read="${cu.id}">Ansehen</button></div>`
+    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>📖</i><div><b>Lesetext</b><span>„${esc(rdx.title)}“ · freiwillig</span></div><button class="btn small ghost" data-read="${cu.id}" style="width:auto">Lesen</button></div>`;
   const stepDialog = !dls.length ? "" : nextK < 0
     ? `<div class="step done"><i>✓</i><div><b>Dialoge</b><span>alle ${dls.length} gehört</span></div><button class="link small" data-unit="${cu.id}">Ansehen</button></div>`
     : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>🎧</i><div><b>Dialoge hören</b><span>${dDoneN}/${dls.length} · „${esc(dls[nextK].title)}“ · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}:${nextK}" style="width:auto">Hören</button></div>`;
@@ -511,7 +521,7 @@ function renderHome() {
         <div class="info"><div class="small muted">Einheit ${ci + 1} von ${UNITS.length} · <span class="tag">${cu.level}</span></div><h3>${esc(cu.title)}</h3></div>
         <span class="chev">›</span>
       </button>
-      <div class="steps">${stepGrammar}${stepWords}${stepDialog}${stepTest}</div>
+      <div class="steps">${stepGrammar}${stepWords}${stepRead}${stepDialog}${stepTest}</div>
     </div>
 
     <div class="stats">
@@ -540,6 +550,7 @@ function renderHome() {
   app.querySelectorAll("[data-gram]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.gram)));
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
   app.querySelectorAll("[data-dialog]").forEach((b) => (b.onclick = () => openDialog(b.dataset.dialog)));
+  app.querySelectorAll("[data-read]").forEach((b) => (b.onclick = () => openReading(b.dataset.read)));
   const ut = $("#unit-test"); if (ut) ut.onclick = () => startSession("test", { unit: cu.id });
 }
 
@@ -677,6 +688,12 @@ function renderUnit(uid) {
       <div><b>➕ ${esc(eg.title)}</b><span>Zusatz · ${esc(eg.sum)}</span></div>
       <span class="pill ${es && es.done ? "ok" : ""}">${es && es.done ? "✓ gelernt" : "Lernen"}</span></button>`; }).join("")}
 
+    ${RD()[u.id] ? `<div class="section-h"><h3>📖 Lesetext</h3></div>
+    <button class="card gcard" id="rd-open">
+      <div><b>${esc(RD()[u.id].title)}</b><span>${esc(RD()[u.id].kind)} · Lesen, Wörter antippen, Fragen</span></div>
+      <span class="pill ${S.reading[u.id] && S.reading[u.id].done ? "ok" : ""}">${S.reading[u.id] && S.reading[u.id].done ? "✓ " + S.reading[u.id].best + " %" : "Lesen"}</span>
+    </button>` : ""}
+
     ${dlgList(u.id).length ? `<div class="section-h"><h3>🎧 Dialoge</h3><span class="small muted">${dlgList(u.id).filter((d, k) => dlgDone(u.id + ":" + k)).length}/${dlgList(u.id).length}</span></div>
     <div class="stack">${dlgList(u.id).map((d, k) => { const did = u.id + ":" + k, r = S.dialogs[did]; return `<button class="card gcard" data-did="${did}">
       <div><b>${esc(d.title)}</b><span>${d.lines.length} Zeilen · Hören, mitlesen, Fragen</span></div>
@@ -701,6 +718,7 @@ function renderUnit(uid) {
   $("#g-open").onclick = () => openGrammar(g.id, u.id);
   app.querySelectorAll("[data-xg]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.xg, u.id)));
   app.querySelectorAll("[data-did]").forEach((b) => (b.onclick = () => openDialog(b.dataset.did, u.id)));
+  const ro = $("#rd-open"); if (ro) ro.onclick = () => openReading(u.id, u.id);
   const t = $("#u-test"); if (t) t.onclick = () => startSession("test", { unit: u.id });
 }
 
@@ -743,6 +761,89 @@ function renderDialog(did) {
   $("#t-trans").onclick = () => { dlgTrans = !dlgTrans; stopSeq(); renderDialog(did); };
   app.querySelectorAll(".bubble").forEach((b) => (b.onclick = () => { const l = d.lines[+b.dataset.line]; speakLines([l], d.people, mark); }));
   $("#d-go").onclick = () => { stopSeq(); startSession("dialog", { did, uid }); };
+}
+
+// ---------- Lesetexte ----------
+let rdTrans = false, LEX = null;
+function lexicon() {
+  if (LEX && LEX.__n === WORDS.length) return LEX;
+  LEX = { __n: WORDS.length };
+  Object.entries((window.SW_COMMON || {})[S.lang] || {}).forEach(([k, v]) => { LEX[k] = { en: k, de: v, common: true }; });
+  WORDS.forEach((w) => { const k = w.en.toLowerCase(); if (!LEX[k]) LEX[k] = w; if (k.startsWith("to ") && !LEX[k.slice(3)]) LEX[k.slice(3)] = w; });
+  return LEX;
+}
+function lookupAt(r, toks, i) {
+  // längster Treffer ab dem angetippten Wort: erst Glossar des Textes, dann Wortschatz
+  const gl = Object.fromEntries(Object.entries(r.gl || {}).map(([k, v]) => [k.toLowerCase(), v]));
+  const lx = lexicon();
+  for (let n = 4; n >= 1; n--) {
+    if (i + n > toks.length) continue;
+    const ph = toks.slice(i, i + n).join(" ").toLowerCase();
+    if (gl[ph]) return { en: toks.slice(i, i + n).join(" "), de: gl[ph], w: lx[ph] && !lx[ph].common ? lx[ph] : null };
+    if (lx[ph]) return { en: lx[ph].en, de: lx[ph].de, w: lx[ph].common ? null : lx[ph] };
+  }
+  const t = toks[i].toLowerCase().replace(/'s$/, "");
+  const cands = [t, t.replace(/s$/, ""), t.replace(/es$/, ""), t.replace(/ies$/, "y"), t.replace(/ed$/, ""), t.replace(/d$/, ""), t.replace(/ing$/, ""), t.replace(/ing$/, "e"), t.replace(/ly$/, "")];
+  for (const c of cands) { if (gl[c]) return { en: toks[i], de: gl[c], w: lx[c] && !lx[c].common ? lx[c] : null }; if (lx[c]) return { en: lx[c].en, de: lx[c].de, w: lx[c].common ? null : lx[c] }; }
+  return null;
+}
+function renderReading(uid) {
+  setTabbar(false);
+  const r = RD()[uid], u = unitById(uid), rec = S.reading[uid];
+  let k = 0;
+  const paraHtml = (p, pi) => {
+    const html = p[0].split(/(\s+)/).map((tok) => {
+      if (/^\s+$/.test(tok) || !/[A-Za-z]/.test(tok)) return esc(tok);
+      const m = tok.match(/^([^A-Za-z0-9]*)(.*?)([^A-Za-z0-9]*)$/);
+      return `${esc(m[1])}<span class="tw" data-i="${k++}">${esc(m[2])}</span>${esc(m[3])}`;
+    }).join("");
+    return `<div class="rd-p" data-p="${pi}"><p>${html}</p>${rdTrans ? `<p class="rd-de">${esc(p[1])}</p>` : ""}</div>`;
+  };
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${u.level}</span></div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">📖 ${esc(r.kind.toUpperCase())} · ${esc(u.title)}</div>
+    <h1 class="page-title">${esc(r.title)}</h1>
+    <p class="sub">Tippe auf ein Wort für die Übersetzung. Versuch erst, den Text ohne Hilfe zu verstehen.</p>
+    <div class="dlg-ctrl">
+      <button class="btn" id="play">▶ Vorlesen</button>
+      <button class="btn ghost" id="slow" style="width:auto">🐢</button>
+    </div>
+    <div class="seg" style="margin:12px 0 14px"><button id="t-trans" class="${rdTrans ? "on" : ""}">${rdTrans ? "Übersetzung an" : "Übersetzung zeigen"}</button></div>
+    <div class="card rd">${r.paras.map(paraHtml).join("")}</div>
+    <div class="stack" style="margin-top:20px">
+      <button class="btn" id="r-go">Fragen beantworten (${r.questions.length})</button>
+      <p class="small muted center">${rec && rec.done ? `Bestes Ergebnis: ${rec.best} %` : "Verständnisfragen zum Text"}</p>
+    </div>
+  </div>`;
+  const toks = r.paras.flatMap((p) => p[0].split(/\s+/).filter((t) => /[A-Za-z]/.test(t)).map((t) => t.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, "")));
+  const lines = r.paras.map((p) => ["", p[0], p[1]]);
+  const mark = (i) => app.querySelectorAll(".rd-p").forEach((b) => b.classList.toggle("live", +b.dataset.p === i));
+  $("#back").onclick = back;
+  $("#play").onclick = () => speakLines(lines, [""], mark);
+  $("#slow").onclick = () => speakLines(lines, [""], mark, null, true);
+  $("#t-trans").onclick = () => { rdTrans = !rdTrans; stopSeq(); renderReading(uid); };
+  $("#r-go").onclick = () => { stopSeq(); startSession("read", { uid }); };
+  app.querySelector(".rd").onclick = (e) => {
+    const t = e.target.closest(".tw"); if (!t) return;
+    app.querySelectorAll(".tw.on").forEach((x) => x.classList.remove("on")); t.classList.add("on");
+    const hit = lookupAt(r, toks, +t.dataset.i);
+    const word = hit ? hit.en : toks[+t.dataset.i];
+    speak(word);
+    const known = hit && hit.w && st(hit.w.id);
+    sheet(`<h2 style="margin-bottom:4px">${esc(word)}</h2>
+      <p style="font-size:19px;margin:0 0 14px">${hit ? esc(hit.de) : '<span class="muted">Nicht im Wörterbuch. Tipp: „Übersetzung zeigen“.</span>'}</p>
+      <div class="stack">
+        <button class="btn ghost" id="lx-say">🔊 Anhören</button>
+        ${hit && !known && !(hit.w && hit.w.unit === "custom") && !(lexicon()[word.toLowerCase()] || {}).common ? `<button class="btn" id="lx-add">＋ Zu meinen Wörtern</button>` : known ? `<p class="small muted center">Schon in deinem Lernstand ✓</p>` : ""}
+      </div>`);
+    $("#lx-say").onclick = () => speak(word);
+    const a = $("#lx-add");
+    if (a) a.onclick = () => {
+      if (hit.w) { const s2 = S.words[hit.w.id] || (S.words[hit.w.id] = { b: 0, due: today(), seen: 0, wrong: 0 }); s2.due = today(); }
+      else { S.custom.push({ id: Date.now().toString(36), en: hit.en, de: hit.de, ex: "", exde: "" }); buildContent(); LEX = null; }
+      save(); closeSheet(); toast("Gemerkt – kommt in der Wiederholung dran");
+    };
+  };
 }
 
 function renderGrammar(gid) {
@@ -823,6 +924,8 @@ function startSession(mode, opt = {}) {
     const mixed = shuffle(B);
     for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
     tasks.push(...mixed);
+  } else if (mode === "read") {
+    tasks = shuffle(RD()[opt.uid].questions.map((q, k) => ({ rq: opt.uid, k, t: "rq" })));
   } else if (mode === "free") {
     tasks = shuffle(WORDS.filter((w) => st(w.id))).slice(0, 10).map((w) => ({ id: w.id, t: exerciseFor(w), free: true }));
     shuffle(Object.keys(S.gram).filter((id) => S.gram[id].done && GMAP[id])).slice(0, 2)
@@ -897,6 +1000,7 @@ function renderTask() {
   if (Q.pos >= Q.tasks.length) return renderResult();
   const task = Q.tasks[Q.pos];
   if (task.dq) return tDQ(task);
+  if (task.rq) return tRQ(task);
   if (task.dlg) return tSentence(task, { en: task.en, de: task.de }, (ok) => sFeedback(task, ok));
   if (task.gid) {
     const g = GMAP[task.gid];
@@ -1079,6 +1183,19 @@ function tDQ(task) {
   $("#re").onclick = () => speakLines(d.lines, d.people);
   bindOptions(right, (ok) => { stopSeq(); sFeedback(task, ok, ok ? null : `Richtig: ${right}`); });
 }
+function tRQ(task) {
+  const r = RD()[task.rq];
+  const [q, right, wrongs] = r.questions[task.k];
+  const opts = shuffle([right, ...wrongs]);
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">📖 ${esc(r.title)} · Leseverständnis</div>
+    <div class="prompt"><div class="big" style="font-size:25px">${esc(q)}</div></div>
+    <details class="card rd-peek" style="margin-bottom:16px"><summary class="small muted">Text nochmal lesen</summary>${r.paras.map((p) => `<p>${esc(p[0])}</p>`).join("")}</details>
+    ${optionsHtml(opts)}
+  </div>${footCheck}`;
+  bindClose();
+  bindOptions(right, (ok) => sFeedback(task, ok, ok ? null : `Richtig: ${right}`));
+}
 function sentenceCheck(input, target) {
   const a = expand(norm(input)), b = expand(norm(target));
   if (a === b) return "ok";
@@ -1109,12 +1226,12 @@ function tSentence(task, item, onDone) {
   $("#dunno").onclick = () => go(null);
 }
 function sFeedback(task, ok, msg) {
-  award(ok, "s:" + (task.dq || task.en), false);
+  award(ok, "s:" + (task.dq || task.rq || task.en), false);
   let body = "";
   if (task.en) body += `<p class="sol">${ok ? "" : "Richtig: "}${esc(task.en)}</p><p class="muted">${esc(task.de)}</p>`;
   else if (msg) body += `<p class="sol">${esc(msg)}</p>`;
   footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Nicht ganz", body);
-  $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Dialog ${task.dq || ""}: ${task.en || dlgGet(task.dq).questions[task.k][0]}` }); save(); toast("Gemeldet – danke!"); };
+  $("#rep").onclick = () => { S.reports.push({ date: today(), text: task.rq ? `Lesetext ${task.rq}: ${RD()[task.rq].questions[task.k][0]}` : `Dialog ${task.dq || ""}: ${task.en || dlgGet(task.dq).questions[task.k][0]}` }); save(); toast("Gemeldet – danke!"); };
   if (!ok && task.t === "tsent" && task.typed) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
   if (task.en && S.settings.autoplay) setTimeout(() => speak(task.en), 200);
 }
@@ -1381,6 +1498,12 @@ function renderResult() {
     title = "Dialog geschafft!";
     sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.`;
   }
+  if (Q.mode === "read") {
+    const prev = S.reading[Q.opt.uid];
+    S.reading[Q.opt.uid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
+    title = "Text verstanden!";
+    sub = `„${RD()[Q.opt.uid].title}“ – ${acc} % richtig.`;
+  }
   if (Q.mode === "test") {
     const u = unitById(Q.opt.unit);
     const pass = acc >= TEST_PASS * 100;
@@ -1414,7 +1537,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
@@ -1511,7 +1634,7 @@ function renderMore() {
     </ul>
     <input type="file" id="file" accept="application/json,.json" hidden>
 
-    <p class="small muted center" style="margin-top:22px">Sprachwerk · ${UNITS.length} Einheiten · ${G().length} Grammatik-Lektionen · ${dlgCount()} Dialoge · ${WORDS.length} Wörter<br>Alles bleibt auf diesem Gerät, kein Konto, keine Werbung.<br>Tipp: In Safari über „Teilen → Zum Home-Bildschirm“ als App speichern.</p>
+    <p class="small muted center" style="margin-top:22px">Sprachwerk · ${UNITS.length} Einheiten · ${G().length} Grammatik-Lektionen · ${dlgCount()} Dialoge · ${rdCount()} Lesetexte · ${WORDS.length} Wörter<br>Alles bleibt auf diesem Gerät, kein Konto, keine Werbung.<br>Tipp: In Safari über „Teilen → Zum Home-Bildschirm“ als App speichern.</p>
   </div>`;
   app.querySelectorAll("[data-set]").forEach((b) => (b.onclick = () => {
     const k = b.dataset.set; let v = b.dataset.v;
@@ -1588,5 +1711,5 @@ function closeSheet() { $("#sheet")?.remove(); }
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !Q && !T && !$("#sheet")) render(); });
 render();
-window.__sw = { get S() { return S; }, WORDS: () => WORDS, todayPlan, currentUnitIndex };
+window.__sw = { get S() { return S; }, WORDS: () => WORDS, todayPlan, currentUnitIndex, lookupAt, RD };
 })();
