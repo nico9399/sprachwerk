@@ -3,7 +3,7 @@
 Eigene App zum Sprachenlernen – zuerst Englisch. Läuft im Browser (iPhone: Safari → Teilen → Zum Home-Bildschirm), offline nutzbar.
 
 - Einstufungstest (A1–C1), danach Schnellcheck für bekannte Stufen
-- Lernpfad mit 45 Einheiten (A1–C1), 3.135 Wörter: Grammatik, Wörter, Einheitentest
+- Lernpfad mit 45 Einheiten (A1–C1), 3.523 Wörter: Grammatik, Wörter, Einheitentest
 - 61 Grammatik-Lektionen (973 Übungen), Übersicht unter Pfad → Alle Grammatik-Lektionen
 - 135 Dialoge (3 je Einheit) mit Hörverständnis, Diktat und Satz-Übersetzung
 - Vokabeltrainer mit Lernfächern, Sprechübungen (abschaltbar), Fehler melden
