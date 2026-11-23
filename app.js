@@ -67,6 +67,10 @@ if (navigator.storage && navigator.storage.persist) navigator.storage.persist().
 const L = () => window.SW_LANGS[S.lang];
 const G = () => window.SW_GRAMMAR[S.lang];
 const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
+const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(x) ? x : [x]; };
+const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
+const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
+const dlgCount = () => Object.keys(DLG()).reduce((a, u) => a + dlgList(u).length, 0);
 
 // ---------- Inhalte ----------
 let WORDS = [], WMAP = {}, UNITS = [], GMAP = {};
@@ -97,6 +101,7 @@ function migrate() {
   }
   if (S.packsOff) { delete S.packsOff; changed = true; }
   if (!S.dialogs) { S.dialogs = {}; changed = true; }
+  for (const k of Object.keys(S.dialogs)) if (!k.includes(":")) { S.dialogs[k + ":0"] = S.dialogs[k]; delete S.dialogs[k]; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -312,7 +317,7 @@ function back() {
   view = view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
-function openDialog(uid, from) { view = { type: "dialog", id: uid, from }; render(); window.scrollTo(0, 0); }
+function openDialog(did, from) { view = { type: "dialog", id: did, from }; render(); window.scrollTo(0, 0); }
 
 // ---------- Onboarding ----------
 function renderWelcome() {
@@ -433,11 +438,12 @@ function renderHome() {
   const stepWords = cp.coreSeen >= cp.coreTotal
     ? `<div class="step done"><i>✓</i><div><b>Kernwörter</b><span>alle ${cp.coreTotal} gelernt · ${cp.seen}/${cp.total} insgesamt</span></div></div>`
     : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>2</i><div><b>Kernwörter</b><span>${cp.coreSeen} von ${cp.coreTotal} – kommen in der Tageslektion</span></div></div>`;
-  const dl = DLG()[cu.id];
-  const dDone = S.dialogs[cu.id] && S.dialogs[cu.id].done;
-  const stepDialog = !dl ? "" : dDone
-    ? `<div class="step done"><i>✓</i><div><b>Dialog</b><span>${esc(dl.title)}</span></div><button class="link small" data-dialog="${cu.id}">Anhören</button></div>`
-    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>🎧</i><div><b>Dialog hören</b><span>${esc(dl.title)} · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}" style="width:auto">Hören</button></div>`;
+  const dls = dlgList(cu.id);
+  const dDoneN = dls.filter((d, k) => dlgDone(cu.id + ":" + k)).length;
+  const nextK = dls.findIndex((d, k) => !dlgDone(cu.id + ":" + k));
+  const stepDialog = !dls.length ? "" : nextK < 0
+    ? `<div class="step done"><i>✓</i><div><b>Dialoge</b><span>alle ${dls.length} gehört</span></div><button class="link small" data-unit="${cu.id}">Ansehen</button></div>`
+    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>🎧</i><div><b>Dialoge hören</b><span>${dDoneN}/${dls.length} · „${esc(dls[nextK].title)}“ · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}:${nextK}" style="width:auto">Hören</button></div>`;
   const stepTest = `<div class="step ${ready ? "now" : ""}"><i>3</i><div><b>Einheitentest</b><span>${ready ? "Bereit! 80 % zum Bestehen" : "nach Grammatik & Wörtern"}</span></div>${ready ? `<button class="btn small" id="unit-test" style="width:auto">Start</button>` : ""}</div>`;
 
   app.innerHTML = `
@@ -586,11 +592,11 @@ function renderUnit(uid) {
       <div><b>➕ ${esc(eg.title)}</b><span>Zusatz · ${esc(eg.sum)}</span></div>
       <span class="pill ${es && es.done ? "ok" : ""}">${es && es.done ? "✓ gelernt" : "Lernen"}</span></button>`; }).join("")}
 
-    ${DLG()[u.id] ? `<div class="section-h"><h3>🎧 Dialog</h3></div>
-    <button class="card gcard" id="d-open">
-      <div><b>${esc(DLG()[u.id].title)}</b><span>Gespräch anhören, mitlesen, Fragen beantworten</span></div>
-      <span class="pill ${S.dialogs[u.id] && S.dialogs[u.id].done ? "ok" : ""}">${S.dialogs[u.id] && S.dialogs[u.id].done ? "✓ " + S.dialogs[u.id].best + " %" : "Hören"}</span>
-    </button>` : ""}
+    ${dlgList(u.id).length ? `<div class="section-h"><h3>🎧 Dialoge</h3><span class="small muted">${dlgList(u.id).filter((d, k) => dlgDone(u.id + ":" + k)).length}/${dlgList(u.id).length}</span></div>
+    <div class="stack">${dlgList(u.id).map((d, k) => { const did = u.id + ":" + k, r = S.dialogs[did]; return `<button class="card gcard" data-did="${did}">
+      <div><b>${esc(d.title)}</b><span>${d.lines.length} Zeilen · Hören, mitlesen, Fragen</span></div>
+      <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.best + " %" : "Hören"}</span>
+    </button>`; }).join("")}</div>` : ""}
 
     <div class="section-h"><h3>📚 Kernwörter</h3><span class="small muted">${p.coreSeen}/${p.coreTotal} gelernt</span></div>
     ${wordListHtml(p.ws.filter((w) => w.core))}
@@ -609,16 +615,18 @@ function renderUnit(uid) {
   $("#back").onclick = back;
   $("#g-open").onclick = () => openGrammar(g.id, u.id);
   app.querySelectorAll("[data-xg]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.xg, u.id)));
-  const dop = $("#d-open"); if (dop) dop.onclick = () => openDialog(u.id, u.id);
+  app.querySelectorAll("[data-did]").forEach((b) => (b.onclick = () => openDialog(b.dataset.did, u.id)));
   const t = $("#u-test"); if (t) t.onclick = () => startSession("test", { unit: u.id });
 }
 
 let dlgHide = false, dlgTrans = false;
-function renderDialog(uid) {
+function renderDialog(did) {
   setTabbar(false);
-  const d = DLG()[uid];
+  if (!String(did).includes(":")) did = did + ":0";
+  const uid = did.split(":")[0];
+  const d = dlgGet(did);
   const u = unitById(uid);
-  const rec = S.dialogs[uid];
+  const rec = S.dialogs[did];
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${u.level}</span></div>
     <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🎧 DIALOG · ${esc(u.title)}</div>
@@ -646,10 +654,10 @@ function renderDialog(uid) {
   $("#back").onclick = back;
   $("#play").onclick = () => play(false);
   $("#slow").onclick = () => play(true);
-  $("#t-hide").onclick = () => { dlgHide = !dlgHide; stopSeq(); renderDialog(uid); };
-  $("#t-trans").onclick = () => { dlgTrans = !dlgTrans; stopSeq(); renderDialog(uid); };
+  $("#t-hide").onclick = () => { dlgHide = !dlgHide; stopSeq(); renderDialog(did); };
+  $("#t-trans").onclick = () => { dlgTrans = !dlgTrans; stopSeq(); renderDialog(did); };
   app.querySelectorAll(".bubble").forEach((b) => (b.onclick = () => { const l = d.lines[+b.dataset.line]; speakLines([l], d.people, mark); }));
-  $("#d-go").onclick = () => { stopSeq(); startSession("dialog", { uid }); };
+  $("#d-go").onclick = () => { stopSeq(); startSession("dialog", { did, uid }); };
 }
 
 function renderGrammar(gid) {
@@ -729,8 +737,8 @@ function startSession(mode, opt = {}) {
     const g = GMAP[opt.gid];
     tasks = grammarTasks(g, Math.min(LESSON_DRILLS, g.drills.length), { lesson: true });
   } else if (mode === "dialog") {
-    const d = DLG()[opt.uid];
-    tasks = shuffle(d.questions.map((q, k) => ({ dq: opt.uid, k, t: "dq" })));
+    const d = dlgGet(opt.did);
+    tasks = shuffle(d.questions.map((q, k) => ({ dq: opt.did, k, t: "dq" })));
     const lines = shuffle(d.lines.filter((l) => l[1].split(" ").length <= 12));
     lines.slice(0, 2).forEach((l) => tasks.push({ t: "dict", en: l[1], de: l[2], dlg: true }));
     if (lines[2]) tasks.push({ t: "tsent", en: lines[2][1], de: lines[2][2], dlg: true });
@@ -963,7 +971,7 @@ function tBuild(task, w) {
 
 // ----- Dialog & Sätze -----
 function tDQ(task) {
-  const d = DLG()[task.dq];
+  const d = dlgGet(task.dq);
   const [q, right, wrongs] = d.questions[task.k];
   const opts = shuffle([right, ...wrongs]);
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
@@ -1011,7 +1019,7 @@ function sFeedback(task, ok, msg) {
   if (task.en) body += `<p class="sol">${ok ? "" : "Richtig: "}${esc(task.en)}</p><p class="muted">${esc(task.de)}</p>`;
   else if (msg) body += `<p class="sol">${esc(msg)}</p>`;
   footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Nicht ganz", body);
-  $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Dialog ${task.dq || ""}: ${task.en || DLG()[task.dq].questions[task.k][0]}` }); save(); toast("Gemeldet – danke!"); };
+  $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Dialog ${task.dq || ""}: ${task.en || dlgGet(task.dq).questions[task.k][0]}` }); save(); toast("Gemeldet – danke!"); };
   if (!ok && task.t === "tsent" && task.typed) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
   if (task.en && S.settings.autoplay) setTimeout(() => speak(task.en), 200);
 }
@@ -1273,10 +1281,10 @@ function renderResult() {
     sub = `„${g.title}“ – ${acc} % beim ersten Versuch. Die Regel kommt jetzt regelmäßig in deinen Wiederholungen.`;
   }
   if (Q.mode === "dialog") {
-    const prev = S.dialogs[Q.opt.uid];
-    S.dialogs[Q.opt.uid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
+    const prev = S.dialogs[Q.opt.did];
+    S.dialogs[Q.opt.did] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
     title = "Dialog geschafft!";
-    sub = `„${DLG()[Q.opt.uid].title}“ – ${acc} % richtig.`;
+    sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.`;
   }
   if (Q.mode === "test") {
     const u = unitById(Q.opt.unit);
@@ -1408,7 +1416,7 @@ function renderMore() {
     </ul>
     <input type="file" id="file" accept="application/json,.json" hidden>
 
-    <p class="small muted center" style="margin-top:22px">Sprachwerk · ${UNITS.length} Einheiten · ${G().length} Grammatik-Lektionen · ${Object.keys(DLG()).length} Dialoge · ${WORDS.length} Wörter<br>Alles bleibt auf diesem Gerät, kein Konto, keine Werbung.<br>Tipp: In Safari über „Teilen → Zum Home-Bildschirm“ als App speichern.</p>
+    <p class="small muted center" style="margin-top:22px">Sprachwerk · ${UNITS.length} Einheiten · ${G().length} Grammatik-Lektionen · ${dlgCount()} Dialoge · ${WORDS.length} Wörter<br>Alles bleibt auf diesem Gerät, kein Konto, keine Werbung.<br>Tipp: In Safari über „Teilen → Zum Home-Bildschirm“ als App speichern.</p>
   </div>`;
   app.querySelectorAll("[data-set]").forEach((b) => (b.onclick = () => {
     const k = b.dataset.set; let v = b.dataset.v;

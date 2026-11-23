@@ -6,7 +6,7 @@ Eigene App zum Sprachenlernen – zuerst Englisch. Läuft im Browser (iPhone: Sa
 - Lernpfad mit 37 Einheiten (A1–B2): Grammatik, Wörter, Einheitentest
 - 53 Grammatik-Lektionen (877 Übungen), Übersicht unter Pfad → Alle Grammatik-Lektionen
 - 37 Grammatik-Lektionen mit Übungen, Wiederholung im Abstand
-- 37 Dialoge mit Hörverständnis, Diktat und Satz-Übersetzung
+- 111 Dialoge (3 je Einheit) mit Hörverständnis, Diktat und Satz-Übersetzung
 - Vokabeltrainer mit Lernfächern, Sprechübungen (abschaltbar), Fehler melden
 - Übungen: Bedeutung wählen, Hören, Schreiben, Sätze bauen
 - Aussprache über die Sprachausgabe des Geräts
