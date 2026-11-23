@@ -3893,6 +3893,556 @@ window.SW_LANGS.en = {
      "have made"
     ],
     "a": 1
+   },
+   {
+    "lvl": "A1",
+    "q": "Was heißt „der Bahnhof“?",
+    "o": [
+     "station",
+     "airport",
+     "street",
+     "shop"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "A1",
+    "q": "We ___ to work by bus.",
+    "o": [
+     "goes",
+     "go",
+     "going",
+     "are go"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A1",
+    "q": "Was bedeutet „cheap“?",
+    "o": [
+     "teuer",
+     "billig",
+     "schnell",
+     "leer"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A1",
+    "q": "___ is your name?",
+    "o": [
+     "Who",
+     "Where",
+     "What",
+     "How"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "A1",
+    "q": "There ___ three apples on the table.",
+    "o": [
+     "is",
+     "are",
+     "be",
+     "has"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A1",
+    "q": "Was heißt „Ich habe Hunger“?",
+    "o": [
+     "I have hunger.",
+     "I am hungry.",
+     "I hungry.",
+     "I do hungry."
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A1",
+    "q": "He ___ like coffee.",
+    "o": [
+     "don't",
+     "not",
+     "doesn't",
+     "isn't"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "A1",
+    "q": "Was bedeutet „Wednesday“?",
+    "o": [
+     "Dienstag",
+     "Donnerstag",
+     "Mittwoch",
+     "Montag"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "A1",
+    "q": "This is ___ car. (my sister's)",
+    "o": [
+     "she",
+     "her",
+     "hers",
+     "his"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A1",
+    "q": "Was heißt „links“?",
+    "o": [
+     "right",
+     "straight",
+     "left",
+     "back"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "A2",
+    "q": "I ___ TV when the phone rang.",
+    "o": [
+     "watched",
+     "was watching",
+     "am watching",
+     "watch"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A2",
+    "q": "Was bedeutet „to borrow“?",
+    "o": [
+     "leihen (sich ausleihen)",
+     "verkaufen",
+     "verlieren",
+     "bezahlen"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "A2",
+    "q": "You ___ wear a helmet here. It's the rule.",
+    "o": [
+     "must",
+     "can",
+     "may",
+     "would"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "A2",
+    "q": "She is the ___ person in our team.",
+    "o": [
+     "most tall",
+     "taller",
+     "tallest",
+     "more tall"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "A2",
+    "q": "Was heißt „sich beeilen“?",
+    "o": [
+     "to hurry",
+     "to wait",
+     "to rest",
+     "to worry"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "A2",
+    "q": "I'm going ___ my parents this weekend.",
+    "o": [
+     "visit",
+     "to visit",
+     "visiting",
+     "visited"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A2",
+    "q": "How ___ money do you need?",
+    "o": [
+     "many",
+     "much",
+     "lot",
+     "more"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A2",
+    "q": "Was bedeutet „appointment“?",
+    "o": [
+     "Bewerbung",
+     "Termin",
+     "Wohnung",
+     "Ausflug"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "A2",
+    "q": "We didn't go out ___ it was raining.",
+    "o": [
+     "but",
+     "so",
+     "because",
+     "although"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "A2",
+    "q": "I've ___ finished my work.",
+    "o": [
+     "yet",
+     "already",
+     "ever",
+     "still"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "You ___ have called me – I was worried!",
+    "o": [
+     "should",
+     "must",
+     "would",
+     "can"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "B1",
+    "q": "Was bedeutet „to complain“?",
+    "o": [
+     "sich beschweren",
+     "vergleichen",
+     "erklären",
+     "versprechen"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "B1",
+    "q": "The man ___ lives next door is a mechanic.",
+    "o": [
+     "which",
+     "who",
+     "whose",
+     "what"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "I've been waiting ___ two hours.",
+    "o": [
+     "since",
+     "for",
+     "during",
+     "ago"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "Was heißt „Erfahrung“?",
+    "o": [
+     "experiment",
+     "experience",
+     "expectation",
+     "expense"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "She told me she ___ tired.",
+    "o": [
+     "is",
+     "was",
+     "be",
+     "has"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "I'm looking forward ___ you.",
+    "o": [
+     "to see",
+     "seeing",
+     "to seeing",
+     "see"
+    ],
+    "a": 2
+   },
+   {
+    "lvl": "B1",
+    "q": "Was bedeutet „to postpone“?",
+    "o": [
+     "absagen",
+     "verschieben",
+     "vorbereiten",
+     "bestätigen"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "The machine needs ___.",
+    "o": [
+     "to repair",
+     "repairing",
+     "repair",
+     "repaired"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B1",
+    "q": "Unless you hurry, you ___ the bus.",
+    "o": [
+     "miss",
+     "will miss",
+     "would miss",
+     "missed"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B2",
+    "q": "I wish I ___ that. It was a mistake.",
+    "o": [
+     "didn't say",
+     "hadn't said",
+     "wouldn't say",
+     "haven't said"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B2",
+    "q": "Was bedeutet „to tackle a problem“?",
+    "o": [
+     "ein Problem angehen",
+     "ein Problem verursachen",
+     "ein Problem verschweigen",
+     "ein Problem verschieben"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "B2",
+    "q": "She ___ have left already – her coat is gone.",
+    "o": [
+     "must",
+     "can't",
+     "should",
+     "would"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "B2",
+    "q": "___ being tired, he finished the shift.",
+    "o": [
+     "Although",
+     "Despite",
+     "However",
+     "Even"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B2",
+    "q": "Was heißt „Voraussetzung“?",
+    "o": [
+     "requirement",
+     "requisition",
+     "reservation",
+     "recommendation"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "B2",
+    "q": "I had my car ___ yesterday.",
+    "o": [
+     "repair",
+     "repaired",
+     "repairing",
+     "to repair"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B2",
+    "q": "Was bedeutet „to be aware of sth“?",
+    "o": [
+     "sich einer Sache bewusst sein",
+     "auf etw. warten",
+     "etw. vermeiden",
+     "etw. vergessen"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "B2",
+    "q": "By next year, I ___ here for ten years.",
+    "o": [
+     "will work",
+     "will have worked",
+     "have worked",
+     "am working"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B2",
+    "q": "He denied ___ the money.",
+    "o": [
+     "to take",
+     "taking",
+     "take",
+     "took"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "B2",
+    "q": "The more you practise, ___ you get.",
+    "o": [
+     "the better",
+     "better",
+     "the best",
+     "more better"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "C1",
+    "q": "Not only ___ late, but he also forgot the documents.",
+    "o": [
+     "he was",
+     "was he",
+     "he is",
+     "did he was"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "C1",
+    "q": "Was bedeutet „to undermine“?",
+    "o": [
+     "untergraben",
+     "unterstützen",
+     "unterschätzen",
+     "unterbrechen"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "C1",
+    "q": "It was the noise ___ kept me awake.",
+    "o": [
+     "what",
+     "that",
+     "which it",
+     "who"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "C1",
+    "q": "___ you need any help, just call me.",
+    "o": [
+     "Should",
+     "Would",
+     "Unless",
+     "Had"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "C1",
+    "q": "Was heißt „sich nicht festlegen“?",
+    "o": [
+     "to sit on the fence",
+     "to cut corners",
+     "to break the ice",
+     "to call the shots"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "C1",
+    "q": "I'd rather you ___ smoke in the car.",
+    "o": [
+     "don't",
+     "didn't",
+     "won't",
+     "not"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "C1",
+    "q": "Was bedeutet „albeit“?",
+    "o": [
+     "wenn auch",
+     "deshalb",
+     "außerdem",
+     "stattdessen"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "C1",
+    "q": "Had I known about the delay, I ___ earlier.",
+    "o": [
+     "would leave",
+     "would have left",
+     "had left",
+     "will leave"
+    ],
+    "a": 1
+   },
+   {
+    "lvl": "C1",
+    "q": "Was bedeutet „to be at the end of one's tether“?",
+    "o": [
+     "am Ende seiner Kräfte sein",
+     "am Ziel sein",
+     "pleite sein",
+     "fertig mit der Arbeit sein"
+    ],
+    "a": 0
+   },
+   {
+    "lvl": "C1",
+    "q": "Little ___ that the decision would change everything.",
+    "o": [
+     "we knew",
+     "did we know",
+     "we did know",
+     "knew we"
+    ],
+    "a": 1
    }
   ]
 };

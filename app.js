@@ -377,7 +377,8 @@ function renderWelcome() {
 let T = null;
 function startTest() {
   const all = L().placement;
-  T = { blocks: LEVELS.map((l) => shuffle(all.filter((q) => q.lvl === l))), b: 0, i: 0, score: LEVELS.map(() => 0), answered: 0 };
+  // je Stufe 5 zufällige Fragen aus dem Pool → bei Wiederholung andere Fragen
+  T = { blocks: LEVELS.map((l) => shuffle(all.filter((q) => q.lvl === l)).slice(0, 5)), b: 0, i: 0, score: LEVELS.map(() => 0), answered: 0 };
   renderTestQ();
 }
 function renderTestQ() {
