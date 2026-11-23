@@ -43,6 +43,7 @@ const DEFAULT = {
   dialogs: {},   // Einheit-ID -> { done, best }
   packs: {},     // Themenpaket-ID -> true (neue Wörter im Tagesplan)
   reading: {},   // Einheit-ID -> { done, best } (Lesetexte)
+  sounds: {},    // Aussprache-Lektion -> { done, best }
   custom: [],
   days: {},
   reports: [],
@@ -72,6 +73,8 @@ const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
 const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(x) ? x : [x]; };
 const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
 const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
+const SND = () => (window.SW_SOUNDS || {})[S.lang] || [];
+const sndGet = (id) => SND().find((x) => x.id === id);
 const MK = () => (window.SW_MISTAKES || {})[S.lang] || [];
 const RD = () => (window.SW_READING || {})[S.lang] || {};
 const rdCount = () => Object.keys(RD()).length;
@@ -121,6 +124,7 @@ function migrate() {
   for (const k of Object.keys(S.dialogs)) if (!k.includes(":")) { S.dialogs[k + ":0"] = S.dialogs[k]; delete S.dialogs[k]; changed = true; }
   if (!S.packs) { S.packs = {}; changed = true; }
   if (!S.reading) { S.reading = {}; changed = true; }
+  if (!S.sounds) { S.sounds = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -344,6 +348,8 @@ function render() {
   if (view && view.type === "glist") return renderGrammarList();
   if (view && view.type === "plist") return renderPackList();
   if (view && view.type === "mlist") return renderMistakeList();
+  if (view && view.type === "slist") return renderSoundList();
+  if (view && view.type === "sound") return renderSound(view.id);
   if (view && view.type === "read") return renderReading(view.id);
   if (view && view.type === "pack") return renderPack(view.id);
   setTabbar(true);
@@ -353,7 +359,7 @@ function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scro
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
 function back() {
   stopSeq();
-  view = view && view.type === "pack" ? { type: "plist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
+  view = view && view.type === "pack" ? { type: "plist" } : view && view.type === "sound" ? { type: "slist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
 function openReading(uid, from) { view = { type: "read", id: uid, from }; render(); window.scrollTo(0, 0); }
@@ -569,6 +575,10 @@ function renderPath() {
       <div><b>⚠️ Fehlertrainer „Typisch deutsch“</b><span>${MK().length} Lektionen · ${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} gelernt</span></div>
       <span class="chev">›</span>
     </button>` : ""}
+    ${SND().length ? `<button class="card gcard" id="slist" style="margin-bottom:6px">
+      <div><b>🗣️ Aussprache-Trainer</b><span>${SND().length} Lektionen · ${SND().filter((x) => S.sounds[x.id] && S.sounds[x.id].done).length} geübt</span></div>
+      <span class="chev">›</span>
+    </button>` : ""}
     ${PACKS.length ? `<button class="card gcard" id="plist" style="margin-bottom:6px">
       <div><b>🎒 Themenpakete</b><span>${PACKS.length} Pakete · ${PACKS.filter((p) => packOn(p.id)).length} eingeschaltet</span></div>
       <span class="chev">›</span>
@@ -596,8 +606,110 @@ function renderPath() {
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
   $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
+  const sl = $("#slist"); if (sl) sl.onclick = () => { view = { type: "slist" }; render(); window.scrollTo(0, 0); };
   const ml = $("#mlist"); if (ml) ml.onclick = () => { view = { type: "mlist" }; render(); window.scrollTo(0, 0); };
   const pl = $("#plist"); if (pl) pl.onclick = () => { view = { type: "plist" }; render(); window.scrollTo(0, 0); };
+}
+
+// ---------- Aussprache-Trainer ----------
+function renderSoundList() {
+  setTabbar(false);
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Aussprache</h1>
+    <p class="sub">Die Laute, die Deutschen im Englischen am schwersten fallen. Erst hören und unterscheiden, dann nachsprechen.</p>
+    <div class="stack">${SND().map((x) => { const r = S.sounds[x.id]; return `<button class="card gcard" data-snd="${x.id}">
+      <div><b>${x.emoji} ${esc(x.title)}</b><span>${esc(x.sum)}</span></div>
+      <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.best + " %" : "Üben"}</span>
+    </button>`; }).join("")}</div>
+    <p class="small muted" style="margin-top:14px">Hinweis: Die Spracherkennung prüft nur, ob dein Wort verstanden wurde – nicht, wie schön es klingt. Hören und Unterscheiden ist deshalb der wichtigste Teil.</p>
+  </div>`;
+  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  app.querySelectorAll("[data-snd]").forEach((b) => (b.onclick = () => { view = { type: "sound", id: b.dataset.snd }; render(); window.scrollTo(0, 0); }));
+}
+function renderSound(id) {
+  setTabbar(false);
+  const x = sndGet(id), r = S.sounds[id];
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🗣️ AUSSPRACHE</div>
+    <h1 class="page-title">${x.emoji} ${esc(x.title)}</h1>
+    <p class="sub">${esc(x.sum)}</p>
+    <div class="stack">${x.tip.map(([h, t]) => `<div class="card rule"><h3>${esc(h)}</h3><p>${t}</p></div>`).join("")}</div>
+    ${x.pairs ? `<div class="section-h"><h3>Wortpaare zum Anhören</h3></div>
+    <p class="small muted" style="margin:-4px 2px 8px">Tippe auf ein Wort und achte auf den Unterschied.</p>
+    <div class="pairs">${x.pairs.map(([a, ad, b, bd]) => `<div class="pair card"><button data-say="${esc(a)}"><b>${esc(a)}</b><span>${esc(ad)}</span></button><i>↔</i><button data-say="${esc(b)}"><b>${esc(b)}</b><span>${esc(bd)}</span></button></div>`).join("")}</div>` : ""}
+    ${x.stress ? `<div class="section-h"><h3>Beispiele</h3></div>
+    <div class="pairs">${x.stress.slice(0, 6).map(([w, syl, k, de]) => `<button class="card stress-ex" data-say="${esc(w)}"><b>${syl.map((y, i) => (i === k ? `<u>${esc(y.toUpperCase())}</u>` : esc(y))).join("·")}</b><span>${esc(de)}</span></button>`).join("")}</div>` : ""}
+    ${x.twister ? `<div class="section-h"><h3>Zungenbrecher</h3></div>
+    <div class="example card"><div class="t"><b>${esc(x.twister[0])}</b><span>${esc(x.twister[1])}</span></div>${speakBtn(x.twister[0])}</div>` : ""}
+    <div style="margin-top:22px" class="stack">
+      <button class="btn" id="s-go">${r && r.done ? "Nochmal üben" : "Übungen starten"}</button>
+      <p class="small muted center">${r && r.done ? `Beste Runde: ${r.best} %` : x.stress ? "Hören und die betonte Silbe erkennen" : "Hören, unterscheiden und nachsprechen"}</p>
+    </div>
+  </div>`;
+  $("#back").onclick = back;
+  $("#s-go").onclick = () => startSession("sound", { sid: id });
+}
+function soundTasks(x) {
+  if (x.stress) return shuffle(x.stress.map((_, k) => ({ snd: x.id, k, t: "stress" }))).slice(0, 10);
+  const listen = shuffle(x.pairs.map((_, k) => ({ snd: x.id, k, t: "pair", pick: Math.random() < 0.5 ? 0 : 1 }))).slice(0, 7);
+  const say = speakingAllowed() ? shuffle(x.say).slice(0, 4).map((w) => ({ snd: x.id, t: "ssay", en: w[0], de: w[1] })) : [];
+  const out = [];
+  listen.forEach((t, i) => { out.push(t); if (i % 2 === 1 && say.length) out.push(say.shift()); });
+  return out.concat(say);
+}
+function tPair(task) {
+  const x = sndGet(task.snd);
+  const [a, ad, b, bd] = x.pairs[task.k];
+  const word = task.pick ? b : a;
+  const right = word + " – " + (task.pick ? bd : ad);
+  const opts = shuffle([a + " – " + ad, b + " – " + bd]);
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">🗣️ ${esc(x.title)} · Welches Wort hörst du?</div>
+    <div class="dlg-ctrl" style="margin:18px 0 22px"><button class="btn" id="play">🔊 Anhören</button><button class="btn ghost" id="slow" style="width:auto">🐢</button></div>
+    ${optionsHtml(opts)}
+  </div>${footCheck}`;
+  bindClose();
+  setTimeout(() => speak(word), 250);
+  $("#play").onclick = () => speak(word);
+  $("#slow").onclick = () => speak(word, true);
+  bindOptions(right, (ok) => {
+    award(ok, "snd:" + task.snd + task.k, false);
+    footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Das war das andere Wort",
+      `<p class="sol">Gehört: ${esc(right)}</p><p class="muted">Tippe zum Vergleich: <button class="link" data-say="${esc(a)}">${esc(a)}</button> · <button class="link" data-say="${esc(b)}">${esc(b)}</button></p>`);
+    $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Aussprache ${task.snd}: ${a}/${b}` }); save(); toast("Gemeldet – danke!"); };
+  });
+}
+function tStress(task) {
+  const x = sndGet(task.snd);
+  const [w, syl, k, de] = x.stress[task.k];
+  const variant = (i) => syl.map((y, j) => (j === i ? y.toUpperCase() : y)).join("-");
+  const right = variant(k);
+  const opts = shuffle(syl.map((_, i) => variant(i))).slice(0, 4);
+  if (!opts.includes(right)) opts[0] = right;
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">🎯 Wortbetonung · Welche Silbe ist betont?</div>
+    <div class="prompt">${speakBtn(w)}<div class="big">${esc(w)}</div></div>
+    <div class="gde">${esc(de)}</div>
+    ${optionsHtml(shuffle(opts))}
+  </div>${footCheck}`;
+  bindClose();
+  setTimeout(() => speak(w), 250);
+  bindOptions(right, (ok) => {
+    award(ok, "snd:" + task.snd + task.k, false);
+    footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Nicht ganz", `<p class="sol">${esc(right)}</p>`);
+    $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Betonung: ${w}` }); save(); toast("Gemeldet – danke!"); };
+    setTimeout(() => speak(w), 200);
+  });
+}
+function tSSay(task) {
+  speakUI({ en: task.en, de: task.de, label: "Sprich deutlich nach", strict: true }, task, (ok, heard) => {
+    award(ok, "snd:" + task.en, false);
+    footFeedback(ok, ok ? "✓ Gut verstanden!" : "✗ Nicht erkannt", `<p class="sol">${esc(task.en)}</p>${heard ? `<p class="muted">Erkannt: „${esc(heard)}“</p>` : ""}`);
+    $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Aussprache sprechen: ${task.en}` }); save(); toast("Gemeldet – danke!"); };
+    if (!ok) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
+  });
 }
 
 // ---------- Fehlertrainer ----------
@@ -947,6 +1059,8 @@ function startSession(mode, opt = {}) {
     const mixed = shuffle(B);
     for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
     tasks.push(...mixed);
+  } else if (mode === "sound") {
+    tasks = soundTasks(sndGet(opt.sid));
   } else if (mode === "read") {
     tasks = shuffle(RD()[opt.uid].questions.map((q, k) => ({ rq: opt.uid, k, t: "rq" })));
   } else if (mode === "free") {
@@ -1024,6 +1138,7 @@ function renderTask() {
   const task = Q.tasks[Q.pos];
   if (task.dq) return tDQ(task);
   if (task.rq) return tRQ(task);
+  if (task.snd) return ({ pair: tPair, stress: tStress, ssay: tSSay })[task.t](task);
   if (task.dlg) return tSentence(task, { en: task.en, de: task.de }, (ok) => sFeedback(task, ok));
   if (task.gid) {
     const g = GMAP[task.gid];
@@ -1310,7 +1425,7 @@ function stopRec() { try { if (REC) { REC.onresult = REC.onerror = REC.onend = n
 function tSpeak(task, w) {
   speakUI({ en: w.en, de: w.de, label: "Sprich nach" }, task, (ok, heard) => feedback(task, w, ok, ok ? null : `So heißt es: ${w.en}`, { soft: true, heard }));
 }
-function silentReplacement(task) { return task.gid ? { ...task, t: "gbuild" } : { ...task, t: "mc_de" }; }
+function silentReplacement(task) { if (task.snd) { const x = sndGet(task.snd); return { snd: task.snd, t: "pair", k: Math.floor(Math.random() * x.pairs.length), pick: Math.random() < 0.5 ? 0 : 1 }; } return task.gid ? { ...task, t: "gbuild" } : { ...task, t: "mc_de" }; }
 function speakUI(item, task, onDone) {
   let tries = 0;
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
@@ -1347,7 +1462,7 @@ function speakUI(item, task, onDone) {
     rec.onresult = (e) => {
       got = true;
       const alts = [...e.results[0]].map((a) => a.transcript);
-      const ok = alts.some((a) => speechMatch(a, item.en));
+      const ok = alts.some((a) => (item.strict ? strictMatch(a, item.en) : speechMatch(a, item.en)));
       stopRec(); mic.classList.remove("live");
       tries++;
       if (ok) { mic.disabled = true; $("#no-speak").remove(); onDone(true, alts[0]); }
@@ -1366,6 +1481,7 @@ function speakUI(item, task, onDone) {
     try { rec.start(); } catch (e) { stopRec(); mic.classList.remove("live"); hint.textContent = "Hat nicht geklappt – nochmal tippen"; }
   };
 }
+function strictMatch(said, target) { const a = norm(said), b = norm(target); return a === b || a.split(" ").includes(b) || (b.includes(" ") && a.includes(b)); }
 function speechMatch(said, target) {
   const a = expand(norm(said)).replace(/^to /, ""), b = expand(norm(target)).replace(/^to /, "");
   if (a === b || a.includes(b)) return true;
@@ -1521,6 +1637,12 @@ function renderResult() {
     title = "Dialog geschafft!";
     sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.`;
   }
+  if (Q.mode === "sound") {
+    const prev = S.sounds[Q.opt.sid];
+    S.sounds[Q.opt.sid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
+    title = "Gut geübt!";
+    sub = `„${sndGet(Q.opt.sid).title}“ – ${acc} % richtig.`;
+  }
   if (Q.mode === "read") {
     const prev = S.reading[Q.opt.uid];
     S.reading[Q.opt.uid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
@@ -1560,7 +1682,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
