@@ -1,5 +1,5 @@
 // Sprachwerk – Inhalte Englisch (Lernpfad)
-// Wort: [englisch, deutsch, Beispiel EN, Beispiel DE]. grammar → id in data/en-grammar.js
+// Wort: [englisch, deutsch, Beispiel EN, Beispiel DE]. grammar/extra → id in data/en-grammar.js
 window.SW_LANGS = window.SW_LANGS || {};
 window.SW_LANGS.en = {
   code: "en", name: "Englisch", flag: "🇬🇧", voices: { us: "en-US", uk: "en-GB" },
@@ -87,7 +87,7 @@ window.SW_LANGS.en = {
       ["what","was","What's your name?","Wie heißt du?"],
       ["how","wie","How are you?","Wie geht's?"]
     ]},
-    { id: "u02", level: "A1", title: "Familie & Freunde", emoji: "👨‍👩‍👧", grammar: "pronouns", words: [
+    { id: "u02", level: "A1", title: "Familie & Freunde", emoji: "👨‍👩‍👧", grammar: "pronouns", extra: ["object-pronouns"], words: [
       ["family","die Familie","My family lives nearby.","Meine Familie wohnt in der Nähe."],
       ["friend","der Freund / die Freundin","She is my best friend.","Sie ist meine beste Freundin."],
       ["child","das Kind","The child is sleeping.","Das Kind schläft."],
@@ -168,7 +168,7 @@ window.SW_LANGS.en = {
       ["nappy","die Windel","Can you change the nappy?","Kannst du die Windel wechseln?"],
       ["toddler","das Kleinkind","Toddlers are always busy.","Kleinkinder sind immer beschäftigt."]
     ]},
-    { id: "u03", level: "A1", title: "Dinge & Zahlen", emoji: "🔢", grammar: "articles", words: [
+    { id: "u03", level: "A1", title: "Dinge & Zahlen", emoji: "🔢", grammar: "articles", extra: ["possessive-s","this-that"], words: [
       ["big","groß","That is a big house.","Das ist ein großes Haus."],
       ["small","klein","The room is small.","Das Zimmer ist klein."],
       ["new","neu","I have a new phone.","Ich habe ein neues Handy."],
@@ -341,7 +341,7 @@ window.SW_LANGS.en = {
       ["quiet hours","die Ruhezeiten","Quiet hours start at ten.","Die Ruhezeit beginnt um zehn."],
       ["caretaker","der Hausmeister","Call the caretaker.","Ruf den Hausmeister an."]
     ]},
-    { id: "u05", level: "A1", title: "Tagesablauf", emoji: "⏰", grammar: "present-simple", words: [
+    { id: "u05", level: "A1", title: "Tagesablauf", emoji: "⏰", grammar: "present-simple", extra: ["reflexive"], words: [
       ["to wake up","aufwachen","I wake up at five.","Ich wache um fünf auf."],
       ["to sleep","schlafen","I slept badly last night.","Ich habe letzte Nacht schlecht geschlafen."],
       ["to go","gehen / fahren","I go to work by car.","Ich fahre mit dem Auto zur Arbeit."],
@@ -531,7 +531,7 @@ window.SW_LANGS.en = {
       ["raw","roh","Don't eat raw chicken.","Iss kein rohes Hähnchen."],
       ["frozen","tiefgefroren","We have frozen pizza.","Wir haben Tiefkühlpizza."]
     ]},
-    { id: "u07", level: "A1", title: "Einkaufen", emoji: "🛒", grammar: "some-any", words: [
+    { id: "u07", level: "A1", title: "Einkaufen", emoji: "🛒", grammar: "some-any", extra: ["few-little"], words: [
       ["to buy","kaufen","I want to buy new shoes.","Ich will neue Schuhe kaufen."],
       ["to pay","bezahlen","Can I pay by card?","Kann ich mit Karte bezahlen?"],
       ["price","der Preis","The price is too high.","Der Preis ist zu hoch."],
@@ -838,7 +838,7 @@ window.SW_LANGS.en = {
       ["exit","der Ausgang","Where's the exit?","Wo ist der Ausgang?"],
       ["nearby","in der Nähe","Is there a café nearby?","Gibt es ein Café in der Nähe?"]
     ]},
-    { id: "u11", level: "A2", title: "Arbeit", emoji: "🏭", grammar: "adverbs-frequency", words: [
+    { id: "u11", level: "A2", title: "Arbeit", emoji: "🏭", grammar: "adverbs-frequency", extra: ["make-do"], words: [
       ["job","der Job / die Stelle","I like my job.","Ich mag meinen Job."],
       ["colleague","der Kollege / die Kollegin","My colleague is on holiday.","Mein Kollege ist im Urlaub."],
       ["boss","der Chef / die Chefin","My boss wants to talk to me.","Mein Chef will mit mir reden."],
@@ -983,7 +983,7 @@ window.SW_LANGS.en = {
       ["to rescue","retten","They rescued the cat.","Sie haben die Katze gerettet."],
       ["to point","zeigen (mit Finger)","He pointed at the map.","Er zeigte auf die Karte."]
     ]},
-    { id: "u13", level: "A2", title: "Erlebnisse", emoji: "🎉", grammar: "past-irregular", words: [
+    { id: "u13", level: "A2", title: "Erlebnisse", emoji: "🎉", grammar: "past-irregular", extra: ["could-able"], words: [
       ["to make","machen / herstellen","We make car parts.","Wir stellen Autoteile her."],
       ["to do","tun / machen","What are you doing?","Was machst du gerade?"],
       ["to take","nehmen","Take the bus, it's faster.","Nimm den Bus, der ist schneller."],
@@ -1056,7 +1056,7 @@ window.SW_LANGS.en = {
       ["to wake","aufwachen","I woke at three.","Ich bin um drei aufgewacht."],
       ["to dig","graben","We dug a hole for the tree.","Wir haben ein Loch für den Baum gegraben."]
     ]},
-    { id: "u14", level: "A2", title: "Nachfragen", emoji: "❓", grammar: "past-questions", words: [
+    { id: "u14", level: "A2", title: "Nachfragen", emoji: "❓", grammar: "past-questions", extra: ["some-any-words"], words: [
       ["Could you repeat that?","Kannst du das wiederholen?","Sorry, could you repeat that?","Entschuldigung, kannst du das wiederholen?"],
       ["Could you speak more slowly?","Kannst du langsamer sprechen?","Could you speak more slowly, please?","Kannst du bitte langsamer sprechen?"],
       ["I don't understand.","Ich verstehe das nicht.","Sorry, I don't understand.","Entschuldigung, ich verstehe das nicht."],
@@ -1278,7 +1278,7 @@ window.SW_LANGS.en = {
       ["lost property","das Fundbüro","Ask at lost property.","Frag im Fundbüro."],
       ["to get to","hinkommen","How do we get to the hotel?","Wie kommen wir zum Hotel?"]
     ]},
-    { id: "u17", level: "A2", title: "Vergleichen", emoji: "⚖️", grammar: "comparison", words: [
+    { id: "u17", level: "A2", title: "Vergleichen", emoji: "⚖️", grammar: "comparison", extra: ["too-enough"], words: [
       ["easy","einfach / leicht","This exercise is easy.","Diese Übung ist einfach."],
       ["difficult","schwierig","The exam was difficult.","Die Prüfung war schwierig."],
       ["important","wichtig","This is very important.","Das ist sehr wichtig."],
@@ -1500,7 +1500,7 @@ window.SW_LANGS.en = {
       ["in an hour","in einer Stunde","I'll be there in an hour.","Ich bin in einer Stunde da."],
       ["for two hours","zwei Stunden lang","The meeting lasted for two hours.","Die Besprechung dauerte zwei Stunden."]
     ]},
-    { id: "u20", level: "A2", title: "Small Talk", emoji: "💬", grammar: "question-words", words: [
+    { id: "u20", level: "A2", title: "Small Talk", emoji: "💬", grammar: "question-words", extra: ["question-tags"], words: [
       ["What do you do?","Was machst du beruflich?","So, what do you do?","Und, was machst du beruflich?"],
       ["I work in production.","Ich arbeite in der Produktion.","I work in production at a company.","Ich arbeite in der Produktion einer Firma."],
       ["No problem.","Kein Problem.","No problem, I can do that.","Kein Problem, das kann ich machen."],
@@ -1580,7 +1580,7 @@ window.SW_LANGS.en = {
       ["to introduce yourself","sich vorstellen","Let me introduce myself.","Darf ich mich vorstellen?"],
       ["in common","gemeinsam","We have a lot in common.","Wir haben viel gemeinsam."]
     ]},
-    { id: "u21", level: "A2", title: "Gefühle", emoji: "🙂", grammar: "adverbs-manner", words: [
+    { id: "u21", level: "A2", title: "Gefühle", emoji: "🙂", grammar: "adverbs-manner", extra: ["ed-ing"], words: [
       ["happy","glücklich / froh","I'm happy with the result.","Ich bin mit dem Ergebnis zufrieden."],
       ["sad","traurig","Why are you sad?","Warum bist du traurig?"],
       ["tired","müde","I'm tired after the night shift.","Nach der Nachtschicht bin ich müde."],
@@ -1774,7 +1774,7 @@ window.SW_LANGS.en = {
       ["to prove","beweisen","Can you prove it?","Kannst du es beweisen?"],
       ["to take sides","Partei ergreifen","I don't want to take sides.","Ich will keine Partei ergreifen."]
     ]},
-    { id: "u24", level: "B1", title: "Missgeschicke", emoji: "💥", grammar: "past-continuous", words: [
+    { id: "u24", level: "B1", title: "Missgeschicke", emoji: "💥", grammar: "past-continuous", extra: ["so-such"], words: [
       ["maybe","vielleicht","Maybe we can meet tomorrow.","Vielleicht können wir uns morgen treffen."],
       ["probably","wahrscheinlich","It will probably rain.","Es wird wahrscheinlich regnen."],
       ["actually","eigentlich / tatsächlich","Actually, I prefer tea.","Eigentlich trinke ich lieber Tee."],
@@ -1996,7 +1996,7 @@ window.SW_LANGS.en = {
       ["to have a choice","die Wahl haben","If I had a choice, I'd stay.","Wenn ich die Wahl hätte, würde ich bleiben."],
       ["to swap","tauschen","Would you swap jobs with me?","Würdest du den Job mit mir tauschen?"]
     ]},
-    { id: "u27", level: "B1", title: "Produktion & Prozesse", emoji: "⚙️", grammar: "passive", words: [
+    { id: "u27", level: "B1", title: "Produktion & Prozesse", emoji: "⚙️", grammar: "passive", extra: ["have-done"], words: [
       ["quality","die Qualität","Quality is very important.","Qualität ist sehr wichtig."],
       ["safety","die Sicherheit","Safety comes first.","Sicherheit geht vor."],
       ["gloves","die Handschuhe","Always wear your gloves.","Trag immer deine Handschuhe."],
@@ -2085,7 +2085,7 @@ window.SW_LANGS.en = {
       ["aluminium","das Aluminium","Aluminium is light.","Aluminium ist leicht."],
       ["cardboard","die Pappe","The boxes are made of cardboard.","Die Kartons sind aus Pappe."]
     ]},
-    { id: "u28", level: "B1", title: "Menschen beschreiben", emoji: "🔎", grammar: "relative", words: [
+    { id: "u28", level: "B1", title: "Menschen beschreiben", emoji: "🔎", grammar: "relative", extra: ["both-either"], words: [
       ["customer","der Kunde / die Kundin","The customer wants a refund.","Der Kunde möchte sein Geld zurück."],
       ["supplier","der Lieferant","Our supplier is in Poland.","Unser Lieferant sitzt in Polen."],
       ["tool","das Werkzeug","Pass me that tool, please.","Gib mir bitte das Werkzeug."],
@@ -2229,7 +2229,7 @@ window.SW_LANGS.en = {
       ["fake news","die Falschmeldung","That's fake news.","Das ist eine Falschmeldung."],
       ["to believe","glauben","I don't believe it.","Ich glaube es nicht."]
     ]},
-    { id: "u30", level: "B1", title: "Gewohnheiten", emoji: "🔗", grammar: "gerund-infinitive", words: [
+    { id: "u30", level: "B1", title: "Gewohnheiten", emoji: "🔗", grammar: "gerund-infinitive", extra: ["adj-prep"], words: [
       ["to enjoy","genießen / gern tun","I enjoy working outside.","Ich arbeite gern draußen."],
       ["to avoid","vermeiden","Try to avoid the motorway.","Versuch, die Autobahn zu meiden."],
       ["to suggest","vorschlagen","I suggest taking a break.","Ich schlage vor, eine Pause zu machen."],
@@ -2711,7 +2711,7 @@ window.SW_LANGS.en = {
       ["to queue at the office","auf dem Amt warten","We queued at the office for an hour.","Wir haben eine Stunde auf dem Amt gewartet."],
       ["ticket number","die Wartenummer","Take a ticket number.","Ziehen Sie eine Wartenummer."]
     ]},
-    { id: "u37", level: "B2", title: "Fortschritt", emoji: "📈", grammar: "present-perfect-cont", words: [
+    { id: "u37", level: "B2", title: "Fortschritt", emoji: "📈", grammar: "present-perfect-cont", extra: ["future-continuous"], words: [
       ["progress","der Fortschritt","You're making good progress.","Du machst gute Fortschritte."],
       ["lately","in letzter Zeit","I've been very busy lately.","Ich war in letzter Zeit sehr beschäftigt."],
       ["recently","kürzlich / neulich","I recently changed jobs.","Ich habe kürzlich den Job gewechselt."],

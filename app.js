@@ -11,7 +11,8 @@ const MAX_REVIEWS = 20;
 const MAX_QUICK = 8;
 const MAX_GRAMMAR_REVIEWS = 3;
 const TEST_PASS = 0.8;
-const CORE = 30; // Kernwörter je Einheit (reichen für den Einheitentest)
+const CORE = 30;
+const LESSON_DRILLS = 12; // Übungen je Grammatik-Runde (zufällig aus allen) // Kernwörter je Einheit (reichen für den Einheitentest)
 
 // ---------- Helpers ----------
 const $ = (s, r = document) => r.querySelector(s);
@@ -300,12 +301,17 @@ function render() {
   if (view && view.type === "unit") return renderUnit(view.id);
   if (view && view.type === "grammar") return renderGrammar(view.id);
   if (view && view.type === "dialog") return renderDialog(view.id);
+  if (view && view.type === "glist") return renderGrammarList();
   setTabbar(true);
   ({ home: renderHome, path: renderPath, words: renderWords, more: renderMore })[tab]();
 }
 function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scrollTo(0, 0); }
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
-function back() { stopSeq(); view = view && view.from ? { type: "unit", id: view.from } : null; render(); window.scrollTo(0, 0); }
+function back() {
+  stopSeq();
+  view = view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
+  render(); window.scrollTo(0, 0);
+}
 function openDialog(uid, from) { view = { type: "dialog", id: uid, from }; render(); window.scrollTo(0, 0); }
 
 // ---------- Onboarding ----------
@@ -502,7 +508,11 @@ function renderHome() {
 function renderPath() {
   const ci = currentUnitIndex();
   let html = `<div class="fadein"><h1 class="page-title">Lernpfad</h1>
-    <p class="sub">${unitsDoneCount()} von ${UNITS.length} Einheiten geschafft. Jede Einheit: Grammatik, Wörter, Test.</p>`;
+    <p class="sub">${unitsDoneCount()} von ${UNITS.length} Einheiten geschafft. Jede Einheit: Grammatik, Wörter, Test.</p>
+    <button class="card gcard" id="glist" style="margin-bottom:6px">
+      <div><b>📐 Alle Grammatik-Lektionen</b><span>${G().length} Lektionen · ${Object.values(S.gram).filter((g) => g.done).length} gelernt</span></div>
+      <span class="chev">›</span>
+    </button>`;
   LEVELS.forEach((lv) => {
     const list = UNITS.map((u, i) => ({ u, i })).filter((x) => x.u.level === lv);
     if (!list.length) return;
@@ -525,6 +535,29 @@ function renderPath() {
   html += `</div>`;
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
+  $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
+}
+
+function renderGrammarList() {
+  setTabbar(false);
+  const where = {};
+  UNITS.forEach((u, i) => { where[u.grammar] = i + 1; (u.extra || []).forEach((g) => (where[g] = i + 1)); });
+  let html = `<div class="fadein"><div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Grammatik</h1><p class="sub">Alle Lektionen nach Stufe. Du kannst jede jederzeit lernen und üben.</p>`;
+  LEVELS.forEach((lv) => {
+    const list = G().filter((g) => g.level === lv);
+    if (!list.length) return;
+    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((g) => S.gram[g.id] && S.gram[g.id].done).length}/${list.length}</span></div><div class="stack">`;
+    list.forEach((g) => {
+      const gs = S.gram[g.id];
+      html += `<button class="card gcard" data-g="${g.id}"><div><b>${esc(g.title)}</b><span>${esc(g.sum)}${where[g.id] ? ` · Einheit ${where[g.id]}` : ""}</span></div>
+        <span class="pill ${gs && gs.done ? "ok" : ""}">${gs && gs.done ? "✓ " + (gs.best || 0) + " %" : "Lernen"}</span></button>`;
+    });
+    html += `</div>`;
+  });
+  app.innerHTML = html + `</div>`;
+  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  app.querySelectorAll("[data-g]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.g, "glist")));
 }
 
 function renderUnit(uid) {
@@ -549,6 +582,9 @@ function renderUnit(uid) {
       <div><b>${esc(g.title)}</b><span>${esc(g.sum)}</span></div>
       <span class="pill ${p.grammarDone ? "ok" : ""}">${p.grammarDone ? "✓ gelernt" : "Lernen"}</span>
     </button>
+    ${(u.extra || []).filter((x) => GMAP[x]).map((x) => { const eg = GMAP[x], es = S.gram[x]; return `<button class="card gcard" data-xg="${x}" style="margin-top:10px">
+      <div><b>➕ ${esc(eg.title)}</b><span>Zusatz · ${esc(eg.sum)}</span></div>
+      <span class="pill ${es && es.done ? "ok" : ""}">${es && es.done ? "✓ gelernt" : "Lernen"}</span></button>`; }).join("")}
 
     ${DLG()[u.id] ? `<div class="section-h"><h3>🎧 Dialog</h3></div>
     <button class="card gcard" id="d-open">
@@ -572,6 +608,7 @@ function renderUnit(uid) {
   </div>`;
   $("#back").onclick = back;
   $("#g-open").onclick = () => openGrammar(g.id, u.id);
+  app.querySelectorAll("[data-xg]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.xg, u.id)));
   const dop = $("#d-open"); if (dop) dop.onclick = () => openDialog(u.id, u.id);
   const t = $("#u-test"); if (t) t.onclick = () => startSession("test", { unit: u.id });
 }
@@ -632,7 +669,8 @@ function renderGrammar(gid) {
       ${g.ex.map(([en, de]) => `<div class="example card"><div class="t"><b>${esc(en)}</b><span>${esc(de)}</span></div>${speakBtn(en)}</div>`).join("")}
     </div>
     <div style="margin-top:22px" class="stack">
-      <button class="btn" id="g-go">${gs && gs.done ? "Nochmal üben" : "Übungen starten"} (${g.drills.length})</button>
+      <button class="btn" id="g-go">${gs && gs.done ? "Nochmal üben" : "Übungen starten"} (${Math.min(LESSON_DRILLS, g.drills.length)})</button>
+      <p class="small muted center" style="margin-top:-4px">${g.drills.length} Übungen insgesamt – jede Runde eine andere Auswahl</p>
       <p class="small muted center">${gs && gs.done ? `Beste Runde: ${gs.best || 0} % · die Regel kommt regelmäßig in der Tageslektion` : "Danach kommt die Regel automatisch in deine Wiederholungen."}</p>
     </div>
   </div>`;
@@ -689,7 +727,7 @@ function startSession(mode, opt = {}) {
     tasks = shuffle(tasks);
   } else if (mode === "grammar") {
     const g = GMAP[opt.gid];
-    tasks = grammarTasks(g, g.drills.length, { lesson: true });
+    tasks = grammarTasks(g, Math.min(LESSON_DRILLS, g.drills.length), { lesson: true });
   } else if (mode === "dialog") {
     const d = DLG()[opt.uid];
     tasks = shuffle(d.questions.map((q, k) => ({ dq: opt.uid, k, t: "dq" })));
