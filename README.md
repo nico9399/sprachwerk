@@ -10,11 +10,12 @@ Eigene App zum Sprachenlernen – zuerst Englisch. Läuft im Browser (iPhone: Sa
 - Fehlertrainer „Typisch deutsch“: 10 Lektionen, 130 Übungen (falsche Freunde, seit/since, Satzstellung, make/do …), unter Pfad → Fehlertrainer
 - Aussprache-Trainer: 8 Lektionen (th, w/v, ship/sheep, bed/bad, Endlaute, j/y, Wortbetonung) mit Hör-Unterscheidung und Nachsprechen
 - Schreibwerkstatt: 22 Schreibaufgaben (A1–C2) mit Bausteinen, Musterlösung und Checkliste (teils automatisch erkannt)
+- 10 Hörtexte (Podcast-Folgen, ca. 2 Min., A2–C2) mit Player, Text/Übersetzung zuschaltbar und Verständnisfragen
 - 147 Dialoge (3 je Einheit) mit Hörverständnis, Diktat und Satz-Übersetzung
 - Vokabeltrainer mit Lernfächern, Sprechübungen (abschaltbar), Fehler melden
 - Übungen: Bedeutung wählen, Hören, Schreiben, Sätze bauen
 - Aussprache über die Sprachausgabe des Geräts
 - Alle Daten bleiben auf dem Gerät (localStorage), Sicherung als JSON-Datei
 
-Inhalte: `data/en.js` (Einheiten + Wörter), `data/en-grammar.js` (Grammatik), `data/en-dialogs.js` (Dialoge), `data/en-packs.js` (Themenpakete), `data/en-reading.js` (Lesetexte + Mini-Wörterbuch), `data/en-mistakes.js` (Fehlertrainer), `data/en-sounds.js` (Aussprache), `data/en-writing.js` (Schreibwerkstatt).
+Inhalte: `data/en.js` (Einheiten + Wörter), `data/en-grammar.js` (Grammatik), `data/en-dialogs.js` (Dialoge), `data/en-packs.js` (Themenpakete), `data/en-reading.js` (Lesetexte + Mini-Wörterbuch), `data/en-mistakes.js` (Fehlertrainer), `data/en-sounds.js` (Aussprache), `data/en-writing.js` (Schreibwerkstatt), `data/en-listening.js` (Hörtexte).
 Schrift: Bricolage Grotesque (SIL Open Font License).

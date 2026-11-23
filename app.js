@@ -45,6 +45,7 @@ const DEFAULT = {
   reading: {},   // Einheit-ID -> { done, best } (Lesetexte)
   sounds: {},    // Aussprache-Lektion -> { done, best }
   writing: {},   // Schreibaufgabe -> { draft, checks, done, score, date }
+  listening: {}, // Hörtext -> { done, best }
   custom: [],
   days: {},
   reports: [],
@@ -74,6 +75,8 @@ const DLG = () => (window.SW_DIALOGS || {})[S.lang] || {};
 const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(x) ? x : [x]; };
 const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
 const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
+const POD = () => (window.SW_LISTEN || {})[S.lang] || [];
+const podGet = (id) => POD().find((x) => x.id === id);
 const WR = () => (window.SW_WRITING || {})[S.lang] || [];
 const SND = () => (window.SW_SOUNDS || {})[S.lang] || [];
 const sndGet = (id) => SND().find((x) => x.id === id);
@@ -128,6 +131,7 @@ function migrate() {
   if (!S.reading) { S.reading = {}; changed = true; }
   if (!S.sounds) { S.sounds = {}; changed = true; }
   if (!S.writing) { S.writing = {}; changed = true; }
+  if (!S.listening) { S.listening = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -272,11 +276,11 @@ function speakLines(lines, people, onLine, onEnd, slow = false) {
     if (seq.stop) return;
     if (i >= lines.length) { SEQ = null; onLine && onLine(-1); onEnd && onEnd(); return; }
     const [who, en] = lines[i];
-    const second = people.indexOf(who) === 1;
+    const pi = people.indexOf(who), second = pi === 1, third = pi === 2;
     const u = new SpeechSynthesisUtterance(en);
     u.lang = voiceCode();
     const v = second ? (vb || va) : va; if (v) u.voice = v;
-    u.pitch = second && !vb ? 0.75 : 1;
+    u.pitch = second && !vb ? 0.75 : third ? 1.25 : 1;
     u.rate = slow ? 0.65 : S.settings.rate;
     u.onend = () => setTimeout(() => next(i + 1), 350);
     u.onerror = () => { if (!seq.stop) next(i + 1); };
@@ -353,6 +357,8 @@ function render() {
   if (view && view.type === "mlist") return renderMistakeList();
   if (view && view.type === "slist") return renderSoundList();
   if (view && view.type === "wlist") return renderWriteList();
+  if (view && view.type === "podlist") return renderPodList();
+  if (view && view.type === "pod") return renderPod(view.id);
   if (view && view.type === "write") return renderWrite(view.id);
   if (view && view.type === "sound") return renderSound(view.id);
   if (view && view.type === "read") return renderReading(view.id);
@@ -364,7 +370,7 @@ function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scro
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
 function back() {
   stopSeq();
-  view = view && view.type === "pack" ? { type: "plist" } : view && view.type === "sound" ? { type: "slist" } : view && view.type === "write" ? { type: "wlist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
+  view = view && view.type === "pack" ? { type: "plist" } : view && view.type === "sound" ? { type: "slist" } : view && view.type === "write" ? { type: "wlist" } : view && view.type === "pod" ? { type: "podlist" } : view && view.from === "mlist" ? { type: "mlist" } : view && view.from === "glist" ? { type: "glist" } : view && view.from ? { type: "unit", id: view.from } : null;
   render(); window.scrollTo(0, 0);
 }
 function openReading(uid, from) { view = { type: "read", id: uid, from }; render(); window.scrollTo(0, 0); }
@@ -580,6 +586,10 @@ function renderPath() {
       <div><b>⚠️ Fehlertrainer „Typisch deutsch“</b><span>${MK().length} Lektionen · ${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} gelernt</span></div>
       <span class="chev">›</span>
     </button>` : ""}
+    ${POD().length ? `<button class="card gcard" id="podlist" style="margin-bottom:6px">
+      <div><b>🎙️ Hörtexte</b><span>${POD().length} Podcast-Folgen · ${POD().filter((x) => S.listening[x.id] && S.listening[x.id].done).length} gehört</span></div>
+      <span class="chev">›</span>
+    </button>` : ""}
     ${WR().length ? `<button class="card gcard" id="wlist" style="margin-bottom:6px">
       <div><b>✍️ Schreibwerkstatt</b><span>${WR().length} Aufgaben · ${WR().filter((x) => S.writing[x.id] && S.writing[x.id].done).length} geschrieben</span></div>
       <span class="chev">›</span>
@@ -615,10 +625,100 @@ function renderPath() {
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
   $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
+  const pdl = $("#podlist"); if (pdl) pdl.onclick = () => { view = { type: "podlist" }; render(); window.scrollTo(0, 0); };
   const wl = $("#wlist"); if (wl) wl.onclick = () => { view = { type: "wlist" }; render(); window.scrollTo(0, 0); };
   const sl = $("#slist"); if (sl) sl.onclick = () => { view = { type: "slist" }; render(); window.scrollTo(0, 0); };
   const ml = $("#mlist"); if (ml) ml.onclick = () => { view = { type: "mlist" }; render(); window.scrollTo(0, 0); };
   const pl = $("#plist"); if (pl) pl.onclick = () => { view = { type: "plist" }; render(); window.scrollTo(0, 0); };
+}
+
+// ---------- Hörtexte (Podcasts) ----------
+const podMinutes = (x) => Math.max(1, Math.round(x.lines.reduce((a, l) => a + l[1].split(/\s+/).length, 0) / 130));
+function renderPodList() {
+  setTabbar(false);
+  let html = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Hörtexte</h1>
+    <p class="sub">Kurze Podcast-Folgen mit echten Gesprächen. Erst ohne Text hören, dann Fragen beantworten.</p>`;
+  LEVELS.forEach((lv) => {
+    const list = POD().filter((x) => x.level === lv);
+    if (!list.length) return;
+    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((x) => S.listening[x.id] && S.listening[x.id].done).length}/${list.length}</span></div><div class="stack">`;
+    list.forEach((x) => { const r = S.listening[x.id]; html += `<button class="card gcard" data-pod="${x.id}">
+      <div><b>${esc(x.title)}</b><span>ca. ${podMinutes(x)} Min. · ${x.people.length} Sprecher · ${x.questions.length} Fragen</span></div>
+      <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.best + " %" : "Hören"}</span></button>`; });
+    html += `</div>`;
+  });
+  app.innerHTML = html + `</div>`;
+  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  app.querySelectorAll("[data-pod]").forEach((b) => (b.onclick = () => { podPos = 0; podShow = false; view = { type: "pod", id: b.dataset.pod }; render(); window.scrollTo(0, 0); }));
+}
+let podPos = 0, podShow = false, podTrans = false, podPlaying = false;
+function renderPod(id) {
+  setTabbar(false);
+  const x = podGet(id), r = S.listening[id], n = x.lines.length;
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${x.level}</span></div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🎙️ PODCAST · ca. ${podMinutes(x)} MIN.</div>
+    <h1 class="page-title">${esc(x.title)}</h1>
+    <p class="sub">Sprecher: ${x.people.map(esc).join(", ")}. Hör erst einmal ohne Text zu – so trainierst du echtes Hörverstehen.</p>
+    <div class="card pod-player">
+      <div class="bar"><i id="pod-bar" style="width:${Math.round((podPos / n) * 100)}%"></i></div>
+      <div class="small muted" id="pod-pos" style="margin:6px 0 12px">Abschnitt ${Math.min(podPos + 1, n)} von ${n}</div>
+      <div class="dlg-ctrl">
+        <button class="btn" id="pod-play">${podPlaying ? "⏸ Pause" : podPos > 0 ? "▶ Weiter" : "▶ Abspielen"}</button>
+        <button class="btn ghost" id="pod-slow" style="width:auto" title="Langsam">🐢</button>
+        <button class="btn ghost" id="pod-restart" style="width:auto" title="Von vorn">⏮</button>
+      </div>
+    </div>
+    <div class="seg" style="margin:14px 0">
+      <button id="t-show" class="${podShow ? "on" : ""}">${podShow ? "Text sichtbar" : "Text zeigen"}</button>
+      <button id="t-trans" class="${podTrans ? "on" : ""}">Übersetzung</button>
+    </div>
+    ${podShow ? `<div class="chat">${x.lines.map(([who, en, de], i) => `<button class="bubble ${x.people.indexOf(who) === 1 ? "r" : ""} ${i === podPos && podPlaying ? "live" : ""}" data-line="${i}">
+      <small>${esc(who)}</small><b>${esc(en)}</b>${podTrans ? `<span>${esc(de)}</span>` : ""}</button>`).join("")}</div>` : `<p class="small muted center">Text verborgen – tippe auf „Text zeigen“, wenn du nachlesen willst.</p>`}
+    <div class="stack" style="margin-top:20px">
+      <button class="btn" id="pod-go">Fragen beantworten (${x.questions.length})</button>
+      <p class="small muted center">${r && r.done ? `Bestes Ergebnis: ${r.best} %` : "Verständnisfragen zur Folge"}</p>
+    </div>
+  </div>`;
+  const mark = (i) => {
+    if (i < 0) return;
+    podPos = i;
+    const bar = $("#pod-bar"), pos = $("#pod-pos");
+    if (bar) bar.style.width = Math.round((i / n) * 100) + "%";
+    if (pos) pos.textContent = `Abschnitt ${i + 1} von ${n}`;
+    app.querySelectorAll(".bubble").forEach((b) => b.classList.toggle("live", +b.dataset.line === i));
+  };
+  const setBtn = () => { const b = $("#pod-play"); if (b) b.textContent = podPlaying ? "⏸ Pause" : podPos > 0 ? "▶ Weiter" : "▶ Abspielen"; };
+  const play = (from, slow) => {
+    podPlaying = true; setBtn();
+    speakLines(x.lines.slice(from), x.people, (i) => mark(i < 0 ? -1 : from + i), () => { podPlaying = false; podPos = 0; const bar = $("#pod-bar"), pos = $("#pod-pos"); if (bar) bar.style.width = "100%"; if (pos) pos.textContent = "Ende der Folge – jetzt die Fragen beantworten"; setBtn(); }, slow);
+  };
+  const pause = () => { stopSeq(); podPlaying = false; setBtn(); };
+  $("#back").onclick = () => { pause(); back(); };
+  $("#pod-play").onclick = () => (podPlaying ? pause() : play(podPos, false));
+  $("#pod-slow").onclick = () => { stopSeq(); play(podPos, true); };
+  $("#pod-restart").onclick = () => { stopSeq(); podPos = 0; play(0, false); };
+  $("#t-show").onclick = () => { podShow = !podShow; const p = podPlaying; renderPod(id); if (p) setBtn(); };
+  $("#t-trans").onclick = () => { podTrans = !podTrans; if (!podShow) podShow = true; renderPod(id); };
+  app.querySelectorAll(".bubble").forEach((b) => (b.onclick = () => { stopSeq(); play(+b.dataset.line, false); }));
+  $("#pod-go").onclick = () => { pause(); startSession("pod", { pid: id }); };
+}
+function tPQ(task) {
+  const x = podGet(task.pq);
+  const [q, right, wrongs] = x.questions[task.k];
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">🎙️ ${esc(x.title)} · Hörverständnis</div>
+    <div class="prompt"><div class="big" style="font-size:25px">${esc(q)}</div></div>
+    ${optionsHtml(shuffle([right, ...wrongs]))}
+  </div>${footCheck}`;
+  bindClose();
+  bindOptions(right, (ok) => {
+    award(ok, "pod:" + task.pq + task.k, false);
+    footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Nicht ganz", ok ? "" : `<p class="sol">Richtig: ${esc(right)}</p>`);
+    $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Hörtext ${task.pq}: ${q}` }); save(); toast("Gemeldet – danke!"); };
+  });
 }
 
 // ---------- Schreibwerkstatt ----------
@@ -1147,6 +1247,8 @@ function startSession(mode, opt = {}) {
     const mixed = shuffle(B);
     for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
     tasks.push(...mixed);
+  } else if (mode === "pod") {
+    tasks = shuffle(podGet(opt.pid).questions.map((q, k) => ({ pq: opt.pid, k, t: "pq" })));
   } else if (mode === "sound") {
     tasks = soundTasks(sndGet(opt.sid));
   } else if (mode === "read") {
@@ -1226,6 +1328,7 @@ function renderTask() {
   const task = Q.tasks[Q.pos];
   if (task.dq) return tDQ(task);
   if (task.rq) return tRQ(task);
+  if (task.pq) return tPQ(task);
   if (task.snd) return ({ pair: tPair, stress: tStress, ssay: tSSay })[task.t](task);
   if (task.dlg) return tSentence(task, { en: task.en, de: task.de }, (ok) => sFeedback(task, ok));
   if (task.gid) {
@@ -1725,6 +1828,12 @@ function renderResult() {
     title = "Dialog geschafft!";
     sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.`;
   }
+  if (Q.mode === "pod") {
+    const prev = S.listening[Q.opt.pid];
+    S.listening[Q.opt.pid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
+    title = "Gut zugehört!";
+    sub = `„${podGet(Q.opt.pid).title}“ – ${acc} % richtig.`;
+  }
   if (Q.mode === "sound") {
     const prev = S.sounds[Q.opt.sid];
     S.sounds[Q.opt.sid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
@@ -1770,7 +1879,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
