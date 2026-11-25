@@ -667,8 +667,8 @@ function renderPod(id) {
       <div class="small muted" id="pod-pos" style="margin:6px 0 12px">Abschnitt ${Math.min(podPos + 1, n)} von ${n}</div>
       <div class="dlg-ctrl">
         <button class="btn" id="pod-play">${podPlaying ? "⏸ Pause" : podPos > 0 ? "▶ Weiter" : "▶ Abspielen"}</button>
-        <button class="btn ghost" id="pod-slow" style="width:auto" title="Langsam">🐢</button>
-        <button class="btn ghost" id="pod-restart" style="width:auto" title="Von vorn">⏮</button>
+        <button class="btn ghost" id="pod-slow" style="width:auto" title="Langsam" aria-label="Langsam abspielen">🐢</button>
+        <button class="btn ghost" id="pod-restart" style="width:auto" title="Von vorn" aria-label="Von vorn abspielen">⏮</button>
       </div>
     </div>
     <div class="seg" style="margin:14px 0">
@@ -710,7 +710,7 @@ function tPQ(task) {
   const [q, right, wrongs] = x.questions[task.k];
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <div class="prompt-label">🎙️ ${esc(x.title)} · Hörverständnis</div>
-    <div class="prompt"><div class="big" style="font-size:25px">${esc(q)}</div></div>
+    <div class="prompt"><div class="big" style="font-size:1.5625rem">${esc(q)}</div></div>
     ${optionsHtml(shuffle([right, ...wrongs]))}
   </div>${footCheck}`;
   bindClose();
@@ -855,7 +855,7 @@ function tPair(task) {
   const opts = shuffle([a + " – " + ad, b + " – " + bd]);
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <div class="prompt-label">🗣️ ${esc(x.title)} · Welches Wort hörst du?</div>
-    <div class="dlg-ctrl" style="margin:18px 0 22px"><button class="btn" id="play">🔊 Anhören</button><button class="btn ghost" id="slow" style="width:auto">🐢</button></div>
+    <div class="dlg-ctrl" style="margin:18px 0 22px"><button class="btn" id="play">🔊 Anhören</button><button class="btn ghost" id="slow" style="width:auto" aria-label="Langsam abspielen">🐢</button></div>
     ${optionsHtml(opts)}
   </div>${footCheck}`;
   bindClose();
@@ -1060,7 +1060,7 @@ function renderDialog(did) {
     <p class="sub">Erst nur zuhören, dann mitlesen. Tippe auf eine Zeile, um sie nochmal zu hören.</p>
     <div class="dlg-ctrl">
       <button class="btn" id="play">▶ Abspielen</button>
-      <button class="btn ghost" id="slow" style="width:auto">🐢</button>
+      <button class="btn ghost" id="slow" style="width:auto" aria-label="Langsam abspielen">🐢</button>
     </div>
     <div class="seg" style="margin:12px 0 14px">
       <button id="t-hide" class="${dlgHide ? "on" : ""}">${dlgHide ? "🙈 Text verborgen" : "Text verbergen"}</button>
@@ -1129,7 +1129,7 @@ function renderReading(uid) {
     <p class="sub">Tippe auf ein Wort für die Übersetzung. Versuch erst, den Text ohne Hilfe zu verstehen.</p>
     <div class="dlg-ctrl">
       <button class="btn" id="play">▶ Vorlesen</button>
-      <button class="btn ghost" id="slow" style="width:auto">🐢</button>
+      <button class="btn ghost" id="slow" style="width:auto" aria-label="Langsam abspielen">🐢</button>
     </div>
     <div class="seg" style="margin:12px 0 14px"><button id="t-trans" class="${rdTrans ? "on" : ""}">${rdTrans ? "Übersetzung an" : "Übersetzung zeigen"}</button></div>
     <div class="card rd">${r.paras.map(paraHtml).join("")}</div>
@@ -1154,7 +1154,7 @@ function renderReading(uid) {
     speak(word);
     const known = hit && hit.w && st(hit.w.id);
     sheet(`<h2 style="margin-bottom:4px">${esc(word)}</h2>
-      <p style="font-size:19px;margin:0 0 14px">${hit ? esc(hit.de) : '<span class="muted">Nicht im Wörterbuch. Tipp: „Übersetzung zeigen“.</span>'}</p>
+      <p style="font-size:1.1875rem;margin:0 0 14px">${hit ? esc(hit.de) : '<span class="muted">Nicht im Wörterbuch. Tipp: „Übersetzung zeigen“.</span>'}</p>
       <div class="stack">
         <button class="btn ghost" id="lx-say">🔊 Anhören</button>
         ${hit && !known && !(hit.w && hit.w.unit === "custom") && !(lexicon()[word.toLowerCase()] || {}).common ? `<button class="btn" id="lx-add">＋ Zu meinen Wörtern</button>` : known ? `<p class="small muted center">Schon in deinem Lernstand ✓</p>` : ""}
@@ -1473,7 +1473,7 @@ function buildUI(src, label, onDone) {
   const placed = [];
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <div class="prompt-label">${label}</div>
-    <div class="prompt"><div class="big" style="font-size:24px">${esc(src.de)}</div></div>
+    <div class="prompt"><div class="big" style="font-size:1.5rem">${esc(src.de)}</div></div>
     <div class="build-area" id="area"></div>
     <div class="bank" id="bank">${bank.map((b, k) => `<button class="tile" data-k="${k}">${esc(b.t)}</button>`).join("")}</div>
   </div>${footCheck}`;
@@ -1504,7 +1504,7 @@ function tDQ(task) {
   const opts = shuffle([right, ...wrongs]);
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <div class="prompt-label">🎧 ${esc(d.title)} · Hörverständnis</div>
-    <div class="prompt"><div class="big" style="font-size:25px">${esc(q)}</div></div>
+    <div class="prompt"><div class="big" style="font-size:1.5625rem">${esc(q)}</div></div>
     <div class="dlg-ctrl" style="margin-bottom:16px"><button class="btn ghost small" id="re">▶ Gespräch nochmal hören</button></div>
     ${optionsHtml(opts)}
   </div>${footCheck}`;
@@ -1518,7 +1518,7 @@ function tRQ(task) {
   const opts = shuffle([right, ...wrongs]);
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <div class="prompt-label">📖 ${esc(r.title)} · Leseverständnis</div>
-    <div class="prompt"><div class="big" style="font-size:25px">${esc(q)}</div></div>
+    <div class="prompt"><div class="big" style="font-size:1.5625rem">${esc(q)}</div></div>
     <details class="card rd-peek" style="margin-bottom:16px"><summary class="small muted">Text nochmal lesen</summary>${r.paras.map((p) => `<p>${esc(p[0])}</p>`).join("")}</details>
     ${optionsHtml(opts)}
   </div>${footCheck}`;
@@ -1536,7 +1536,7 @@ function tSentence(task, item, onDone) {
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <div class="prompt-label">${dict ? "✍️ Diktat · Hör zu und schreib mit" : "🔁 Übersetze den Satz"}</div>
     ${dict ? `<div class="listen-big">${speakBtn(item.en)}<button class="speak slow" data-say="${esc(item.en)}" data-slow="1" aria-label="Langsam">🐢</button></div>`
-           : `<div class="prompt"><div class="big" style="font-size:24px">${esc(item.de)}</div></div>`}
+           : `<div class="prompt"><div class="big" style="font-size:1.5rem">${esc(item.de)}</div></div>`}
     <textarea class="answer-input" id="ans" rows="3" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" placeholder="${dict ? "Was hörst du?" : "Auf Englisch …"}"></textarea>
     <button class="skip" id="dunno">Weiß ich nicht</button>
   </div>${footCheck}`;
