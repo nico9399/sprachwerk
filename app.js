@@ -26,6 +26,20 @@ const today = () => dayKey();
 const lvlIdx = (l) => LEVELS.indexOf(l);
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
+const IC = {
+  grammar: '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/>',
+  read: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
+  dialog: '<path d="M4 5h11v8H8l-4 3z"/><path d="M15 9h5v8l-3-2.5h-6V13"/>',
+  podcast: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>',
+  write: '<path d="M4 20h4L19.5 8.5l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  sound: '<path d="M3 12h1.5M7 8.5v7M11 5v14M15 8v8M19 10.5v3"/>',
+  mistakes: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.1"/>',
+  packs: '<path d="M4 8l8-4 8 4-8 4z"/><path d="M4 12.5l8 4 8-4M4 16.5l8 4 8-4"/>',
+  test: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/>',
+  words: '<path d="M5 6h14M5 12h14M5 18h9"/>',
+  practice: '<path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/>',
+};
+const icon = (k, cls = "ic") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
 const ICON_SPEAK = '<svg viewBox="0 0 24 24"><path d="M4 9.5v5a1 1 0 0 0 1 1h3l4.3 3.6a.8.8 0 0 0 1.3-.6V5.5a.8.8 0 0 0-1.3-.6L8 8.5H5a1 1 0 0 0-1 1zm12.4-2.7a1 1 0 0 1 1.4.1 7.7 7.7 0 0 1 0 10.2 1 1 0 1 1-1.5-1.3 5.7 5.7 0 0 0 0-7.6 1 1 0 0 1 .1-1.4zm-2.3 2.4a1 1 0 0 1 1.4.2 4 4 0 0 1 0 5.2 1 1 0 0 1-1.6-1.2 2 2 0 0 0 0-2.8 1 1 0 0 1 .2-1.4z"/></svg>';
 const ICON_MIC = '<svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zm-7 9a1 1 0 0 1 2 0 5 5 0 0 0 10 0 1 1 0 1 1 2 0 7 7 0 0 1-6 6.9V21a1 1 0 1 1-2 0v-2.1A7 7 0 0 1 5 12z"/></svg>';
 
@@ -364,7 +378,7 @@ function render() {
   if (view && view.type === "read") return renderReading(view.id);
   if (view && view.type === "pack") return renderPack(view.id);
   setTabbar(true);
-  ({ home: renderHome, path: renderPath, words: renderWords, more: renderMore })[tab]();
+  ({ home: renderHome, path: renderPath, practice: renderPractice, words: renderWords, more: renderMore })[tab]();
 }
 function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scrollTo(0, 0); }
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
@@ -492,7 +506,7 @@ function renderHome() {
 
   const stepGrammar = cp.grammarDone
     ? `<div class="step done"><i>✓</i><div><b>Grammatik</b><span>${esc(cg.title)}</span></div><button class="link small" data-gram="${cg.id}">Ansehen</button></div>`
-    : `<div class="step now"><i>1</i><div><b>Grammatik lernen</b><span>${esc(cg.title)}</span></div><button class="btn small" data-gram="${cg.id}" style="width:auto">Los</button></div>`;
+    : `<div class="step now"><i>1</i><div><b>Grammatik lernen</b><span>${esc(cg.title)}</span></div><button class="btn small ${total ? "ghost" : ""}" data-gram="${cg.id}" style="width:auto">Starten</button></div>`;
   const stepWords = cp.coreSeen >= cp.coreTotal
     ? `<div class="step done"><i>✓</i><div><b>Kernwörter</b><span>alle ${cp.coreTotal} gelernt · ${cp.seen}/${cp.total} insgesamt</span></div></div>`
     : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>2</i><div><b>Kernwörter</b><span>${cp.coreSeen} von ${cp.coreTotal} – kommen in der Tageslektion</span></div></div>`;
@@ -502,11 +516,11 @@ function renderHome() {
   const rdx = RD()[cu.id], rdDone = !!(S.reading[cu.id] && S.reading[cu.id].done);
   const stepRead = !rdx ? "" : rdDone
     ? `<div class="step done"><i>✓</i><div><b>Lesetext</b><span>„${esc(rdx.title)}“ · ${S.reading[cu.id].best} %</span></div><button class="link small" data-read="${cu.id}">Ansehen</button></div>`
-    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>📖</i><div><b>Lesetext</b><span>„${esc(rdx.title)}“ · freiwillig</span></div><button class="btn small ghost" data-read="${cu.id}" style="width:auto">Lesen</button></div>`;
+    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>${icon("read")}</i><div><b>Lesetext</b><span>„${esc(rdx.title)}“ · freiwillig</span></div><button class="btn small ghost" data-read="${cu.id}" style="width:auto">Lesen</button></div>`;
   const stepDialog = !dls.length ? "" : nextK < 0
     ? `<div class="step done"><i>✓</i><div><b>Dialoge</b><span>alle ${dls.length} gehört</span></div><button class="link small" data-unit="${cu.id}">Ansehen</button></div>`
-    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>🎧</i><div><b>Dialoge hören</b><span>${dDoneN}/${dls.length} · „${esc(dls[nextK].title)}“ · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}:${nextK}" style="width:auto">Hören</button></div>`;
-  const stepTest = `<div class="step ${ready ? "now" : ""}"><i>3</i><div><b>Einheitentest</b><span>${ready ? "Bereit! 80 % zum Bestehen" : "nach Grammatik & Wörtern"}</span></div>${ready ? `<button class="btn small" id="unit-test" style="width:auto">Start</button>` : ""}</div>`;
+    : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>${icon("dialog")}</i><div><b>Dialoge hören</b><span>${dDoneN}/${dls.length} · „${esc(dls[nextK].title)}“ · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}:${nextK}" style="width:auto">Hören</button></div>`;
+  const stepTest = `<div class="step ${ready ? "now" : ""}"><i>3</i><div><b>Einheitentest</b><span>${ready ? "Bereit! 80 % zum Bestehen" : "nach Grammatik & Wörtern"}</span></div>${ready ? `<button class="btn small ${total ? "ghost" : ""}" id="unit-test" style="width:auto">Starten</button>` : ""}</div>`;
 
   app.innerHTML = `
   <div class="fadein">
@@ -520,10 +534,10 @@ function renderHome() {
       <h2>${greet}!</h2>
       <p>Deine Tageslektion ist bereit.</p>
       <div class="counts">
-        ${plan.due.length ? `<span>🔁 ${plural(plan.due.length, "Wiederholung", "Wiederholungen")}</span>` : ""}
-        ${plan.gram.length ? `<span>📐 ${plan.gram.length}× Grammatik</span>` : ""}
-        ${plan.fresh.length ? `<span>✨ ${plural(plan.fresh.length, "neues Wort", "neue Wörter")}</span>` : ""}
-        ${plan.quick.length ? `<span>⚡ ${plan.quick.length} Schnellcheck</span>` : ""}
+        ${plan.fresh.length ? `<span>${plural(plan.fresh.length, "neues Wort", "neue Wörter")}</span>` : ""}
+        ${plan.due.length ? `<span>${plural(plan.due.length, "Wiederholung", "Wiederholungen")}</span>` : ""}
+        ${plan.gram.length ? `<span>${plan.gram.length}× Grammatik</span>` : ""}
+        ${plan.quick.length ? `<span>${plan.quick.length} Schnellcheck</span>` : ""}
       </div>
       <button class="btn" id="start">Lektion starten</button>
     </div>` : `
@@ -544,7 +558,7 @@ function renderHome() {
     </div>
 
     <div class="stats">
-      <div class="stat streak"><b>${stk}</b><span>${stk === 1 ? "Tag" : "Tage"} in Folge 🔥</span></div>
+      <div class="stat streak"><b>${stk}</b><span>${stk === 1 ? "Tag" : "Tage"} in Folge</span></div>
       <div class="stat"><b>${learnedCount()}</b><span>Wörter gelernt</span></div>
       <div class="stat"><b>${unitsDoneCount()}</b><span>Einheiten fertig</span></div>
     </div>
@@ -577,31 +591,7 @@ function renderHome() {
 function renderPath() {
   const ci = currentUnitIndex();
   let html = `<div class="fadein"><h1 class="page-title">Lernpfad</h1>
-    <p class="sub">${unitsDoneCount()} von ${UNITS.length} Einheiten geschafft. Jede Einheit: Grammatik, Wörter, Test.</p>
-    <button class="card gcard" id="glist" style="margin-bottom:6px">
-      <div><b>📐 Alle Grammatik-Lektionen</b><span>${G().length} Lektionen · ${Object.values(S.gram).filter((g) => g.done).length} gelernt</span></div>
-      <span class="chev">›</span>
-    </button>
-    ${MK().length ? `<button class="card gcard" id="mlist" style="margin-bottom:6px">
-      <div><b>⚠️ Fehlertrainer „Typisch deutsch“</b><span>${MK().length} Lektionen · ${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} gelernt</span></div>
-      <span class="chev">›</span>
-    </button>` : ""}
-    ${POD().length ? `<button class="card gcard" id="podlist" style="margin-bottom:6px">
-      <div><b>🎙️ Hörtexte</b><span>${POD().length} Podcast-Folgen · ${POD().filter((x) => S.listening[x.id] && S.listening[x.id].done).length} gehört</span></div>
-      <span class="chev">›</span>
-    </button>` : ""}
-    ${WR().length ? `<button class="card gcard" id="wlist" style="margin-bottom:6px">
-      <div><b>✍️ Schreibwerkstatt</b><span>${WR().length} Aufgaben · ${WR().filter((x) => S.writing[x.id] && S.writing[x.id].done).length} geschrieben</span></div>
-      <span class="chev">›</span>
-    </button>` : ""}
-    ${SND().length ? `<button class="card gcard" id="slist" style="margin-bottom:6px">
-      <div><b>🗣️ Aussprache-Trainer</b><span>${SND().length} Lektionen · ${SND().filter((x) => S.sounds[x.id] && S.sounds[x.id].done).length} geübt</span></div>
-      <span class="chev">›</span>
-    </button>` : ""}
-    ${PACKS.length ? `<button class="card gcard" id="plist" style="margin-bottom:6px">
-      <div><b>🎒 Themenpakete</b><span>${PACKS.length} Pakete · ${PACKS.filter((p) => packOn(p.id)).length} eingeschaltet</span></div>
-      <span class="chev">›</span>
-    </button>` : ""}`;
+    <p class="sub">${unitsDoneCount()} von ${UNITS.length} Einheiten geschafft. Jede Einheit: Grammatik, Wörter, Test. Alle Trainer findest du unter „Üben“.</p>`;
   LEVELS.forEach((lv) => {
     const list = UNITS.map((u, i) => ({ u, i })).filter((x) => x.u.level === lv);
     if (!list.length) return;
@@ -624,12 +614,26 @@ function renderPath() {
   html += `</div>`;
   app.innerHTML = html;
   app.querySelectorAll("[data-unit]").forEach((b) => (b.onclick = () => openUnit(b.dataset.unit)));
-  $("#glist").onclick = () => { view = { type: "glist" }; render(); window.scrollTo(0, 0); };
-  const pdl = $("#podlist"); if (pdl) pdl.onclick = () => { view = { type: "podlist" }; render(); window.scrollTo(0, 0); };
-  const wl = $("#wlist"); if (wl) wl.onclick = () => { view = { type: "wlist" }; render(); window.scrollTo(0, 0); };
-  const sl = $("#slist"); if (sl) sl.onclick = () => { view = { type: "slist" }; render(); window.scrollTo(0, 0); };
-  const ml = $("#mlist"); if (ml) ml.onclick = () => { view = { type: "mlist" }; render(); window.scrollTo(0, 0); };
-  const pl = $("#plist"); if (pl) pl.onclick = () => { view = { type: "plist" }; render(); window.scrollTo(0, 0); };
+}
+
+// ---------- Üben (alle Trainer) ----------
+function renderPractice() {
+  const tiles = [
+    { id: "glist", ic: "grammar", t: "Grammatik", s: `${Object.values(S.gram).filter((g) => g.done).length - MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} von ${G().length} gelernt` },
+    { id: "podlist", ic: "podcast", t: "Hörtexte", s: `${POD().filter((x) => S.listening[x.id] && S.listening[x.id].done).length} von ${POD().length} gehört` },
+    { id: "wlist", ic: "write", t: "Schreiben", s: `${WR().filter((x) => S.writing[x.id] && S.writing[x.id].done).length} von ${WR().length} geschrieben` },
+    { id: "slist", ic: "sound", t: "Aussprache", s: `${SND().filter((x) => S.sounds[x.id] && S.sounds[x.id].done).length} von ${SND().length} geübt` },
+    { id: "mlist", ic: "mistakes", t: "Typisch deutsch", s: `${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} von ${MK().length} Fehlerfallen` },
+    { id: "plist", ic: "packs", t: "Themenpakete", s: `${PACKS.filter((p) => packOn(p.id)).length} von ${PACKS.length} eingeschaltet` },
+  ];
+  app.innerHTML = `<div class="fadein">
+    <h1 class="page-title">Üben</h1>
+    <p class="sub">Zusätzlich zum Lernpfad: gezielt trainieren, was du gerade brauchst.</p>
+    <div class="tiles">${tiles.map((x) => `<button class="tile-card" data-v="${x.id}">${icon(x.ic, "ic tile-ic")}<b>${x.t}</b><span>${x.s}</span></button>`).join("")}</div>
+    ${learnedCount() >= 4 ? `<button class="card gcard" id="free" style="margin-top:14px"><div><b>Freies Üben</b><span>Gemischte Wiederholung deiner gelernten Wörter</span></div><span class="chev">›</span></button>` : ""}
+  </div>`;
+  app.querySelectorAll("[data-v]").forEach((b) => (b.onclick = () => { view = { type: b.dataset.v }; render(); window.scrollTo(0, 0); }));
+  const f = $("#free"); if (f) f.onclick = () => startSession("free");
 }
 
 // ---------- Hörtexte (Podcasts) ----------
@@ -650,7 +654,7 @@ function renderPodList() {
     html += `</div>`;
   });
   app.innerHTML = html + `</div>`;
-  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  $("#back").onclick = () => { view = null; tab = "practice"; render(); };
   app.querySelectorAll("[data-pod]").forEach((b) => (b.onclick = () => { podPos = 0; podShow = false; view = { type: "pod", id: b.dataset.pod }; render(); window.scrollTo(0, 0); }));
 }
 let podPos = 0, podShow = false, podTrans = false, podPlaying = false;
@@ -659,7 +663,7 @@ function renderPod(id) {
   const x = podGet(id), r = S.listening[id], n = x.lines.length;
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${x.level}</span></div>
-    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🎙️ PODCAST · ca. ${podMinutes(x)} MIN.</div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("podcast", "ic eb")} PODCAST · ca. ${podMinutes(x)} MIN.</div>
     <h1 class="page-title">${esc(x.title)}</h1>
     <p class="sub">Sprecher: ${x.people.map(esc).join(", ")}. Hör erst einmal ohne Text zu – so trainierst du echtes Hörverstehen.</p>
     <div class="card pod-player">
@@ -739,7 +743,7 @@ function renderWriteList() {
     html += `</div>`;
   });
   app.innerHTML = html + `<p class="small muted" style="margin-top:14px">Ohne KI-Korrektur: Die Checkliste erkennt manche Punkte automatisch (vorab abgehakt), den Rest prüfst du selbst anhand der Musterlösung.</p></div>`;
-  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  $("#back").onclick = () => { view = null; tab = "practice"; render(); };
   app.querySelectorAll("[data-w]").forEach((b) => (b.onclick = () => { view = { type: "write", id: b.dataset.w }; render(); window.scrollTo(0, 0); }));
 }
 let wReveal = {}, wDe = false;
@@ -753,19 +757,19 @@ function renderWrite(id) {
   const checks = r.checks && r.checks.length === x.check.length ? r.checks : auto;
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${x.level}</span></div>
-    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">✍️ ${esc(x.kind.toUpperCase())}</div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("write", "ic eb")} ${esc(x.kind.toUpperCase())}</div>
     <h1 class="page-title">${esc(x.title)}</h1>
     <div class="card note">${esc(x.task)}<br><span class="small muted">Umfang: ${x.words[0]}–${x.words[1]} Wörter</span></div>
-    <div class="section-h"><h3>🧩 Bausteine</h3></div>
+    <div class="section-h"><h3>Bausteine</h3></div>
     <div class="stack">${x.hints.map(([en, de]) => `<div class="example card"><div class="t"><b>${esc(en)}</b><span>${esc(de)}</span></div>${speakBtn(en)}</div>`).join("")}</div>
-    <div class="section-h"><h3>📝 Dein Text</h3><span class="small muted" id="w-count"></span></div>
+    <div class="section-h"><h3>Dein Text</h3><span class="small muted" id="w-count"></span></div>
     <textarea id="w-text" class="wtext" placeholder="Schreib hier auf Englisch …" autocapitalize="sentences" spellcheck="true">${esc(text)}</textarea>
     <div class="dlg-ctrl" style="margin-top:10px"><button class="btn ghost" id="w-say">🔊 Meinen Text vorlesen</button></div>
     ${!shown ? `<button class="btn" id="w-show" style="margin-top:16px">Fertig – mit Musterlösung vergleichen</button>
       <p class="small muted center">Tipp: Erst selbst schreiben, dann vergleichen. Dein Entwurf wird automatisch gespeichert.</p>` : `
-    <div class="section-h"><h3>✅ Checkliste</h3><span class="small muted">${checks.filter(Boolean).length}/${x.check.length}</span></div>
+    <div class="section-h"><h3>Checkliste</h3><span class="small muted">${checks.filter(Boolean).length}/${x.check.length}</span></div>
     <ul class="set wcheck">${x.check.map(([t, re], i) => `<li class="tap" data-c="${i}"><span class="cb ${checks[i] ? "on" : ""}">${checks[i] ? "✓" : ""}</span><span>${esc(t)}${re && auto[i] ? `<small>automatisch erkannt</small>` : ""}</span></li>`).join("")}</ul>
-    <div class="section-h"><h3>💡 Musterlösung</h3>${speakBtn(x.model)}</div>
+    <div class="section-h"><h3>Musterlösung</h3>${speakBtn(x.model)}</div>
     <div class="card model">${esc(wDe ? x.modelDe : x.model).replace(/\n/g, "<br>")}</div>
     <div class="seg" style="margin:10px 0 0"><button id="w-de" class="${wDe ? "on" : ""}">${wDe ? "Deutsch an" : "Deutsch zeigen"}</button></div>
     <p class="small muted" style="margin-top:10px">Vergleiche: Welche Bausteine hast du benutzt? Was würdest du übernehmen? Du kannst deinen Text oben weiter verbessern.</p>
@@ -812,7 +816,7 @@ function renderSoundList() {
     </button>`; }).join("")}</div>
     <p class="small muted" style="margin-top:14px">Hinweis: Die Spracherkennung prüft nur, ob dein Wort verstanden wurde – nicht, wie schön es klingt. Hören und Unterscheiden ist deshalb der wichtigste Teil.</p>
   </div>`;
-  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  $("#back").onclick = () => { view = null; tab = "practice"; render(); };
   app.querySelectorAll("[data-snd]").forEach((b) => (b.onclick = () => { view = { type: "sound", id: b.dataset.snd }; render(); window.scrollTo(0, 0); }));
 }
 function renderSound(id) {
@@ -820,7 +824,7 @@ function renderSound(id) {
   const x = sndGet(id), r = S.sounds[id];
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
-    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🗣️ AUSSPRACHE</div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("sound", "ic eb")} AUSSPRACHE</div>
     <h1 class="page-title">${x.emoji} ${esc(x.title)}</h1>
     <p class="sub">${esc(x.sum)}</p>
     <div class="stack">${x.tip.map(([h, t]) => `<div class="card rule"><h3>${esc(h)}</h3><p>${t}</p></div>`).join("")}</div>
@@ -912,7 +916,7 @@ function renderMistakeList() {
       <span class="pill ${gs && gs.done ? "ok" : ""}">${gs && gs.done ? "✓ " + (gs.best || 0) + " %" : "Lernen"}</span>
     </button>`; }).join("")}</div>
   </div>`;
-  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  $("#back").onclick = () => { view = null; tab = "practice"; render(); };
   app.querySelectorAll("[data-mk]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.mk, "mlist")));
 }
 
@@ -954,7 +958,7 @@ function renderPack(pid) {
         <div class="seg"><button id="p-on" class="${on ? "on" : ""}">An</button><button id="p-off" class="${on ? "" : "on"}">Aus</button></div></li>
     </ul>
     <p class="small muted" style="margin:8px 2px 0">Schon gelernte Wörter werden immer wiederholt, auch wenn das Paket aus ist.</p>
-    <div class="section-h"><h3>📚 Wörter</h3><span class="small muted">${s.seen}/${s.total}</span></div>
+    <div class="section-h"><h3>Wörter</h3><span class="small muted">${s.seen}/${s.total}</span></div>
     ${wordListHtml(ws)}
   </div>`;
   $("#back").onclick = back;
@@ -981,7 +985,7 @@ function renderGrammarList() {
     html += `</div>`;
   });
   app.innerHTML = html + `</div>`;
-  $("#back").onclick = () => { view = null; tab = "path"; render(); };
+  $("#back").onclick = () => { view = null; tab = "practice"; render(); };
   app.querySelectorAll("[data-g]").forEach((b) => (b.onclick = () => openGrammar(b.dataset.g, "glist")));
 }
 
@@ -1002,7 +1006,7 @@ function renderUnit(uid) {
     ${!open ? `<div class="card note">🔒 Diese Einheit ist noch gesperrt. Schließ zuerst die vorige Einheit ab. Die Grammatik kannst du dir trotzdem schon ansehen.</div>` : ""}
     ${p.done ? `<div class="card note good">✓ Bestanden mit ${rec.score} % am ${new Date(rec.date).toLocaleDateString("de-DE")}</div>` : ""}
 
-    <div class="section-h"><h3>📐 Grammatik</h3></div>
+    <div class="section-h"><h3>Grammatik</h3></div>
     <button class="card gcard" id="g-open">
       <div><b>${esc(g.title)}</b><span>${esc(g.sum)}</span></div>
       <span class="pill ${p.grammarDone ? "ok" : ""}">${p.grammarDone ? "✓ gelernt" : "Lernen"}</span>
@@ -1011,25 +1015,25 @@ function renderUnit(uid) {
       <div><b>➕ ${esc(eg.title)}</b><span>Zusatz · ${esc(eg.sum)}</span></div>
       <span class="pill ${es && es.done ? "ok" : ""}">${es && es.done ? "✓ gelernt" : "Lernen"}</span></button>`; }).join("")}
 
-    ${RD()[u.id] ? `<div class="section-h"><h3>📖 Lesetext</h3></div>
+    ${RD()[u.id] ? `<div class="section-h"><h3>Lesetext</h3></div>
     <button class="card gcard" id="rd-open">
       <div><b>${esc(RD()[u.id].title)}</b><span>${esc(RD()[u.id].kind)} · Lesen, Wörter antippen, Fragen</span></div>
       <span class="pill ${S.reading[u.id] && S.reading[u.id].done ? "ok" : ""}">${S.reading[u.id] && S.reading[u.id].done ? "✓ " + S.reading[u.id].best + " %" : "Lesen"}</span>
     </button>` : ""}
 
-    ${dlgList(u.id).length ? `<div class="section-h"><h3>🎧 Dialoge</h3><span class="small muted">${dlgList(u.id).filter((d, k) => dlgDone(u.id + ":" + k)).length}/${dlgList(u.id).length}</span></div>
+    ${dlgList(u.id).length ? `<div class="section-h"><h3>Dialoge</h3><span class="small muted">${dlgList(u.id).filter((d, k) => dlgDone(u.id + ":" + k)).length}/${dlgList(u.id).length}</span></div>
     <div class="stack">${dlgList(u.id).map((d, k) => { const did = u.id + ":" + k, r = S.dialogs[did]; return `<button class="card gcard" data-did="${did}">
       <div><b>${esc(d.title)}</b><span>${d.lines.length} Zeilen · Hören, mitlesen, Fragen</span></div>
       <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.best + " %" : "Hören"}</span>
     </button>`; }).join("")}</div>` : ""}
 
-    <div class="section-h"><h3>📚 Kernwörter</h3><span class="small muted">${p.coreSeen}/${p.coreTotal} gelernt</span></div>
+    <div class="section-h"><h3>Kernwörter</h3><span class="small muted">${p.coreSeen}/${p.coreTotal} gelernt</span></div>
     ${wordListHtml(p.ws.filter((w) => w.core))}
-    ${p.total > p.coreTotal ? `<div class="section-h"><h3>➕ Zusatzwörter</h3><span class="small muted">${p.seen - p.coreSeen}/${p.total - p.coreTotal}</span></div>
+    ${p.total > p.coreTotal ? `<div class="section-h"><h3>Zusatzwörter</h3><span class="small muted">${p.seen - p.coreSeen}/${p.total - p.coreTotal}</span></div>
     <p class="small muted" style="margin:-4px 2px 8px">Kommen nach und nach in der Tageslektion dazu – für den Test nicht nötig.</p>
     ${wordListHtml(p.ws.filter((w) => !w.core))}` : ""}
 
-    <div class="section-h"><h3>🏁 Einheitentest</h3></div>
+    <div class="section-h"><h3>Einheitentest</h3></div>
     <div class="card">
       <p style="margin:0 0 12px">10 Aufgaben aus Wörtern und Grammatik dieser Einheit. Ab 80 % ist die Einheit geschafft${p.quick ? "" : " und die nächste wird freigeschaltet"}.</p>
       ${testReady(i) && open ? `<button class="btn" id="u-test">${p.done ? "Test wiederholen" : "Test starten"}</button>`
@@ -1124,7 +1128,7 @@ function renderReading(uid) {
   };
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${u.level}</span></div>
-    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">📖 ${esc(r.kind.toUpperCase())} · ${esc(u.title)}</div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("read", "ic eb")} ${esc(r.kind.toUpperCase())} · ${esc(u.title)}</div>
     <h1 class="page-title">${esc(r.title)}</h1>
     <p class="sub">Tippe auf ein Wort für die Übersetzung. Versuch erst, den Text ohne Hilfe zu verstehen.</p>
     <div class="dlg-ctrl">
@@ -1175,7 +1179,7 @@ function renderGrammar(gid) {
   const gs = S.gram[gid];
   app.innerHTML = `<div class="fadein">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${g.level}</span></div>
-    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${g.mk ? "⚠️ FEHLERTRAINER" : "📐 GRAMMATIK"}</div>
+    <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${g.mk ? icon("mistakes", "ic eb") + " TYPISCH DEUTSCH" : icon("grammar", "ic eb") + " GRAMMATIK"}</div>
     <h1 class="page-title">${esc(g.title)}</h1>
     <p class="sub">${esc(g.sum)}</p>
     <div class="stack">
