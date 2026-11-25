@@ -135,7 +135,10 @@ function migrate() {
     if (WMAP[k]) continue;
     const en = k.slice(k.indexOf(":") + 1);
     const nk = byEn[en];
-    if (nk && !S.words[nk]) S.words[nk] = S.words[k];
+    // Nur echte Altlasten (v1-IDs) umziehen. Unbekannte Einträge bleiben erhalten, damit z. B. ein
+    // einmal nicht geladenes Themenpaket keinen Lernstand löscht (sie werden überall per WMAP ignoriert).
+    if (!nk) continue;
+    if (!S.words[nk]) S.words[nk] = S.words[k];
     delete S.words[k]; changed = true;
   }
   if (S.packsOff) { delete S.packsOff; changed = true; }
@@ -510,7 +513,7 @@ function renderHome() {
 
   const stepGrammar = cp.grammarDone
     ? `<div class="step done"><i>✓</i><div><b>Grammatik</b><span>${esc(cg.title)}</span></div><button class="link small" data-gram="${cg.id}">Ansehen</button></div>`
-    : `<div class="step now"><i>1</i><div><b>Grammatik lernen</b><span>${esc(cg.title)}</span></div><button class="btn small ${total ? "ghost" : ""}" data-gram="${cg.id}" style="width:auto">Starten</button></div>`;
+    : `<div class="step now"><i>1</i><div><b>Grammatik lernen</b><span>${esc(cg.title)}</span></div><button class="btn small ghost" data-gram="${cg.id}" style="width:auto">Starten</button></div>`;
   const stepWords = cp.coreSeen >= cp.coreTotal
     ? `<div class="step done"><i>✓</i><div><b>Kernwörter</b><span>alle ${cp.coreTotal} gelernt · ${cp.seen}/${cp.total} insgesamt</span></div></div>`
     : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>2</i><div><b>Kernwörter</b><span>${cp.coreSeen} von ${cp.coreTotal} – kommen in der Tageslektion</span></div></div>`;
@@ -524,7 +527,7 @@ function renderHome() {
   const stepDialog = !dls.length ? "" : nextK < 0
     ? `<div class="step done"><i>✓</i><div><b>Dialoge</b><span>alle ${dls.length} gehört</span></div><button class="link small" data-unit="${cu.id}">Ansehen</button></div>`
     : `<div class="step ${cp.grammarDone ? "now" : ""}"><i>${icon("dialog")}</i><div><b>Dialoge hören</b><span>${dDoneN}/${dls.length} · „${esc(dls[nextK].title)}“ · freiwillig</span></div><button class="btn small ghost" data-dialog="${cu.id}:${nextK}" style="width:auto">Hören</button></div>`;
-  const stepTest = `<div class="step ${ready ? "now" : ""}"><i>3</i><div><b>Einheitentest</b><span>${ready ? "Bereit! 80 % zum Bestehen" : "nach Grammatik & Wörtern"}</span></div>${ready ? `<button class="btn small ${total ? "ghost" : ""}" id="unit-test" style="width:auto">Starten</button>` : ""}</div>`;
+  const stepTest = `<div class="step ${ready ? "now" : ""}"><i>3</i><div><b>Einheitentest</b><span>${ready ? "Bereit! 80 % zum Bestehen" : "nach Grammatik & Wörtern"}</span></div>${ready ? `<button class="btn small ghost" id="unit-test" style="width:auto">Starten</button>` : ""}</div>`;
 
   app.innerHTML = `
   <div class="fadein">
@@ -546,9 +549,13 @@ function renderHome() {
       <button class="btn" id="start">Lektion starten</button>
     </div>` : `
     <div class="hero lv-${cu.level}" data-lv="${cu.level}">
-      <h2>Alles erledigt 🎉</h2>
-      <p>${cp.grammarDone ? "Für heute ist nichts mehr fällig. Wer mag, übt freiwillig weiter." : "Die Wörter sind erledigt – mach mit der Grammatik der Einheit weiter."}</p>
-      <button class="btn" id="extra" ${learnedCount() < 4 ? "disabled" : ""}>Freies Üben</button>
+      ${ready && !cp.done ? `<h2>Bereit für den Test</h2>
+      <p>Grammatik und Kernwörter von „${esc(cu.title)}“ sitzen. Mit 80 % im Einheitentest geht es zur nächsten Einheit.</p>
+      <button class="btn" id="hero-test">Einheitentest starten</button>` : !cp.grammarDone ? `<h2>Wörter erledigt</h2>
+      <p>Für heute sind keine Wörter mehr dran. Als Nächstes: die Grammatik dieser Einheit.</p>
+      <button class="btn" data-gram="${cg.id}">Grammatik lernen</button>` : `<h2>Alles erledigt 🎉</h2>
+      <p>Für heute ist nichts mehr fällig. Wer mag, übt freiwillig weiter.</p>
+      <button class="btn" id="extra" ${learnedCount() < 4 ? "disabled" : ""}>Freies Üben</button>`}
     </div>`}
 
     <div class="section-h"><h3>Dein Lernpfad</h3><button class="link small" id="all-units">Alle Einheiten</button></div>
@@ -589,6 +596,7 @@ function renderHome() {
   app.querySelectorAll("[data-dialog]").forEach((b) => (b.onclick = () => openDialog(b.dataset.dialog)));
   app.querySelectorAll("[data-read]").forEach((b) => (b.onclick = () => openReading(b.dataset.read)));
   const ut = $("#unit-test"); if (ut) ut.onclick = () => startSession("test", { unit: cu.id });
+  const ht = $("#hero-test"); if (ht) ht.onclick = () => startSession("test", { unit: cu.id });
 }
 
 // ---------- Lernpfad ----------
@@ -1879,7 +1887,7 @@ function renderResult() {
     <h2>${title}</h2>
     <p class="muted">${esc(sub)}</p>
     <div class="result-grid">
-      <div class="stat"><b style="color:var(--gold)">+${xpGot}</b><span>XP</span></div>
+      <div class="stat"><b style="color:var(--gold-ink)">+${xpGot}</b><span>XP</span></div>
       <div class="stat"><b>${acc}%</b><span>richtig</span></div>
       <div class="stat"><b>${mins}</b><span>Min.</span></div>
     </div>
@@ -2061,5 +2069,5 @@ function closeSheet() { $("#sheet")?.remove(); }
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !Q && !T && !$("#sheet")) render(); });
 render();
-window.__sw = { get S() { return S; }, WORDS: () => WORDS, todayPlan, currentUnitIndex, lookupAt, RD };
+window.__sw = { get S() { return S; }, WORDS: () => WORDS, todayPlan, currentUnitIndex, lookupAt, RD, distractors, checkTyped, buildSource, sameMeaning, unitUnlocked, isQuickLevel, testReady, unitProgress, dueWords, startSession, get Q() { return Q; } };
 })();
