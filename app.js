@@ -530,7 +530,7 @@ function renderHome() {
     </div>
 
     ${total ? `
-    <div class="hero">
+    <div class="hero lv-${cu.level}" data-lv="${cu.level}">
       <h2>${greet}!</h2>
       <p>Deine Tageslektion ist bereit.</p>
       <div class="counts">
@@ -541,17 +541,17 @@ function renderHome() {
       </div>
       <button class="btn" id="start">Lektion starten</button>
     </div>` : `
-    <div class="hero">
+    <div class="hero lv-${cu.level}" data-lv="${cu.level}">
       <h2>Alles erledigt 🎉</h2>
       <p>${cp.grammarDone ? "Für heute ist nichts mehr fällig. Wer mag, übt freiwillig weiter." : "Die Wörter sind erledigt – mach mit der Grammatik der Einheit weiter."}</p>
       <button class="btn" id="extra" ${learnedCount() < 4 ? "disabled" : ""}>Freies Üben</button>
     </div>`}
 
     <div class="section-h"><h3>Dein Lernpfad</h3><button class="link small" id="all-units">Alle Einheiten</button></div>
-    <div class="card unit-now">
+    <div class="card unit-now lv-scope lv-${cu.level}">
       <button class="unit-head" data-unit="${cu.id}">
         <div class="em">${cu.emoji}</div>
-        <div class="info"><div class="small muted">Einheit ${ci + 1} von ${UNITS.length} · <span class="tag">${cu.level}</span></div><h3>${esc(cu.title)}</h3></div>
+        <div class="info"><div class="small muted">Einheit ${ci + 1} von ${UNITS.length} · <span class="tag lv-${cu.level}">${cu.level}</span></div><h3>${esc(cu.title)}</h3></div>
         <span class="chev">›</span>
       </button>
       <div class="steps">${stepGrammar}${stepWords}${stepRead}${stepDialog}${stepTest}</div>
@@ -596,7 +596,7 @@ function renderPath() {
     const list = UNITS.map((u, i) => ({ u, i })).filter((x) => x.u.level === lv);
     if (!list.length) return;
     const doneN = list.filter((x) => unitDone(x.i)).length;
-    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${doneN}/${list.length}</span></div><div class="path">`;
+    html += `<div class="level-h"><span class="tag big lv-${lv}">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${doneN}/${list.length}</span></div><div class="path lv-${lv}">`;
     list.forEach(({ u, i }) => {
       const p = unitProgress(i);
       const open = unitUnlocked(i);
@@ -647,7 +647,7 @@ function renderPodList() {
   LEVELS.forEach((lv) => {
     const list = POD().filter((x) => x.level === lv);
     if (!list.length) return;
-    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((x) => S.listening[x.id] && S.listening[x.id].done).length}/${list.length}</span></div><div class="stack">`;
+    html += `<div class="level-h"><span class="tag big lv-${lv}">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((x) => S.listening[x.id] && S.listening[x.id].done).length}/${list.length}</span></div><div class="stack">`;
     list.forEach((x) => { const r = S.listening[x.id]; html += `<button class="card gcard" data-pod="${x.id}">
       <div><b>${esc(x.title)}</b><span>ca. ${podMinutes(x)} Min. · ${x.people.length} Sprecher · ${x.questions.length} Fragen</span></div>
       <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.best + " %" : "Hören"}</span></button>`; });
@@ -662,7 +662,7 @@ function renderPod(id) {
   setTabbar(false);
   const x = podGet(id), r = S.listening[id], n = x.lines.length;
   app.innerHTML = `<div class="fadein">
-    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${x.level}</span></div>
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag lv-${x.level}">${x.level}</span></div>
     <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("podcast", "ic eb")} PODCAST · ca. ${podMinutes(x)} MIN.</div>
     <h1 class="page-title">${esc(x.title)}</h1>
     <p class="sub">Sprecher: ${x.people.map(esc).join(", ")}. Hör erst einmal ohne Text zu – so trainierst du echtes Hörverstehen.</p>
@@ -736,7 +736,7 @@ function renderWriteList() {
   LEVELS.forEach((lv) => {
     const list = WR().filter((x) => x.level === lv);
     if (!list.length) return;
-    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((x) => S.writing[x.id] && S.writing[x.id].done).length}/${list.length}</span></div><div class="stack">`;
+    html += `<div class="level-h"><span class="tag big lv-${lv}">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((x) => S.writing[x.id] && S.writing[x.id].done).length}/${list.length}</span></div><div class="stack">`;
     list.forEach((x) => { const r = S.writing[x.id]; html += `<button class="card gcard" data-w="${x.id}">
       <div><b>${esc(x.title)}</b><span>${esc(x.kind)} · ${x.words[0]}–${x.words[1]} Wörter</span></div>
       <span class="pill ${r && r.done ? "ok" : ""}">${r && r.done ? "✓ " + r.score + " %" : r && r.draft ? "Entwurf" : "Schreiben"}</span></button>`; });
@@ -756,7 +756,7 @@ function renderWrite(id) {
   const auto = x.check.map(([, re]) => { if (!re) return false; try { return new RegExp(re, "im").test(text); } catch (e) { return false; } });
   const checks = r.checks && r.checks.length === x.check.length ? r.checks : auto;
   app.innerHTML = `<div class="fadein">
-    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${x.level}</span></div>
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag lv-${x.level}">${x.level}</span></div>
     <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("write", "ic eb")} ${esc(x.kind.toUpperCase())}</div>
     <h1 class="page-title">${esc(x.title)}</h1>
     <div class="card note">${esc(x.task)}<br><span class="small muted">Umfang: ${x.words[0]}–${x.words[1]} Wörter</span></div>
@@ -976,7 +976,7 @@ function renderGrammarList() {
   LEVELS.forEach((lv) => {
     const list = G().filter((g) => g.level === lv);
     if (!list.length) return;
-    html += `<div class="level-h"><span class="tag big">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((g) => S.gram[g.id] && S.gram[g.id].done).length}/${list.length}</span></div><div class="stack">`;
+    html += `<div class="level-h"><span class="tag big lv-${lv}">${lv}</span><b>${LEVEL_NAMES[lv]}</b><span class="small muted">${list.filter((g) => S.gram[g.id] && S.gram[g.id].done).length}/${list.length}</span></div><div class="stack">`;
     list.forEach((g) => {
       const gs = S.gram[g.id];
       html += `<button class="card gcard" data-g="${g.id}"><div><b>${esc(g.title)}</b><span>${esc(g.sum)}${where[g.id] ? ` · Einheit ${where[g.id]}` : ""}</span></div>
@@ -997,11 +997,11 @@ function renderUnit(uid) {
   const g = GMAP[u.grammar];
   const open = unitUnlocked(i);
   const rec = S.units[u.id];
-  app.innerHTML = `<div class="fadein">
+  app.innerHTML = `<div class="fadein lv-scope lv-${u.level}">
     <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
     <div class="unit-hero">
       <div class="em big">${u.emoji}</div>
-      <div><div class="small muted">Einheit ${i + 1} · <span class="tag">${u.level}</span>${p.quick ? " · ⚡ Schnellcheck" : ""}</div><h1 class="page-title" style="margin:2px 0 0">${esc(u.title)}</h1></div>
+      <div><div class="small muted">Einheit ${i + 1} · <span class="tag lv-${u.level}">${u.level}</span>${p.quick ? " · ⚡ Schnellcheck" : ""}</div><h1 class="page-title" style="margin:2px 0 0">${esc(u.title)}</h1></div>
     </div>
     ${!open ? `<div class="card note">🔒 Diese Einheit ist noch gesperrt. Schließ zuerst die vorige Einheit ab. Die Grammatik kannst du dir trotzdem schon ansehen.</div>` : ""}
     ${p.done ? `<div class="card note good">✓ Bestanden mit ${rec.score} % am ${new Date(rec.date).toLocaleDateString("de-DE")}</div>` : ""}
@@ -1058,7 +1058,7 @@ function renderDialog(did) {
   const u = unitById(uid);
   const rec = S.dialogs[did];
   app.innerHTML = `<div class="fadein">
-    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${u.level}</span></div>
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag lv-${u.level}">${u.level}</span></div>
     <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">🎧 DIALOG · ${esc(u.title)}</div>
     <h1 class="page-title">${esc(d.title)}</h1>
     <p class="sub">Erst nur zuhören, dann mitlesen. Tippe auf eine Zeile, um sie nochmal zu hören.</p>
@@ -1127,7 +1127,7 @@ function renderReading(uid) {
     return `<div class="rd-p" data-p="${pi}"><p>${html}</p>${rdTrans ? `<p class="rd-de">${esc(p[1])}</p>` : ""}</div>`;
   };
   app.innerHTML = `<div class="fadein">
-    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${u.level}</span></div>
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag lv-${u.level}">${u.level}</span></div>
     <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${icon("read", "ic eb")} ${esc(r.kind.toUpperCase())} · ${esc(u.title)}</div>
     <h1 class="page-title">${esc(r.title)}</h1>
     <p class="sub">Tippe auf ein Wort für die Übersetzung. Versuch erst, den Text ohne Hilfe zu verstehen.</p>
@@ -1178,7 +1178,7 @@ function renderGrammar(gid) {
   const g = GMAP[gid];
   const gs = S.gram[gid];
   app.innerHTML = `<div class="fadein">
-    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag">${g.level}</span></div>
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button><span class="tag lv-${g.level}">${g.level}</span></div>
     <div class="small muted" style="font-weight:800;margin-top:6px;letter-spacing:.05em">${g.mk ? icon("mistakes", "ic eb") + " TYPISCH DEUTSCH" : icon("grammar", "ic eb") + " GRAMMATIK"}</div>
     <h1 class="page-title">${esc(g.title)}</h1>
     <p class="sub">${esc(g.sum)}</p>
