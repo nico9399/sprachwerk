@@ -50,7 +50,7 @@ const DEFAULT = {
   onboarded: false,
   passed: -1,
   test: null,
-  settings: { accent: "us", rate: 0.9, newPerDay: 7, goal: 50, sound: true, autoplay: true, speak: true },
+  settings: { accent: "us", rate: 0.9, newPerDay: 7, goal: 50, sound: true, autoplay: true, speak: true, quick: true, quickPerDay: 8 },
   words: {},     // Wort-ID -> { b, due, seen, wrong, learned, quick }
   gram: {},      // Grammatik-ID -> { done, b, due, seen, wrong, best }
   units: {},     // Einheit-ID -> { done, score, date }
@@ -245,7 +245,8 @@ function todayPlan() {
     const keep = fresh.slice(0, Math.max(0, Math.min(fresh.length, nNew - nPack)));
     fresh.length = 0; fresh.push(...keep, ...pk.slice(0, nNew - keep.length));
   }
-  return { due, gram, fresh, quick: quick.slice(0, MAX_QUICK) };
+  // Schnellcheck abschaltbar und in der Menge einstellbar (Mehr → Lernen)
+  return { due, gram, fresh, quick: S.settings.quick === false ? [] : quick.slice(0, S.settings.quickPerDay || MAX_QUICK) };
 }
 
 // ---------- Statistik ----------
@@ -1969,6 +1970,8 @@ function renderMore() {
     <ul class="set">
       <li><span>Neue Wörter pro Tag</span>${step("newPerDay", 3, 20, 1)}</li>
       <li><span>Tagesziel (XP)</span>${step("goal", 20, 200, 10)}</li>
+      <li><span>Schnellcheck<small>${S.passed < 0 ? "Gilt erst nach einem Einstufungstest über A1" : (() => { const n = newCandidates().quick.length; return n ? `Fragt die Stufen A1–${LEVELS[startLvl() - 1]} kurz ab · noch ${n} Wörter` : "Alle Wörter der bekannten Stufen sind abgefragt"; })()}</small></span>${seg("quick", [["true", "An"], ["false", "Aus"]])}</li>
+      ${s.quick !== false ? `<li><span>Schnellcheck pro Tag</span>${step("quickPerDay", 2, 30, 2)}</li>` : ""}
       <li class="tap" id="retest"><span>Einstufungstest wiederholen<small>Aktuell: ${S.passed < 0 ? "Start bei A1" : "bis " + LEVELS[S.passed] + " sicher"}</small></span></li>
     </ul>
 

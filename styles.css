@@ -527,3 +527,8 @@ textarea.answer-input { resize: none; font-size: 1.125rem; line-height: 1.4; }
   .hero[class*="lv-"] .counts span { background: rgba(255,255,255,.08); }
   .hero[class*="lv-"]::after { color: var(--lv); opacity: .18; }
 }
+/* Einstellungen: Zeilen dürfen umbrechen, damit breite Umschalter nie abgeschnitten werden */
+.set li { flex-wrap: wrap; }
+.set li > span { flex: 1 1 140px; }
+.seg { flex: none; max-width: 100%; }
+.seg button { min-height: 36px; }
