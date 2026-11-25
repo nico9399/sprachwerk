@@ -153,7 +153,10 @@ function migrate() {
 const st = (id) => S.words[id];
 const unitWords = (uid) => WORDS.filter((w) => w.unit === uid);
 const unitById = (uid) => UNITS.find((u) => u.id === uid);
-const isQuickLevel = (level) => lvlIdx(level) <= S.passed;
+// Startstufe nach dem Einstufungstest: eine über der bestandenen – wer alles besteht, startet in der höchsten Stufe
+const startLvl = () => Math.min(S.passed + 1, LEVELS.length - 1);
+// Stufen unterhalb der Startstufe = Schnellcheck (die Startstufe selbst wird immer richtig gelernt)
+const isQuickLevel = (level) => lvlIdx(level) < startLvl();
 
 // ---------- Lernpfad ----------
 function unitDone(i) { return !!(S.units[UNITS[i].id] && S.units[UNITS[i].id].done); }
@@ -162,7 +165,7 @@ function unitUnlocked(i) {
   if (i === 0 || unitDone(i)) return true;
   if (isQuickLevel(u.level)) return true;
   if (unitDone(i - 1)) return true;
-  if (lvlIdx(u.level) === S.passed + 1 && UNITS[i - 1].level !== u.level) return true;
+  if (lvlIdx(u.level) === startLvl() && UNITS[i - 1].level !== u.level) return true;
   for (let k = i + 1; k < UNITS.length; k++) if (unitDone(k)) return true;
   return false;
 }
@@ -206,7 +209,8 @@ function newCandidates() {
   for (let i = 0; i < UNITS.length; i++) {
     if (!unitUnlocked(i)) continue;
     const ws = unitWords(UNITS[i].id).filter((w) => !st(w.id));
-    if (isQuickLevel(UNITS[i].level)) { quick.push(...ws.filter((w) => w.core)); extra.push(...ws.filter((w) => !w.core)); }
+    // Schnellcheck: nur Kernwörter, höchste bekannte Stufe zuerst; Zusatzwörter bekannter Stufen nicht als „neu“ einplanen
+    if (isQuickLevel(UNITS[i].level)) quick.unshift(...ws.filter((w) => w.core));
     else { core.push(...ws.filter((w) => w.core)); extra.push(...ws.filter((w) => !w.core)); }
   }
   return { custom, core, extra, quick };
@@ -466,7 +470,7 @@ function finishTest() {
   const text = passed < 0
     ? "Du fängst ganz vorne an – perfekt, so baust du ein sauberes Fundament auf. Die Grundlagen kommen schnell zurück."
     : passed >= LEVELS.length - 1
-      ? "Stark! Du hast alle Stufen geschafft. Alle Einheiten sind offen – die App fragt Bekanntes im Schnelldurchlauf ab."
+      ? "Stark! Du hast alle Stufen geschafft. Du startest in C2 – alles darunter fragt die App nur kurz im Schnellcheck ab."
       : `Die Stufen bis ${shown} sitzen. Diese Einheiten sind offen und werden nur kurz abgefragt (Schnellcheck). Dein Lernpfad startet bei ${startAt}.`;
   setTabbar(false);
   app.innerHTML = `
