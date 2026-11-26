@@ -120,7 +120,7 @@ function buildContent() {
   GMAP = Object.fromEntries([...G(), ...MK().map((g) => ({ ...g, mk: true }))].map((g) => [g.id, g]));
   WORDS = [];
   UNITS.forEach((u, ui) => u.words.forEach((w, wi) => {
-    WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "", sense: w[4] || "" });
+    WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE || (u.core || []).includes(w[0]), level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "", sense: w[4] || "" });
   }));
   S.custom.forEach((c) => WORDS.push({ id: "custom:" + c.id, unit: "custom", ui: -1, level: "A1", en: c.en, de: c.de, ex: c.ex || "", exde: c.exde || "" }));
   // Themenpakete: neue Wörter bekommen eigene IDs, Verweise ("englisch") nutzen das vorhandene Wort (gemeinsamer Lernstand)
@@ -764,6 +764,8 @@ function renderStats() {
         <div class="lvbar" role="img" aria-label="${x.L}: ${x.known} von ${x.total} Wörtern, ${x.sure} davon sicher"><i style="width:${x.total ? (100 * x.known) / x.total : 0}%"></i><b style="width:${x.total ? (100 * x.sure) / x.total : 0}%"></b></div>
         <span class="small num">${x.known}/${x.total}</span>
       </div>`).join("")}
+      ${(() => { const ids = [...new Set(Object.values(PACKW).flat())].filter((id) => WMAP[id] && WMAP[id].pack); const known = ids.filter((id) => S.words[id]); const sure = known.filter((id) => S.words[id].b >= 4).length;
+        return ids.length ? `<div class="lvrow"><span class="tag">Pakete</span><div class="lvbar" role="img" aria-label="Themenpakete: ${known.length} von ${ids.length} Wörtern, ${sure} davon sicher"><i style="width:${(100 * known.length) / ids.length}%"></i><b style="width:${(100 * sure) / ids.length}%"></b></div><span class="small num">${known.length}/${ids.length}</span></div>` : ""; })()}
       <p class="small muted legend"><i class="k-sure"></i>sicher (Wiederholung alle 16+ Tage) <i class="k-known"></i>gelernt</p>
     </div>
 

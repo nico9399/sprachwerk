@@ -567,7 +567,7 @@ button.stats:active .stat { transform: scale(.98); }
 .tbl th:first-child, .tbl td:first-child { text-align: left; }
 .tbl th { color: var(--muted); font-weight: 650; }
 .lvbars { display: flex; flex-direction: column; gap: 12px; padding: 16px 14px; }
-.lvrow { display: grid; grid-template-columns: 44px 1fr 72px; align-items: center; gap: 10px; }
+.lvrow { display: grid; grid-template-columns: 54px 1fr 72px; align-items: center; gap: 10px; }
 .lvrow .tag { justify-self: start; }
 .lvrow .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 650; }
 .lvbar { position: relative; height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }

@@ -1,10 +1,11 @@
 // Sprachwerk – Inhalte Englisch (Lernpfad)
 // Wort: [englisch, deutsch, Beispiel EN, Beispiel DE, Bedeutung (optional, bei gleich geschriebenen Wörtern)]. grammar/extra → id in data/en-grammar.js
+// core: zusätzliche Kernwörter (neben den ersten 30 Wörtern)
 window.SW_LANGS = window.SW_LANGS || {};
 window.SW_LANGS.en = {
   code: "en", name: "Englisch", flag: "🇬🇧", voices: { us: "en-US", uk: "en-GB" },
   units: [
-    { id: "u01", level: "A1", title: "Hallo & Vorstellen", emoji: "👋", grammar: "be", words: [
+    { id: "u01", level: "A1", title: "Hallo & Vorstellen", emoji: "👋", grammar: "be", core: ["excuse me","France","Spain","Italy","Europe"], words: [
       ["hello","hallo","Hello, how are you?","Hallo, wie geht es dir?"],
       ["good morning","guten Morgen","Good morning, everyone!","Guten Morgen zusammen!"],
       ["goodbye","auf Wiedersehen","Goodbye, see you tomorrow.","Auf Wiedersehen, bis morgen."],
@@ -104,7 +105,7 @@ window.SW_LANGS.en = {
       ["I'm not sure","ich bin mir nicht sicher","I'm not sure where he lives.","Ich weiß nicht genau, wo er wohnt."],
       ["I see","ach so, verstehe","I see, that makes sense.","Ach so, das ergibt Sinn."]
     ]},
-    { id: "u02", level: "A1", title: "Familie & Freunde", emoji: "👨‍👩‍👧", grammar: "pronouns", extra: ["object-pronouns"], words: [
+    { id: "u02", level: "A1", title: "Familie & Freunde", emoji: "👨‍👩‍👧", grammar: "pronouns", extra: ["object-pronouns"], core: ["children"], words: [
       ["family","die Familie","My family lives nearby.","Meine Familie wohnt in der Nähe."],
       ["friend","der Freund / die Freundin","She is my best friend.","Sie ist meine beste Freundin."],
       ["child","das Kind","The child is sleeping.","Das Kind schläft."],
@@ -186,7 +187,7 @@ window.SW_LANGS.en = {
       ["toddler","das Kleinkind","Toddlers are always busy.","Kleinkinder sind immer beschäftigt."],
       ["children","die Kinder","They have three children.","Sie haben drei Kinder."]
     ]},
-    { id: "u03", level: "A1", title: "Dinge & Zahlen", emoji: "🔢", grammar: "articles", extra: ["possessive-s","this-that"], words: [
+    { id: "u03", level: "A1", title: "Dinge & Zahlen", emoji: "🔢", grammar: "articles", extra: ["possessive-s","this-that"], core: ["pencil","notebook","picture","time","only","May"], words: [
       ["big","groß","That is a big house.","Das ist ein großes Haus."],
       ["small","klein","The room is small.","Das Zimmer ist klein."],
       ["new","neu","I have a new phone.","Ich habe ein neues Handy."],
@@ -285,7 +286,7 @@ window.SW_LANGS.en = {
       ["May","Mai","My birthday is in May.","Ich habe im Mai Geburtstag."],
       ["letter","der Buchstabe","The word has five letters.","Das Wort hat fünf Buchstaben.","Alphabet"]
     ]},
-    { id: "u04", level: "A1", title: "Zuhause", emoji: "🏠", grammar: "there", words: [
+    { id: "u04", level: "A1", title: "Zuhause", emoji: "🏠", grammar: "there", core: ["television","curtain","mug","teaspoon","scissors"], words: [
       ["house","das Haus","Their house has a garden.","Ihr Haus hat einen Garten."],
       ["flat","die Wohnung","I live in a small flat.","Ich wohne in einer kleinen Wohnung."],
       ["kitchen","die Küche","The kitchen is very clean.","Die Küche ist sehr sauber."],
@@ -429,7 +430,7 @@ window.SW_LANGS.en = {
       ["rug","der Teppich (Vorleger)","There's a rug in front of the sofa.","Vor dem Sofa liegt ein Teppich."],
       ["fan","der Ventilator","Turn on the fan, it's hot.","Mach den Ventilator an, es ist heiß.","Gerät"]
     ]},
-    { id: "u05", level: "A1", title: "Tagesablauf", emoji: "⏰", grammar: "present-simple", extra: ["reflexive"], words: [
+    { id: "u05", level: "A1", title: "Tagesablauf", emoji: "⏰", grammar: "present-simple", extra: ["reflexive"], core: ["towel","soap","toothbrush","toothpaste","to brush","to comb"], words: [
       ["to wake up","aufwachen","I wake up at five.","Ich wache um fünf auf."],
       ["to sleep","schlafen","I slept badly last night.","Ich habe letzte Nacht schlecht geschlafen."],
       ["to go","gehen / fahren","I go to work by car.","Ich fahre mit dem Auto zur Arbeit."],
@@ -529,7 +530,7 @@ window.SW_LANGS.en = {
       ["to tell the time","die Uhr lesen","My son can tell the time now.","Mein Sohn kann jetzt die Uhr lesen."],
       ["to get home","nach Hause kommen","What time do you get home?","Wann kommst du nach Hause?"]
     ]},
-    { id: "u06", level: "A1", title: "Essen & Trinken", emoji: "🍽️", grammar: "do-does", words: [
+    { id: "u06", level: "A1", title: "Essen & Trinken", emoji: "🍽️", grammar: "do-does", core: ["food","vegetable","grape","sweets","crisps","pancake"], words: [
       ["bread","das Brot","We need bread and milk.","Wir brauchen Brot und Milch."],
       ["milk","die Milch","Do you take milk in your coffee?","Nimmst du Milch in den Kaffee?"],
       ["water","das Wasser","A glass of water, please.","Ein Glas Wasser, bitte."],
@@ -717,7 +718,7 @@ window.SW_LANGS.en = {
       ["dishcloth","das Spültuch","Wipe the table with a dishcloth.","Wisch den Tisch mit einem Lappen ab."],
       ["washing-up liquid","das Spülmittel","We're out of washing-up liquid.","Das Spülmittel ist alle."]
     ]},
-    { id: "u07", level: "A1", title: "Einkaufen", emoji: "🛒", grammar: "some-any", extra: ["few-little"], words: [
+    { id: "u07", level: "A1", title: "Einkaufen", emoji: "🛒", grammar: "some-any", extra: ["few-little"], core: ["butcher","bookshop","poor","to go shopping","to pay by card"], words: [
       ["to buy","kaufen","I want to buy new shoes.","Ich will neue Schuhe kaufen."],
       ["to pay","bezahlen","Can I pay by card?","Kann ich mit Karte bezahlen?"],
       ["price","der Preis","The price is too high.","Der Preis ist zu hoch."],
@@ -811,7 +812,7 @@ window.SW_LANGS.en = {
       ["for sale","zu verkaufen","The house is for sale.","Das Haus steht zum Verkauf."],
       ["stamp","die Briefmarke","I need a stamp for this letter.","Ich brauche eine Briefmarke für diesen Brief.","Post"]
     ]},
-    { id: "u08", level: "A1", title: "Kleidung & Wetter", emoji: "🧥", grammar: "present-continuous", words: [
+    { id: "u08", level: "A1", title: "Kleidung & Wetter", emoji: "🧥", grammar: "present-continuous", core: ["shoe","sock","purple","rainbow","icy","boot"], words: [
       ["clothes","die Kleidung","Your clothes are in the cupboard.","Deine Kleidung ist im Schrank."],
       ["warm","warm","It is warm in here.","Hier drin ist es warm."],
       ["cold","kalt","The water is cold.","Das Wasser ist kalt.","Temperatur"],
@@ -906,7 +907,7 @@ window.SW_LANGS.en = {
       ["icy","eisig, vereist","The roads are icy.","Die Straßen sind vereist."],
       ["boot","der Stiefel","I wear boots in winter.","Im Winter trage ich Stiefel.","Kleidung"]
     ]},
-    { id: "u09", level: "A1", title: "Freizeit & Hobbys", emoji: "⚽", grammar: "can-like", words: [
+    { id: "u09", level: "A1", title: "Freizeit & Hobbys", emoji: "⚽", grammar: "can-like", core: ["tree","flower","grass","bird","horse","cow","pig","sheep","mountain","sky","moon","lake","animal","butterfly","bee"], words: [
       ["to like","mögen","I like this song.","Ich mag dieses Lied."],
       ["to want","wollen","I want a coffee.","Ich will einen Kaffee."],
       ["always","immer","He is always on time.","Er ist immer pünktlich."],
@@ -1030,7 +1031,7 @@ window.SW_LANGS.en = {
       ["fly","die Fliege","There's a fly in my soup.","In meiner Suppe ist eine Fliege."],
       ["to fish","angeln","My dad likes to fish.","Mein Vater angelt gern."]
     ]},
-    { id: "u10", level: "A1", title: "In der Stadt", emoji: "🗺️", grammar: "prepositions-place", words: [
+    { id: "u10", level: "A1", title: "In der Stadt", emoji: "🗺️", grammar: "prepositions-place", core: ["bus","station","road","plane","boat","on foot"], words: [
       ["left","links","Turn left at the corner.","Bieg an der Ecke links ab.","Richtung"],
       ["right","rechts","The bank is on the right.","Die Bank ist rechts.","Richtung"],
       ["straight on","geradeaus","Go straight on for 200 metres.","Geh 200 Meter geradeaus."],
@@ -1125,7 +1126,7 @@ window.SW_LANGS.en = {
       ["to miss the bus","den Bus verpassen","Hurry or you'll miss the bus!","Beeil dich, sonst verpasst du den Bus!"],
       ["out of order","außer Betrieb","The lift is out of order.","Der Aufzug ist außer Betrieb."]
     ]},
-    { id: "u11", level: "A2", title: "Arbeit", emoji: "🏭", grammar: "adverbs-frequency", extra: ["make-do"], words: [
+    { id: "u11", level: "A2", title: "Arbeit", emoji: "🏭", grammar: "adverbs-frequency", extra: ["make-do"], core: ["chef","police officer","farmer","actor","singer"], words: [
       ["job","der Job / die Stelle","I like my job.","Ich mag meinen Job."],
       ["colleague","der Kollege / die Kollegin","My colleague is on holiday.","Mein Kollege ist im Urlaub."],
       ["boss","der Chef / die Chefin","My boss wants to talk to me.","Mein Chef will mit mir reden."],
@@ -1452,7 +1453,7 @@ window.SW_LANGS.en = {
       ["to come true","wahr werden","My dream came true.","Mein Traum wurde wahr."],
       ["to come first","Erster werden","She came first in the race.","Sie wurde Erste beim Rennen."]
     ]},
-    { id: "u14", level: "A2", title: "Nachfragen", emoji: "❓", grammar: "past-questions", extra: ["some-any-words"], words: [
+    { id: "u14", level: "A2", title: "Nachfragen", emoji: "❓", grammar: "past-questions", extra: ["some-any-words"], core: ["almost","someone","everywhere","several","another","ready"], words: [
       ["Could you repeat that?","Kannst du das wiederholen?","Sorry, could you repeat that?","Entschuldigung, kannst du das wiederholen?"],
       ["Could you speak more slowly?","Kannst du langsamer sprechen?","Could you speak more slowly, please?","Kannst du bitte langsamer sprechen?"],
       ["I don't understand.","Ich verstehe das nicht.","Sorry, I don't understand.","Entschuldigung, ich verstehe das nicht."],
@@ -1643,7 +1644,7 @@ window.SW_LANGS.en = {
       ["to take place","stattfinden","The meeting takes place on Monday.","Das Meeting findet am Montag statt."],
       ["to take your time","sich Zeit lassen","Take your time, there's no rush.","Lass dir Zeit, keine Eile."]
     ]},
-    { id: "u16", level: "A2", title: "Reisen", emoji: "✈️", grammar: "will", words: [
+    { id: "u16", level: "A2", title: "Reisen", emoji: "✈️", grammar: "will", core: ["backpack","guide","postcard"], words: [
       ["airport","der Flughafen","How do I get to the airport?","Wie komme ich zum Flughafen?"],
       ["train station","der Bahnhof","The train station is near here.","Der Bahnhof ist hier in der Nähe."],
       ["ticket","die Fahrkarte / das Ticket","I need a ticket to London.","Ich brauche ein Ticket nach London."],
@@ -1824,7 +1825,7 @@ window.SW_LANGS.en = {
       ["up to date","aktuell","Keep your software up to date.","Halte deine Software aktuell."],
       ["light","leicht (Gewicht)","The bag is very light.","Die Tasche ist sehr leicht.","Gewicht"]
     ]},
-    { id: "u18", level: "A2", title: "Gesundheit", emoji: "🩺", grammar: "modals-must", words: [
+    { id: "u18", level: "A2", title: "Gesundheit", emoji: "🩺", grammar: "modals-must", core: ["sick","pill","cold"], words: [
       ["doctor","der Arzt / die Ärztin","I need to see a doctor.","Ich muss zum Arzt."],
       ["ill","krank","I'm ill today.","Ich bin heute krank."],
       ["headache","die Kopfschmerzen","I've got a headache.","Ich habe Kopfschmerzen."],
@@ -1949,7 +1950,7 @@ window.SW_LANGS.en = {
       ["cold","die Erkältung","I've got a cold.","Ich bin erkältet.","Krankheit"],
       ["pupil","die Pupille","Her pupils were large.","Ihre Pupillen waren groß.","Auge"]
     ]},
-    { id: "u19", level: "A2", title: "Termine & Telefon", emoji: "📞", grammar: "prepositions-time", words: [
+    { id: "u19", level: "A2", title: "Termine & Telefon", emoji: "📞", grammar: "prepositions-time", core: ["mobile phone","screen","website"], words: [
       ["meeting","die Besprechung","The meeting starts at nine.","Die Besprechung beginnt um neun."],
       ["deadline","die Frist / der Termin","The deadline is Friday.","Die Frist ist Freitag."],
       ["schedule","der Zeitplan","We are behind schedule.","Wir liegen hinter dem Zeitplan."],
@@ -2037,7 +2038,7 @@ window.SW_LANGS.en = {
       ["mouse","die Maus (Computer)","Click with the left mouse button.","Klick mit der linken Maustaste.","Computer"],
       ["key","die Taste","Press any key.","Drück eine beliebige Taste.","Tastatur"]
     ]},
-    { id: "u20", level: "A2", title: "Small Talk", emoji: "💬", grammar: "question-words", extra: ["question-tags"], words: [
+    { id: "u20", level: "A2", title: "Small Talk", emoji: "💬", grammar: "question-words", extra: ["question-tags"], core: ["gift","player","race"], words: [
       ["What do you do?","Was machst du beruflich?","So, what do you do?","Und, was machst du beruflich?"],
       ["I work in production.","Ich arbeite in der Produktion.","I work in production at a company.","Ich arbeite in der Produktion einer Firma."],
       ["No problem.","Kein Problem.","No problem, I can do that.","Kein Problem, das kann ich machen."],
