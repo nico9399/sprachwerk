@@ -623,3 +623,14 @@ button.stats:active .stat { transform: scale(.98); }
 .shield-card span { display: block; font-size: .8125rem; color: var(--muted); margin-top: 2px; }
 .shield-win { display: inline-flex; gap: 8px; align-items: center; margin: 10px auto 0; padding: 8px 12px; border-radius: 12px; background: var(--accent-soft); color: var(--ink); font-size: .875rem; font-weight: 600; text-align: left; }
 .shield-win .ic { color: var(--accent); width: 20px; height: 20px; flex: none; }
+
+/* Verbformen & Wortfamilien */
+.tbl-card { padding: 4px 12px; margin-top: 10px; overflow-x: auto; }
+.ftable { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+.ftable th { text-align: left; font-size: .75rem; color: var(--muted); font-weight: 700; padding: 10px 6px 6px; text-transform: uppercase; letter-spacing: .04em; }
+.ftable td { padding: 9px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.ftable td small { display: block; color: var(--muted); font-size: .8125rem; }
+.ftable td .link { padding: 0; min-height: 0; text-align: left; }
+.ftable td:last-child { text-align: right; width: 1%; white-space: nowrap; }
+details.tbl.card { padding: 6px 12px; }
+details.tbl.card .ftable td:last-child { text-align: left; white-space: normal; width: auto; }

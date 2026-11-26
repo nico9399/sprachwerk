@@ -43,6 +43,7 @@ const IC = {
   lock: '<rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   shield: '<path d="M12 3.5 5 6.5v5c0 4.3 3 7.6 7 9 4-1.4 7-4.7 7-9v-5z"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  forms: '<path d="M4 6h7M4 12h11M4 18h7"/><path d="M15 5l3 3-3 3M19 15l-3 3 3 3"/>',
   words: '<path d="M5 6h14M5 12h14M5 18h9"/>',
   practice: '<path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/>',
 };
@@ -101,6 +102,7 @@ const dlgList = (uid) => { const x = DLG()[uid]; return !x ? [] : Array.isArray(
 const dlgGet = (did) => { const [u, n] = String(did).split(":"); return dlgList(u)[+n || 0]; };
 const dlgDone = (did) => !!(S.dialogs[did] && S.dialogs[did].done);
 const POD = () => (window.SW_LISTEN || {})[S.lang] || [];
+const FORMS = () => (window.SW_FORMS || {})[S.lang] || { verbs: [], fam: [] };
 const podGet = (id) => POD().find((x) => x.id === id);
 const WR = () => (window.SW_WRITING || {})[S.lang] || [];
 const SND = () => (window.SW_SOUNDS || {})[S.lang] || [];
@@ -161,6 +163,7 @@ function migrate() {
   if (!S.writing) { S.writing = {}; changed = true; }
   if (!S.listening) { S.listening = {}; changed = true; }
   if (!S.stats) { S.stats = {}; changed = true; }
+  if (!S.forms) { S.forms = {}; changed = true; }
   if (typeof S.shields !== "number") { S.shields = 0; S.frozen = {}; S.shieldLast = ""; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
@@ -420,6 +423,7 @@ function render() {
   if (view && view.type === "plist") return renderPackList();
   if (view && view.type === "mlist") return renderMistakeList();
   if (view && view.type === "slist") return renderSoundList();
+  if (view && view.type === "forms") return renderForms();
   if (view && view.type === "wlist") return renderWriteList();
   if (view && view.type === "podlist") return renderPodList();
   if (view && view.type === "pod") return renderPod(view.id);
@@ -531,6 +535,121 @@ function finishTest() {
   </div>`;
   T = null;
   $("#t-done").onclick = () => { tab = "home"; view = null; render(); };
+}
+
+// ---------- Verbformen & Wortfamilien ----------
+const FSLOT = ["Verb", "Nomen", "Adjektiv", "Adverb"];
+const FASK = { 1: "Simple Past", 2: "Partizip (3. Form)" };
+const fKey = (kind, i) => kind + ":" + (kind === "v" ? FORMS().verbs[i][0] : FORMS().fam[i][0]);
+const formsSure = (kind) => (kind === "v" ? FORMS().verbs : FORMS().fam).filter((x, i) => (S.forms[fKey(kind, i)] || {}).ok >= 3).length;
+const altsOf = (v) => v.split("/").map((x) => x.trim().toLowerCase());
+function formTasks(kind) {
+  const F = FORMS(), list = kind === "v" ? F.verbs : F.fam, lv = startLvl();
+  // offene zuerst (nach Stufe, bis eine über der eigenen), dann schwache, dann Rest – je 12 Aufgaben
+  const idx = list.map((x, i) => i);
+  const st0 = (i) => S.forms[fKey(kind, i)] || {};
+  const score = (i) => {
+    const s = st0(i), L = kind === "v" ? lvlIdx(list[i][4]) : 0;
+    return (s.ok >= 3 ? 100 : 0) + (s.wrong && s.ok < 3 ? -20 : 0) + (kind === "v" && L > lv + 1 ? 30 : 0) + L * 2 + Math.random() * 6;
+  };
+  const pick = idx.sort((a, b) => score(a) - score(b)).slice(0, 12);
+  return shuffle(pick.map((i) => {
+    const s = st0(i), typed = (s.seen || 0) >= 1 && Math.random() < 0.6;
+    if (kind === "v") return { fk: "v", i, ask: Math.random() < 0.5 ? 1 : 2, typed };
+    const have = [1, 2, 3, 4].filter((k) => list[i][k]);
+    const cue = have[Math.floor(Math.random() * have.length)];
+    const rest = have.filter((k) => k !== cue);
+    return { fk: "f", i, cue, ask: rest[Math.floor(Math.random() * rest.length)], typed: typed && Math.random() < 0.5 };
+  }).filter((t) => t.fk === "v" || t.ask));
+}
+function formDistractors(task, right) {
+  const F = FORMS(), out = new Set(), R = altsOf(right);
+  const add = (x) => { if (x && !R.includes(x.toLowerCase()) && !altsOf(right).some((r) => altsOf(x).includes(r))) out.add(x); };
+  if (task.fk === "v") {
+    const v = F.verbs[task.i];
+    add(v[task.ask === 1 ? 2 : 1]);
+    const base = v[0].replace(/e$/, "");
+    add(base + "ed");
+    shuffle(F.verbs.filter((x, j) => j !== task.i)).slice(0, 6).forEach((x) => out.size < 3 && add(x[task.ask]));
+  } else {
+    shuffle(F.fam.filter((x, j) => j !== task.i && x[task.ask])).slice(0, 8).forEach((x) => out.size < 3 && add(x[task.ask]));
+  }
+  return [...out].slice(0, 3);
+}
+function tForm(task) {
+  const F = FORMS();
+  const row = task.fk === "v" ? F.verbs[task.i] : F.fam[task.i];
+  const right = row[task.ask];
+  const say = task.fk === "v" ? row.slice(0, 3).join(", ") : [1, 2, 3, 4].map((k) => row[k]).filter(Boolean).join(", ");
+  const label = task.fk === "v"
+    ? `${FASK[task.ask]} von`
+    : `Welches ${FSLOT[task.ask - 1] === "Adverb" ? "Adverb" : FSLOT[task.ask - 1]} gehört dazu?`;
+  const cue = task.fk === "v" ? row[0] : row[task.cue];
+  const hint = task.fk === "v" ? row[3] : `${FSLOT[task.cue - 1]} · ${row[0]}`;
+  app.innerHTML = `<div class="s-body fadein">${sessionTop()}
+    <div class="prompt-label">${task.fk === "v" ? "Unregelmäßige Verben" : "Wortfamilie"} · ${esc(label)}</div>
+    <div class="prompt"><div class="big">${esc(cue)}</div><div class="muted">${esc(hint)}</div></div>
+    ${task.typed ? `<input class="answer-input" id="ans" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${esc(task.fk === "v" ? FASK[task.ask] : FSLOT[task.ask - 1])} …" enterkeyhint="done">
+    <button class="skip" id="dunno">Weiß ich nicht</button>` : optionsHtml(shuffle([right.split("/")[0], ...formDistractors(task, right)]))}
+  </div>${footCheck}`;
+  bindClose();
+  const done = (ok, given) => {
+    gradeForm(task, ok);
+    const all = task.fk === "v" ? `<p class="sol">${esc(row[0])} – ${esc(row[1])} – ${esc(row[2])}</p><p class="muted">${esc(row[3])}</p>`
+      : `<p class="sol">${[1, 2, 3, 4].map((k) => row[k] ? `${FSLOT[k - 1]}: <b>${esc(row[k])}</b>` : "").filter(Boolean).join(" · ")}</p>`;
+    footFeedback(ok, ok ? "✓ " + pick(PRAISE) : given ? `✗ Richtig: ${esc(right.replace("/", " / "))}` : "✗ Nicht ganz", all);
+    $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Formen: ${cue} → ${right}` }); save(); toast("Gemeldet – danke!"); };
+    if (S.settings.autoplay) setTimeout(() => speak(say), 200);
+  };
+  if (task.typed) {
+    const inp = $("#ans"); setTimeout(() => inp.focus(), 50);
+    inp.oninput = () => ($("#check").disabled = !inp.value.trim());
+    const go = (val) => { inp.disabled = true; $("#dunno").remove(); const v = (val || "").trim().toLowerCase().replace(/\s+/g, " "); done(!!v && altsOf(right).includes(v), true); };
+    inp.onkeydown = (e) => { if (e.key === "Enter" && inp.value.trim()) { e.preventDefault(); go(inp.value); } };
+    $("#check").onclick = () => go(inp.value);
+    $("#dunno").onclick = () => go(null);
+  } else bindOptions(right.split("/")[0], (ok) => done(ok, false));
+}
+function gradeForm(task, ok) {
+  const key = fKey(task.fk, task.i);
+  award(ok, key, task.retry);
+  const s = S.forms[key] || (S.forms[key] = { seen: 0, ok: 0, wrong: 0 });
+  s.seen++;
+  if (!task.retry) { if (ok) s.ok++; else { s.ok = 0; s.wrong++; } }
+  if (!ok && !task.retry && !Q.requeued.has(key)) { Q.requeued.add(key); Q.tasks.push({ ...task, retry: true, typed: false }); }
+  save();
+}
+function renderForms() {
+  setTabbar(false);
+  const F = FORMS(), lv = view.lv || "all", fq = view.q || "";
+  const sureV = formsSure("v"), sureF = formsSure("f");
+  const verbs = F.verbs.map((v, i) => ({ v, i })).filter(({ v }) => (lv === "all" || v[4] === lv) && (!fq || (v.slice(0, 4).join(" ").toLowerCase().includes(fq.toLowerCase()))));
+  const mark = (k, i) => { const s = S.forms[fKey(k, i)]; return s ? (s.ok >= 3 ? `<span class="pill ok" aria-label="sicher">✓</span>` : `<span class="pill" aria-label="in Arbeit">${s.ok}/3</span>`) : ""; };
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Verbformen & Wortfamilien</h1>
+    <p class="sub">Unregelmäßige Verben in allen drei Formen und Wörter, die zusammengehören. Eine Form gilt als sicher, wenn du sie 3× hintereinander richtig hattest.</p>
+    <div class="tiles">
+      <button class="card tile-card" id="go-v">${icon("forms", "ic")}<b>Unregelmäßige Verben</b><span>${sureV} von ${F.verbs.length} sicher</span></button>
+      <button class="card tile-card" id="go-f">${icon("forms", "ic")}<b>Wortfamilien</b><span>${sureF} von ${F.fam.length} sicher</span></button>
+    </div>
+    <div class="section-h"><h3>Alle Verben</h3></div>
+    <div class="seg full" role="tablist">${["all", ...LEVELS.slice(0, 5)].map((l) => `<button role="tab" aria-selected="${l === lv}" class="${l === lv ? "on" : ""}" data-lv="${l}">${l === "all" ? "Alle" : l}</button>`).join("")}</div>
+    <input class="search" id="fq" type="search" placeholder="Verb suchen …" value="${esc(fq)}" style="margin-top:10px">
+    <div class="card tbl-card"><table class="ftable"><thead><tr><th>Grundform</th><th>Past</th><th>Partizip</th><th></th></tr></thead><tbody>
+      ${verbs.map(({ v, i }) => `<tr><td><button class="link" data-say="${esc(v[0] + ", " + v[1].replace("/", ", ") + ", " + v[2].replace("/", ", "))}"><b>${esc(v[0])}</b></button><small>${esc(v[3])}</small></td><td>${esc(v[1].replace("/", " / "))}</td><td>${esc(v[2].replace("/", " / "))}</td><td>${mark("v", i)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Nichts gefunden.</td></tr>`}
+    </tbody></table></div>
+    <div class="section-h"><h3>Alle Wortfamilien</h3></div>
+    <details class="card tbl"><summary>Liste anzeigen (${F.fam.length})</summary>
+      <table class="ftable"><thead><tr><th>Verb</th><th>Nomen</th><th>Adjektiv</th><th>Adverb</th></tr></thead><tbody>
+      ${F.fam.map((r, i) => `<tr><td>${esc(r[1] || "–")}<small>${esc(r[0])}</small></td><td>${esc(r[2] || "–")}</td><td>${esc(r[3] || "–")}</td><td>${esc(r[4] || "–")} ${mark("f", i)}</td></tr>`).join("")}
+      </tbody></table></details>
+  </div>`;
+  $("#back").onclick = () => { view = null; tab = "practice"; render(); window.scrollTo(0, 0); };
+  $("#go-v").onclick = () => startSession("forms", { kind: "v" });
+  $("#go-f").onclick = () => startSession("forms", { kind: "f" });
+  app.querySelectorAll("[data-lv]").forEach((b) => (b.onclick = () => { view.lv = b.dataset.lv; const y = window.scrollY; renderForms(); window.scrollTo(0, y); }));
+  const q = $("#fq"); q.oninput = () => { view.q = q.value; const pos = q.selectionStart; const y = window.scrollY; renderForms(); window.scrollTo(0, y); const n = $("#fq"); n.focus(); n.setSelectionRange(pos, pos); };
 }
 
 // ---------- Statistik-Seite ----------
@@ -820,6 +939,7 @@ function renderPractice() {
     { id: "podlist", ic: "podcast", t: "Hörtexte", s: `${POD().filter((x) => S.listening[x.id] && S.listening[x.id].done).length} von ${POD().length} gehört` },
     { id: "wlist", ic: "write", t: "Schreiben", s: `${WR().filter((x) => S.writing[x.id] && S.writing[x.id].done).length} von ${WR().length} geschrieben` },
     { id: "slist", ic: "sound", t: "Aussprache", s: `${SND().filter((x) => S.sounds[x.id] && S.sounds[x.id].done).length} von ${SND().length} geübt` },
+    { id: "forms", ic: "forms", t: "Verbformen & Wortfamilien", s: `${formsSure("v")} von ${FORMS().verbs.length} Verben sicher` },
     { id: "mlist", ic: "mistakes", t: "Typisch deutsch", s: `${MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} von ${MK().length} Fehlerfallen` },
     { id: "plist", ic: "packs", t: "Themenpakete", s: `${PACKS.filter((p) => packOn(p.id)).length} von ${PACKS.length} eingeschaltet` },
   ];
@@ -1456,6 +1576,8 @@ function startSession(mode, opt = {}) {
     const w = WMAP[opt.id];
     tasks = st(w.id) ? [{ id: w.id, t: "mc_en", g: true }, { id: w.id, t: "mc_de" }, { id: w.id, t: exerciseFor(w) }]
       : [{ id: w.id, t: "intro" }, { id: w.id, t: "mc_en", g: true }, { id: w.id, t: "mc_de" }];
+  } else if (mode === "forms") {
+    tasks = formTasks(opt.kind);
   } else if (mode === "weak") {
     const ws = weakWords().slice(0, 10), gs = weakGrammar().slice(0, 3);
     const A = ws.map((w) => ({ id: w.id, t: "mc_en" }));
@@ -1545,6 +1667,7 @@ function renderTask() {
   if (task.rq) return tRQ(task);
   if (task.pq) return tPQ(task);
   if (task.snd) return ({ pair: tPair, stress: tStress, ssay: tSSay })[task.t](task);
+  if (task.fk) return tForm(task);
   if (task.dlg) return tSentence(task, { en: task.en, de: task.de }, (ok) => sFeedback(task, ok));
   if (task.gid) {
     const g = GMAP[task.gid];
@@ -2072,6 +2195,11 @@ function renderResult() {
     title = acc >= 50 ? "Gut zugehört!" : "Noch einmal hören?";
     sub = `„${podGet(Q.opt.pid).title}“ – ${acc} % richtig.${acc < 50 ? " Tipp: einmal mit Text und Übersetzung hören, dann die Fragen wiederholen." : ""}`;
   }
+  if (Q.mode === "forms") {
+    const k = Q.opt.kind;
+    title = acc >= 80 ? "Stark geübt!" : acc >= 50 ? "Gut geübt!" : "Dranbleiben!";
+    sub = `${acc} % richtig · ${formsSure(k)} von ${k === "v" ? FORMS().verbs.length + " Verben" : FORMS().fam.length + " Wortfamilien"} sicher.`;
+  }
   if (Q.mode === "sound") {
     const prev = S.sounds[Q.opt.sid];
     S.sounds[Q.opt.sid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
@@ -2118,7 +2246,7 @@ function renderResult() {
     ${shieldNews === "earned" ? `<p class="shield-win">${icon("shield", "ic")} Serienschutz verdient! Verpasst du mal einen Tag, rettet er deine Serie.</p>` : ""}
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : mode === "one" ? "words" : "home"; if (shieldNews === "earned") shieldNews = null; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "forms") { view = { type: "forms" }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : mode === "one" ? "words" : "home"; if (shieldNews === "earned") shieldNews = null; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
