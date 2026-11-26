@@ -2012,8 +2012,8 @@ function renderResult() {
   if (Q.mode === "dialog") {
     const prev = S.dialogs[Q.opt.did];
     S.dialogs[Q.opt.did] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
-    title = "Dialog geschafft!";
-    sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.`;
+    title = acc >= 50 ? "Dialog geschafft!" : "Noch etwas wackelig";
+    sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.${acc < 50 ? " Hör dir den Dialog noch einmal an, dann klappt es besser." : ""}`;
   }
   if (!Q.logged) { Q.logged = true; const ds = dayStats(); ds.ms += Math.min(Date.now() - Q.start, 3600000); ds.n++; save(); }
   if (Q.mode === "weak") {
@@ -2024,8 +2024,8 @@ function renderResult() {
   if (Q.mode === "pod") {
     const prev = S.listening[Q.opt.pid];
     S.listening[Q.opt.pid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
-    title = "Gut zugehört!";
-    sub = `„${podGet(Q.opt.pid).title}“ – ${acc} % richtig.`;
+    title = acc >= 50 ? "Gut zugehört!" : "Noch einmal hören?";
+    sub = `„${podGet(Q.opt.pid).title}“ – ${acc} % richtig.${acc < 50 ? " Tipp: einmal mit Text und Übersetzung hören, dann die Fragen wiederholen." : ""}`;
   }
   if (Q.mode === "sound") {
     const prev = S.sounds[Q.opt.sid];
@@ -2036,8 +2036,8 @@ function renderResult() {
   if (Q.mode === "read") {
     const prev = S.reading[Q.opt.uid];
     S.reading[Q.opt.uid] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
-    title = "Text verstanden!";
-    sub = `„${RD()[Q.opt.uid].title}“ – ${acc} % richtig.`;
+    title = acc >= 50 ? "Text verstanden!" : "Noch einmal lesen?";
+    sub = `„${RD()[Q.opt.uid].title}“ – ${acc} % richtig.${acc < 50 ? " Lies den Text noch einmal mit Übersetzung, dann klappt es besser." : ""}`;
   }
   if (Q.mode === "test") {
     const u = unitById(Q.opt.unit);
