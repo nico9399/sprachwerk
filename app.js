@@ -36,6 +36,12 @@ const IC = {
   mistakes: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.1"/>',
   packs: '<path d="M4 8l8-4 8 4-8 4z"/><path d="M4 12.5l8 4 8-4M4 16.5l8 4 8-4"/>',
   test: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
+  stats: '<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  bolt: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>',
+  lock: '<rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
+  shield: '<path d="M12 3.5 5 6.5v5c0 4.3 3 7.6 7 9 4-1.4 7-4.7 7-9v-5z"/>',
   words: '<path d="M5 6h14M5 12h14M5 18h9"/>',
   practice: '<path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/>',
 };
@@ -60,6 +66,7 @@ const DEFAULT = {
   sounds: {},    // Aussprache-Lektion -> { done, best }
   writing: {},   // Schreibaufgabe -> { draft, checks, done, score, date }
   listening: {}, // Hörtext -> { done, best }
+  stats: {},     // Tag -> { r: richtig, w: falsch, ms: Lernzeit, n: Einheiten }
   custom: [],
   days: {},
   reports: [],
@@ -149,6 +156,7 @@ function migrate() {
   if (!S.sounds) { S.sounds = {}; changed = true; }
   if (!S.writing) { S.writing = {}; changed = true; }
   if (!S.listening) { S.listening = {}; changed = true; }
+  if (!S.stats) { S.stats = {}; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -257,6 +265,16 @@ function streak() {
   if (!S.days[dayKey(d)]) d.setDate(d.getDate() - 1);
   while (S.days[dayKey(d)]) { n++; d.setDate(d.getDate() - 1); }
   return n;
+}
+// Schwächen: schon mal falsch und seitdem keine 3× richtig in Folge
+function weakWords() {
+  return WORDS.filter((w) => { const s = st(w.id); return s && s.learned !== undefined && (s.wrong || 0) >= 1 && (s.ok || 0) < 3; })
+    .map((w) => { const s = st(w.id); return { w, score: (s.wrong || 0) / Math.max(1, s.seen || 1) + (s.b <= 1 ? 0.5 : 0) + (s.lw ? 0.1 : 0) }; })
+    .sort((a, b) => b.score - a.score).map((x) => x.w);
+}
+function weakGrammar() {
+  return Object.entries(S.gram).filter(([id, g]) => GMAP[id] && g.done && (g.wrong || 0) >= 2 && (g.ok || 0) < 3 && g.wrong / Math.max(1, g.seen) >= 0.2)
+    .sort((a, b) => b[1].wrong / b[1].seen - a[1].wrong / a[1].seen).map(([id]) => GMAP[id]);
 }
 const learnedCount = () => Object.keys(S.words).filter((k) => WMAP[k]).length;
 const solidCount = () => Object.entries(S.words).filter(([k, s]) => WMAP[k] && s.b >= 4).length;
@@ -555,8 +573,9 @@ function renderHome() {
       <button class="btn" id="hero-test">Einheitentest starten</button>` : !cp.grammarDone ? `<h2>Wörter erledigt</h2>
       <p>Für heute sind keine Wörter mehr dran. Als Nächstes: die Grammatik dieser Einheit.</p>
       <button class="btn" data-gram="${cg.id}">Grammatik lernen</button>` : `<h2>Alles erledigt 🎉</h2>
-      <p>Für heute ist nichts mehr fällig. Wer mag, übt freiwillig weiter.</p>
-      <button class="btn" id="extra" ${learnedCount() < 4 ? "disabled" : ""}>Freies Üben</button>`}
+      ${weakWords().length + weakGrammar().length >= 3 ? `<p>Für heute ist nichts mehr fällig. Wenn du magst: ${weakWords().length + weakGrammar().length} Schwachstellen gezielt trainieren.</p>
+      <button class="btn" id="hero-weak">Schwächen trainieren</button>` : `<p>Für heute ist nichts mehr fällig. Wer mag, übt freiwillig weiter.</p>
+      <button class="btn" id="extra" ${learnedCount() < 4 ? "disabled" : ""}>Freies Üben</button>`}`}
     </div>`}
 
     <div class="section-h"><h3>Dein Lernpfad</h3><button class="link small" id="all-units">Alle Einheiten</button></div>
@@ -597,6 +616,7 @@ function renderHome() {
   app.querySelectorAll("[data-dialog]").forEach((b) => (b.onclick = () => openDialog(b.dataset.dialog)));
   app.querySelectorAll("[data-read]").forEach((b) => (b.onclick = () => openReading(b.dataset.read)));
   const ut = $("#unit-test"); if (ut) ut.onclick = () => startSession("test", { unit: cu.id });
+  const hw = $("#hero-weak"); if (hw) hw.onclick = () => startSession("weak");
   const ht = $("#hero-test"); if (ht) ht.onclick = () => startSession("test", { unit: cu.id });
 }
 
@@ -631,7 +651,9 @@ function renderPath() {
 
 // ---------- Üben (alle Trainer) ----------
 function renderPractice() {
+  const nWeak = weakWords().length, nWeakG = weakGrammar().length;
   const tiles = [
+    { id: "weak", ic: "target", t: "Schwächen", s: nWeak + nWeakG ? `${plural(nWeak, "Wort", "Wörter")}${nWeakG ? ` · ${nWeakG}× Grammatik` : ""}` : "Gerade keine – stark!" },
     { id: "glist", ic: "grammar", t: "Grammatik", s: `${Object.values(S.gram).filter((g) => g.done).length - MK().filter((g) => S.gram[g.id] && S.gram[g.id].done).length} von ${G().length} gelernt` },
     { id: "podlist", ic: "podcast", t: "Hörtexte", s: `${POD().filter((x) => S.listening[x.id] && S.listening[x.id].done).length} von ${POD().length} gehört` },
     { id: "wlist", ic: "write", t: "Schreiben", s: `${WR().filter((x) => S.writing[x.id] && S.writing[x.id].done).length} von ${WR().length} geschrieben` },
@@ -645,7 +667,10 @@ function renderPractice() {
     <div class="tiles">${tiles.map((x) => `<button class="tile-card" data-v="${x.id}">${icon(x.ic, "ic tile-ic")}<b>${x.t}</b><span>${x.s}</span></button>`).join("")}</div>
     ${learnedCount() >= 4 ? `<button class="card gcard" id="free" style="margin-top:14px"><div><b>Freies Üben</b><span>Gemischte Wiederholung deiner gelernten Wörter</span></div><span class="chev">›</span></button>` : ""}
   </div>`;
-  app.querySelectorAll("[data-v]").forEach((b) => (b.onclick = () => { view = { type: b.dataset.v }; render(); window.scrollTo(0, 0); }));
+  app.querySelectorAll("[data-v]").forEach((b) => (b.onclick = () => {
+    if (b.dataset.v === "weak") { if (nWeak + nWeakG) startSession("weak"); else toast("Keine Schwachstellen – alles sitzt gerade."); return; }
+    view = { type: b.dataset.v }; render(); window.scrollTo(0, 0);
+  }));
   const f = $("#free"); if (f) f.onclick = () => startSession("free");
 }
 
@@ -1264,6 +1289,12 @@ function startSession(mode, opt = {}) {
     const mixed = shuffle(B);
     for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
     tasks.push(...mixed);
+  } else if (mode === "weak") {
+    const ws = weakWords().slice(0, 10), gs = weakGrammar().slice(0, 3);
+    const A = ws.map((w) => ({ id: w.id, t: "mc_en" }));
+    const B = ws.map((w) => { let t = exerciseFor(w); if (t === "mc_en" || t === "listen") t = buildSource(w) && w.en.split(" ").length >= 3 ? "build" : w.en.split(" ").length <= 2 ? "type" : "mc_de"; return { id: w.id, t, g: true }; });
+    gs.forEach((g) => grammarTasks(g, 3).forEach((t, k) => B.push({ ...t, gg: k === 0, review: true })));
+    tasks = [...shuffle(A), ...shuffle(B)];
   } else if (mode === "pod") {
     tasks = shuffle(podGet(opt.pid).questions.map((q, k) => ({ pq: opt.pid, k, t: "pq" })));
   } else if (mode === "sound") {
@@ -1745,8 +1776,9 @@ function gFeedback(task, g, ok, full, heard) {
   if (S.settings.autoplay) setTimeout(() => speak(full), 200);
 }
 
+function dayStats(d = today()) { return S.stats[d] || (S.stats[d] = { r: 0, w: 0, ms: 0, n: 0 }); }
 function award(ok, id, retry) {
-  if (!retry) Q.graded++;
+  if (!retry) { Q.graded++; const ds = dayStats(); if (ok) ds.r++; else ds.w++; }
   if (!ok) { if (!retry) Q.firstWrong++; return; }
   if (!retry) Q.right++;
   const pts = Q.wrongIds.has(id) ? 5 : 10;
@@ -1770,6 +1802,7 @@ function gradeWord(task, w, ok, soft) {
   const s = S.words[w.id] || (S.words[w.id] = { b: 0, due: today(), seen: 0, wrong: 0 });
   s.seen = (s.seen || 0) + 1;
   if (!ok) s.wrong = (s.wrong || 0) + 1;
+  if (!task.retry) { s.ok = ok ? (s.ok || 0) + 1 : 0; if (!ok) s.lw = today(); }
   if (task.free) { if (!ok) setBox(w.id, 1); save(); return; }
   if (task.exam) {
     if (!s.learned) { s.learned = today(); s.quick = true; setBox(w.id, ok ? 4 : 1); }
@@ -1797,6 +1830,7 @@ function gradeGrammar(task, g, ok, soft) {
   }
   const gs = S.gram[g.id] || (S.gram[g.id] = { done: false, b: 0, due: today(), seen: 0, wrong: 0, best: 0 });
   gs.seen++; if (!ok) gs.wrong++;
+  if (!task.retry) gs.ok = ok ? (gs.ok || 0) + 1 : 0;
   if (task.lesson || task.free) { save(); return; }
   if (task.exam) { if (!ok && gs.done) { gs.b = 1; gs.due = addDays(1); } save(); return; }
   if (task.gg && !Q.gradedIds.has(key)) {
@@ -1844,6 +1878,12 @@ function renderResult() {
     S.dialogs[Q.opt.did] = { done: true, best: Math.max(acc, (prev && prev.best) || 0) };
     title = "Dialog geschafft!";
     sub = `„${dlgGet(Q.opt.did).title}“ – ${acc} % richtig.`;
+  }
+  if (!Q.logged) { Q.logged = true; const ds = dayStats(); ds.ms += Math.min(Date.now() - Q.start, 3600000); ds.n++; save(); }
+  if (Q.mode === "weak") {
+    title = "Schwächen trainiert!";
+    const left = weakWords().length + weakGrammar().length;
+    sub = left ? `Noch ${left} Schwachstellen offen – jedes Mal werden es weniger.` : "Keine Schwachstellen mehr übrig. Stark!";
   }
   if (Q.mode === "pod") {
     const prev = S.listening[Q.opt.pid];
@@ -1896,7 +1936,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
