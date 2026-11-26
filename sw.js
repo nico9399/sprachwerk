@@ -1,5 +1,5 @@
 // Offline-Cache. Bei Änderungen die Versionsnummer hochzählen.
-const CACHE = "sprachwerk-v31";
+const CACHE = "sprachwerk-v32";
 const FILES = ["./", "index.html", "styles.css", "app.js", "data/en.js", "data/en-grammar.js", "data/en-dialogs.js", "data/en-packs.js", "data/en-reading.js", "data/en-mistakes.js", "data/en-sounds.js", "data/en-writing.js", "data/en-listening.js", "manifest.json", "fonts/bricolage.woff2", "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
@@ -9,7 +9,11 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   e.respondWith(
-    fetch(e.request, { cache: "no-cache" }).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); return r; })
+    fetch(e.request, { cache: "no-cache" }).then((r) => {
+      // nur erfolgreiche eigene Antworten zwischenspeichern (keine Fehlerseiten, keine fremden Seiten)
+      if (r.ok && new URL(e.request.url).origin === self.location.origin) { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); }
+      return r;
+    })
       .catch(() => caches.match(e.request, { ignoreSearch: true }))
   );
 });

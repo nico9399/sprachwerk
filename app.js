@@ -1097,10 +1097,11 @@ function tStress(task) {
 }
 function tSSay(task) {
   speakUI({ en: task.en, de: task.de, label: "Sprich deutlich nach", strict: true }, task, (ok, heard) => {
+    const sn = snapGrade(null);
     award(ok, "snd:" + task.en, false);
     footFeedback(ok, ok ? "✓ Gut verstanden!" : "✗ Nicht erkannt", `<p class="sol">${esc(task.en)}</p>${heard ? `<p class="muted">Erkannt: „${esc(heard)}“</p>` : ""}`);
     $("#rep").onclick = () => { S.reports.push({ date: today(), text: `Aussprache sprechen: ${task.en}` }); save(); toast("Gemeldet – danke!"); };
-    if (!ok) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
+    if (!ok) addSelfOk(() => { undoGrade(sn); award(true, "snd:" + task.en, false); save(); });
   });
 }
 
@@ -1769,14 +1770,27 @@ function tSentence(task, item, onDone) {
   $("#dunno").onclick = () => go(null);
 }
 function sFeedback(task, ok, msg) {
+  const sn = snapGrade(null);
   award(ok, "s:" + (task.dq || task.rq || task.en), false);
   let body = "";
   if (task.en) body += `<p class="sol">${ok ? "" : "Richtig: "}${esc(task.en)}</p><p class="muted">${esc(task.de)}</p>`;
   else if (msg) body += `<p class="sol">${esc(msg)}</p>`;
   footFeedback(ok, ok ? "✓ " + pick(PRAISE) : "✗ Nicht ganz", body);
   $("#rep").onclick = () => { S.reports.push({ date: today(), text: task.rq ? `Lesetext ${task.rq}: ${RD()[task.rq].questions[task.k][0]}` : `Dialog ${task.dq || ""}: ${task.en || dlgGet(task.dq).questions[task.k][0]}` }); save(); toast("Gemeldet – danke!"); };
-  if (!ok && task.t === "tsent" && task.typed) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
+  if (!ok && task.t === "tsent" && task.typed) addSelfOk(() => { undoGrade(sn); award(true, "s:" + (task.dq || task.rq || task.en), false); save(); });
   if (task.en && S.settings.autoplay) setTimeout(() => speak(task.en), 200);
+}
+// „Meine Version stimmt auch“: Bewertung komplett zurückdrehen und als richtig neu werten
+function snapGrade(wid) {
+  const t = today();
+  return { wid, w: wid && S.words[wid] ? { ...S.words[wid] } : null, n: Q.tasks.length, wrong: new Set(Q.wrongIds), req: new Set(Q.requeued), gid: new Set(Q.gradedIds),
+    q: { graded: Q.graded, right: Q.right, firstWrong: Q.firstWrong, xp: Q.xp }, xp: S.days[t] || 0, ds: { ...dayStats() }, t };
+}
+function undoGrade(sn) {
+  if (sn.wid) { if (sn.w) S.words[sn.wid] = sn.w; else delete S.words[sn.wid]; }
+  Q.tasks.length = sn.n; Q.wrongIds = sn.wrong; Q.requeued = sn.req; Q.gradedIds = sn.gid; Object.assign(Q, sn.q);
+  if (sn.xp) S.days[sn.t] = sn.xp; else delete S.days[sn.t];
+  S.stats[sn.t] = sn.ds;
 }
 function addSelfOk(onOk) {
   const nx = $("#next");
@@ -1920,6 +1934,7 @@ function footFeedback(ok, title, bodyHtml) {
   keyNav();
 }
 function feedback(task, w, ok, msg, o = {}) {
+  const sn = snapGrade(w.id);
   gradeWord(task, w, ok, o.soft);
   let body = "";
   if (o.heard) body += `<p class="muted">Erkannt: „${esc(o.heard)}“</p>`;
@@ -1928,7 +1943,7 @@ function feedback(task, w, ok, msg, o = {}) {
   const title = ok ? (o.typo ? "✓ Fast perfekt" : "✓ " + pick(PRAISE)) : o.soft ? "🙂 Nicht ganz – vergleiche mal" : "✗ Nicht ganz";
   footFeedback(ok || !!o.soft, title, body);
   $("#rep").onclick = () => report(task, w);
-  if (o.selfOk && task.typed) addSelfOk(() => { Q.right++; Q.xp += 10; addXp(10); });
+  if (o.selfOk && task.typed) addSelfOk(() => { undoGrade(sn); gradeWord(task, w, true); });
   if (S.settings.autoplay && ["type", "build", "mc_de", "speak", "dict", "tsent"].includes(task.t)) setTimeout(() => speak(o.say || w.en), 200);
 }
 function gFeedback(task, g, ok, full, heard) {
@@ -2300,7 +2315,7 @@ async function exportData() {
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 function importData(e) {
-  const f = e.target.files[0]; if (!f) return;
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
   const r = new FileReader();
   r.onload = () => {
     try {
@@ -2308,6 +2323,7 @@ function importData(e) {
       if (!d || typeof d.words !== "object") throw new Error();
       if (!confirm("Sicherung laden? Der aktuelle Lernstand wird ersetzt.")) return;
       S = { ...JSON.parse(JSON.stringify(DEFAULT)), ...d, settings: { ...DEFAULT.settings, ...(d.settings || {}) } };
+      if (!S.frozen || typeof S.frozen !== "object") S.frozen = {};
       buildContent(); migrate(); save(); toast("Sicherung geladen"); tab = "home"; view = null; render();
     } catch { toast("Datei konnte nicht gelesen werden"); }
   };
@@ -2333,7 +2349,9 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#shee
 
 // ---------- Start ----------
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
-document.addEventListener("visibilitychange", () => { if (!document.hidden && !Q && !T && !$("#sheet")) render(); });
+// Zurück in der App: nur neu zeichnen, wenn inzwischen ein neuer Tag ist (sonst gehen Scrollposition und offene Ansichten verloren)
+let shownDay = today();
+document.addEventListener("visibilitychange", () => { if (!document.hidden && today() !== shownDay && !Q && !T && !$("#sheet")) { shownDay = today(); render(); } });
 render();
 window.__sw = { get S() { return S; }, WORDS: () => WORDS, todayPlan, currentUnitIndex, lookupAt, RD, distractors, checkTyped, buildSource, sameMeaning, unitUnlocked, isQuickLevel, testReady, unitProgress, dueWords, startSession, get Q() { return Q; } };
 })();
