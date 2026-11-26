@@ -1425,6 +1425,10 @@ function startSession(mode, opt = {}) {
     const mixed = shuffle(B);
     for (let i = 0; i < A.length; i += 4) { tasks.push(...A.slice(i, i + 4)); tasks.push(...mixed.splice(0, 3)); }
     tasks.push(...mixed);
+  } else if (mode === "one") {
+    const w = WMAP[opt.id];
+    tasks = st(w.id) ? [{ id: w.id, t: "mc_en", g: true }, { id: w.id, t: "mc_de" }, { id: w.id, t: exerciseFor(w) }]
+      : [{ id: w.id, t: "intro" }, { id: w.id, t: "mc_en", g: true }, { id: w.id, t: "mc_de" }];
   } else if (mode === "weak") {
     const ws = weakWords().slice(0, 10), gs = weakGrammar().slice(0, 3);
     const A = ws.map((w) => ({ id: w.id, t: "mc_en" }));
@@ -2072,7 +2076,7 @@ function renderResult() {
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : mode === "one" ? "words" : "home"; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 
@@ -2081,10 +2085,58 @@ function wordListHtml(list) {
   if (!list.length) return `<p class="muted center" style="padding:20px">Keine Wörter gefunden.</p>`;
   return `<ul class="wl">${list.map((w) => {
     const s = st(w.id); const b = s ? s.b : 0;
-    return `<li>${speakBtn(w.en)}<div class="w"><b>${esc(w.en)}</b><span>${esc(w.de)}</span></div>
-      <div class="dots" title="Lernstand">${[1, 2, 3, 4, 5].map((k) => `<i class="${s && b >= k ? "on" : ""}"></i>`).join("")}</div>
-      ${w.unit === "custom" ? `<button class="small muted" data-del="${esc(w.id)}" aria-label="Löschen" style="padding:6px">✕</button>` : ""}</li>`;
+    const tag = w.unit === "custom" ? `<span class="tag">Eigen</span>` : w.pack ? `<span class="tag">Paket</span>` : `<span class="tag lv-${w.level}">${w.level}</span>`;
+    return `<li>${speakBtn(w.en)}<button class="w" data-w="${esc(w.id)}" aria-label="${esc(w.en)} – ${esc(w.de)}, Details"><b>${esc(w.en)}</b><span>${esc(w.de)}</span></button>
+      ${tag}<div class="dots" role="img" aria-label="Lernstand ${s ? Math.min(b, 5) : 0} von 5">${[1, 2, 3, 4, 5].map((k) => `<i class="${s && b >= k ? "on" : ""}"></i>`).join("")}</div></li>`;
   }).join("")}</ul>`;
+}
+// Suche: Groß/Klein, Akzente, Umlaut-Schreibweisen und „to “ egal; Treffer nach Güte sortiert
+function fold(s) {
+  return norm(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ß/g, "ss").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u")
+    .replace(/^(to|der|die|das|ein|eine|sich) /, "").replace(/[-']/g, " ").replace(/\s+/g, " ").trim();
+}
+function searchWords(q) {
+  const f = fold(q); if (!f) return null;
+  const out = [];
+  WORDS.forEach((w) => {
+    let best = 9;
+    for (const t of [w.en, ...w.de.split(/[,;/]/)]) {
+      const x = fold(t); if (!x) continue;
+      const r = x === f ? 0 : x.startsWith(f) ? 1 : (" " + x).includes(" " + f) ? 2 : x.includes(f) ? 3 : 9;
+      if (r < best) best = r;
+    }
+    if (best < 9) out.push([best, w]);
+  });
+  return out.sort((a, b) => a[0] - b[0] || a[1].en.length - b[1].en.length).map((x) => x[1]);
+}
+function wordSheet(id) {
+  const w = WMAP[id]; if (!w) return;
+  const s = st(id), u = unitById(w.unit), p = w.pack && PACKS.find((x) => x.id === w.pack);
+  const where = w.unit === "custom" ? "Eigenes Wort" : p ? `Themenpaket „${esc(p.title)}“` : u ? `Einheit ${w.ui + 1} · ${esc(u.title)}` : "";
+  const fmt = (d) => new Date(d + "T12:00:00").toLocaleDateString("de-DE", { day: "numeric", month: "long" });
+  const status = !s ? "Noch nicht gelernt"
+    : s.due <= today() ? "Heute zur Wiederholung fällig"
+    : `Nächste Wiederholung am ${fmt(s.due)}`;
+  sheet(`<div class="wd">
+    <div class="wd-h">${w.unit === "custom" ? `<span class="tag">Eigen</span>` : `<span class="tag lv-${w.level}">${w.level}</span>`}<span class="small muted">${where}</span></div>
+    <div class="wd-word">${speakBtn(w.en)}<div><h2 id="sheet-title">${esc(w.en)}</h2><p>${esc(w.de)}</p></div></div>
+    ${w.ex ? `<div class="wd-ex">${speakBtn(w.ex, "speak sm")}<div><b>${esc(w.ex)}</b>${w.exde ? `<span>${esc(w.exde)}</span>` : ""}</div></div>` : ""}
+    <ul class="set wd-stats">
+      <li><span>Status</span><b>${status}</b></li>
+      ${s ? `<li><span>Lernstand</span><b>Stufe ${Math.min(s.b || 0, 5)} von 5</b></li>
+      <li><span>Geübt</span><b>${plural(s.seen || 0, "Mal", "Mal")} · ${s.wrong || 0}× falsch</b></li>` : ""}
+    </ul>
+    <button class="btn" id="wd-go">${s ? "Jetzt üben" : "Jetzt lernen"}</button>
+    ${s && s.due > today() ? `<button class="btn ghost" id="wd-due" style="margin-top:10px">Heute wiederholen</button>` : ""}
+    ${w.unit === "custom" ? `<button class="btn ghost danger" id="wd-del" style="margin-top:10px">Eigenes Wort löschen</button>` : ""}
+  </div>`);
+  $("#wd-go").onclick = () => { closeSheet(); startSession("one", { id }); };
+  const dd = $("#wd-due"); if (dd) dd.onclick = () => { s.due = today(); save(); closeSheet(); toast("Kommt heute in deine Wiederholung"); render(); };
+  const del = $("#wd-del"); if (del) del.onclick = () => {
+    if (!confirm("Dieses eigene Wort löschen?")) return;
+    S.custom = S.custom.filter((c) => "custom:" + c.id !== id); delete S.words[id];
+    save(); buildContent(); closeSheet(); render();
+  };
 }
 let wq = "", wfilter = "all";
 function renderWords() {
@@ -2098,23 +2150,18 @@ function renderWords() {
     <div id="list"></div>
   </div>`;
   const draw = () => {
-    const q = norm(wq);
-    let list = WORDS.filter((w) => !q || norm(w.en).includes(q) || norm(w.de).includes(q));
+    let list = searchWords(wq) || WORDS;
     if (wfilter === "learned") list = list.filter((w) => st(w.id));
     if (wfilter === "new") list = list.filter((w) => !st(w.id));
     if (wfilter === "hard") list = list.filter((w) => st(w.id) && (st(w.id).wrong || 0) >= 2).sort((a, b) => st(b.id).wrong - st(a.id).wrong);
-    $("#list").innerHTML = wordListHtml(list.slice(0, 400));
+    const n = list.length;
+    $("#list").innerHTML = (wq.trim() || wfilter !== "all" ? `<p class="small muted hits" aria-live="polite">${n ? plural(n, "Treffer", "Treffer") : ""}${n > 300 ? " · die ersten 300 – Suche verfeinern" : ""}</p>` : "") + wordListHtml(list.slice(0, 300));
   };
   draw();
   $("#q").oninput = (e) => { wq = e.target.value; draw(); };
   app.querySelectorAll("[data-f]").forEach((b) => (b.onclick = () => { wfilter = b.dataset.f; renderWords(); }));
   $("#add").onclick = addWordSheet;
-  $("#list").onclick = (e) => {
-    const d = e.target.closest("[data-del]"); if (!d) return;
-    if (!confirm("Dieses eigene Wort löschen?")) return;
-    S.custom = S.custom.filter((c) => c.id !== d.dataset.del.slice(7)); delete S.words[d.dataset.del];
-    save(); buildContent(); draw();
-  };
+  $("#list").onclick = (e) => { const b = e.target.closest("[data-w]"); if (b) wordSheet(b.dataset.w); };
 }
 function addWordSheet() {
   sheet(`<h2>Eigenes Wort</h2>
@@ -2126,6 +2173,8 @@ function addWordSheet() {
   $("#n-save").onclick = () => {
     const en = $("#n-en").value.trim(), de = $("#n-de").value.trim();
     if (!en || !de) return toast("Bitte beide Felder ausfüllen");
+    const dup = WORDS.find((w) => fold(w.en) === fold(en));
+    if (dup) { closeSheet(); toast(dup.unit === "custom" ? "Dieses Wort hast du schon angelegt" : `Gibt es schon: ${dup.pack ? "Themenpaket" : "Einheit " + (dup.ui + 1)}`); wordSheet(dup.id); return; }
     S.custom.push({ id: Date.now().toString(36), en, de, ex: $("#n-ex").value.trim(), exde: $("#n-exde").value.trim() });
     save(); buildContent(); closeSheet(); toast("Gespeichert – kommt in der nächsten Lektion dran"); render();
   };
@@ -2243,11 +2292,17 @@ function sheet(html) {
   closeSheet();
   const bg = document.createElement("div");
   bg.className = "sheet-bg"; bg.id = "sheet";
-  bg.innerHTML = `<div class="sheet"><div class="grab"></div>${html}</div>`;
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div><button class="sheet-x" id="sheet-x" aria-label="Schließen">✕</button>${html}</div>`;
+  const h2 = bg.querySelector("h2"); if (h2) { h2.id = h2.id || "sheet-title"; bg.firstChild.setAttribute("aria-labelledby", h2.id); }
   bg.onclick = (e) => { if (e.target === bg) closeSheet(); };
+  sheetReturn = document.activeElement;
   document.body.appendChild(bg);
+  $("#sheet-x").onclick = closeSheet;
+  const first = bg.querySelector("input, textarea") || $("#sheet-x"); first.focus({ preventScroll: true });
 }
-function closeSheet() { $("#sheet")?.remove(); }
+let sheetReturn = null;
+function closeSheet() { const el = $("#sheet"); if (!el) return; el.remove(); if (sheetReturn && document.contains(sheetReturn)) sheetReturn.focus({ preventScroll: true }); sheetReturn = null; }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#sheet")) { e.preventDefault(); closeSheet(); } });
 
 // ---------- Start ----------
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});

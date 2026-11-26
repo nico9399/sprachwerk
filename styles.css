@@ -580,3 +580,27 @@ button.stats:active .stat { transform: scale(.98); }
 .set li > b { font-variant-numeric: tabular-nums; font-weight: 700; }
 @media (forced-colors: active) { .chart .bar { fill: CanvasText; opacity: 1; } .lvbar b { background: CanvasText; } }
 @media (prefers-color-scheme: dark) { .chart .bar { opacity: .62; } }
+
+/* ---------- Wörterbuch ---------- */
+.wl li { gap: 10px; }
+.wl button.w { flex: 1; min-width: 0; text-align: left; font: inherit; color: inherit; background: none; border: 0; padding: 4px 0; min-height: 44px; cursor: pointer; }
+.wl button.w b { overflow-wrap: anywhere; }
+.wl .tag { flex: none; }
+.hits { margin: 12px 2px -4px; }
+.sheet { position: relative; }
+.sheet-x { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 22px; color: var(--muted); font-size: 1rem; display: grid; place-items: center; }
+.sheet-x:hover { background: var(--surface-2); }
+.wd-h { display: flex; align-items: center; gap: 8px; margin: 2px 48px 12px 0; }
+.wd-word { display: flex; gap: 12px; align-items: flex-start; }
+.wd-word h2 { margin: 2px 0 2px; overflow-wrap: anywhere; }
+.wd-word p { margin: 0; font-size: 1.125rem; }
+.wd-ex { display: flex; gap: 10px; align-items: flex-start; margin: 16px 0 0; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.wd-ex b { display: block; font-weight: 600; }
+.wd-ex span { display: block; color: var(--muted); font-size: .875rem; margin-top: 2px; }
+.speak.sm { width: 32px; height: 32px; border-radius: 10px; }
+.speak.sm svg { width: 17px; height: 17px; }
+.wd-stats { margin: 16px 0; }
+.wd-stats li { min-height: 48px; padding: 10px 14px; }
+.wd-stats li > span { font-weight: 500; color: var(--muted); }
+.wd-stats li > b { text-align: right; font-weight: 650; }
+.btn.danger { color: var(--bad-ink); }
