@@ -393,6 +393,7 @@ function render() {
   if (view && view.type === "grammar") return renderGrammar(view.id);
   if (view && view.type === "dialog") return renderDialog(view.id);
   if (view && view.type === "glist") return renderGrammarList();
+  if (view && view.type === "stats") return renderStats();
   if (view && view.type === "plist") return renderPackList();
   if (view && view.type === "mlist") return renderMistakeList();
   if (view && view.type === "slist") return renderSoundList();
@@ -406,6 +407,7 @@ function render() {
   setTabbar(true);
   ({ home: renderHome, path: renderPath, practice: renderPractice, words: renderWords, more: renderMore })[tab]();
 }
+function openStats() { view = { type: "stats" }; render(); window.scrollTo(0, 0); }
 function openUnit(uid) { view = { type: "unit", id: uid }; render(); window.scrollTo(0, 0); }
 function openGrammar(gid, from) { view = { type: "grammar", id: gid, from }; render(); window.scrollTo(0, 0); }
 function back() {
@@ -508,6 +510,139 @@ function finishTest() {
   $("#t-done").onclick = () => { tab = "home"; view = null; render(); };
 }
 
+// ---------- Statistik-Seite ----------
+let statMetric = "xp", statSel = 13;
+function longestStreak() {
+  const ks = Object.keys(S.days).filter((k) => S.days[k] > 0).sort();
+  let best = 0, run = 0, prev = null;
+  ks.forEach((k) => {
+    const d = new Date(k + "T12:00:00");
+    run = prev && Math.round((d - prev) / 86400000) === 1 ? run + 1 : 1;
+    best = Math.max(best, run); prev = d;
+  });
+  return best;
+}
+function fmtMin(ms) { const m = Math.round(ms / 60000); return m < 60 ? `${m} Min.` : `${Math.floor(m / 60)} Std. ${m % 60} Min.`; }
+function statSeries() {
+  const newBy = {};
+  Object.values(S.words).forEach((w) => { if (w.learned && !w.quick) newBy[w.learned] = (newBy[w.learned] || 0) + 1; });
+  const out = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = dayKey(d), st = S.stats[k];
+    out.push({
+      k, d,
+      xp: S.days[k] || 0,
+      words: newBy[k] || 0,
+      min: st ? Math.round(st.ms / 60000) : 0,
+      acc: st && st.r + st.w ? Math.round((100 * st.r) / (st.r + st.w)) : null,
+    });
+  }
+  return out;
+}
+const STAT_M = {
+  xp: { l: "XP", unit: (v) => `${v} XP` },
+  words: { l: "Neue Wörter", unit: (v) => plural(v, "neues Wort", "neue Wörter") },
+  min: { l: "Minuten", unit: (v) => `${v} Min. gelernt` },
+  acc: { l: "Treffer", unit: (v) => (v === null ? "keine Übungen" : `${v} % richtig`) },
+};
+function statChart(ser, m) {
+  const W = 336, H = 150, top = 14, bot = 22, left = 4, colW = (W - left) / 14;
+  const vals = ser.map((x) => x[m] || 0);
+  let max = m === "acc" ? 100 : Math.max(...vals, m === "xp" ? S.settings.goal : 1);
+  if (m !== "acc") { const step = max <= 5 ? 1 : max <= 20 ? 5 : max <= 100 ? 20 : 50; max = Math.ceil(max / step) * step; }
+  const y = (v) => top + (H - top - bot) * (1 - v / max);
+  const base = y(0);
+  let g = `<line class="grid" x1="0" x2="${W}" y1="${base}" y2="${base}"/><line class="grid soft" x1="0" x2="${W}" y1="${y(max)}" y2="${y(max)}"/>
+    <text class="axis" x="${W}" y="${y(max) - 4}" text-anchor="end">${max}${m === "acc" ? " %" : ""}</text>`;
+  if (m === "xp") g += `<line class="goal-line" x1="0" x2="${W}" y1="${y(S.settings.goal)}" y2="${y(S.settings.goal)}"/>`;
+  ser.forEach((x, i) => {
+    const v = x[m], bw = colW - 6, bx = left + i * colW + 3;
+    const h = v ? Math.max(3, base - y(v)) : 0, r = Math.min(4, bw / 2, h);
+    const path = h ? `M${bx},${base}V${base - h + r}q0,-${r} ${r},-${r}h${bw - 2 * r}q${r},0 ${r},${r}V${base}z` : "";
+    const lab = x.d.toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "numeric" });
+    g += `<g class="col${i === statSel ? " sel" : ""}" data-i="${i}" tabindex="0" role="button" aria-label="${esc(lab)}: ${esc(STAT_M[m].unit(v))}">
+      <rect class="hit" x="${left + i * colW}" y="0" width="${colW}" height="${H}"/>
+      ${h ? `<path class="bar" d="${path}"/>` : v === null ? "" : `<rect class="zero" x="${bx}" y="${base - 2}" width="${bw}" height="2" rx="1"/>`}
+      <text class="axis" x="${left + i * colW + colW / 2}" y="${H - 6}" text-anchor="middle">${i === 13 ? "Heute" : i % 3 === 1 ? x.d.getDate() + "." : ""}</text>
+    </g>`;
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="group" aria-label="${STAT_M[m].l} der letzten 14 Tage">${g}</svg>`;
+}
+function renderStats() {
+  setTabbar(false);
+  const ser = statSeries(), m = statMetric, sel = ser[statSel];
+  const stk = streak(), best = Math.max(longestStreak(), stk);
+  const xpAll = Object.values(S.days).reduce((a, b) => a + b, 0);
+  const st = Object.values(S.stats).reduce((a, x) => ({ r: a.r + x.r, w: a.w + x.w, ms: a.ms + x.ms, n: a.n + x.n }), { r: 0, w: 0, ms: 0, n: 0 });
+  const acc = st.r + st.w ? Math.round((100 * st.r) / (st.r + st.w)) : null;
+  const xp14 = ser.reduce((a, x) => a + x.xp, 0), active14 = ser.filter((x) => x.xp > 0).length;
+  const lv = LEVELS.map((L) => {
+    const ws = WORDS.filter((w) => w.level === L && w.ui >= 0 && w.ui < 1000);
+    const known = ws.filter((w) => S.words[w.id]);
+    return { L, total: ws.length, known: known.length, sure: known.filter((w) => S.words[w.id].b >= 4).length };
+  });
+  const allG = Object.values(GMAP).filter((g) => !g.mk), gDone = allG.filter((g) => S.gram[g.id] && S.gram[g.id].done).length;
+  const cnt = (o) => Object.values(o || {}).filter((x) => x && x.done).length;
+  const statsSince = Object.keys(S.stats).sort()[0];
+  const tableRows = ser.map((x) => `<tr><td>${x.d.toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "numeric" })}</td><td>${x.xp}</td><td>${x.words}</td><td>${x.min}</td><td>${x.acc === null ? "–" : x.acc + " %"}</td></tr>`).join("");
+  app.innerHTML = `<div class="fadein">
+    <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
+    <h1 class="page-title">Statistik</h1>
+    <p class="sub">${active14 ? `In den letzten 14 Tagen an ${plural(active14, "Tag", "Tagen")} gelernt · ${xp14} XP` : "Noch keine Lerntage in den letzten 14 Tagen."}</p>
+
+    <div class="kpis">
+      <div class="stat streak"><b>${stk}</b><span>Serie · Rekord ${best}</span></div>
+      <div class="stat"><b>${xpAll}</b><span>XP gesamt</span></div>
+      <div class="stat"><b>${acc === null ? "–" : acc + " %"}</b><span>Treffer</span></div>
+      <div class="stat"><b>${fmtMin(st.ms).replace(" Min.", "<small> Min.</small>").replace(" Std.", "<small> Std.</small>")}</b><span>Lernzeit</span></div>
+    </div>
+    ${statsSince ? `<p class="small muted note">Treffer und Lernzeit werden seit ${new Date(statsSince + "T12:00:00").toLocaleDateString("de-DE")} gezählt.</p>` : ""}
+
+    <div class="section-h"><h3>Letzte 14 Tage</h3></div>
+    <div class="card chart-card">
+      <div class="seg full" role="tablist">${Object.entries(STAT_M).map(([k, v]) => `<button role="tab" aria-selected="${k === m}" data-m="${k}" class="${k === m ? "on" : ""}">${v.l}</button>`).join("")}</div>
+      <div class="readout" aria-live="polite"><b>${esc(STAT_M[m].unit(sel[m]))}</b><span>${statSel === 13 ? "Heute" : sel.d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })}</span></div>
+      ${statChart(ser, m)}
+      ${m === "xp" ? `<p class="small muted legend"><i class="goal-key"></i>Tagesziel ${S.settings.goal} XP</p>` : ""}
+      <details class="tbl"><summary>Als Tabelle</summary>
+        <table><thead><tr><th>Tag</th><th>XP</th><th>Neu</th><th>Min.</th><th>Treffer</th></tr></thead><tbody>${tableRows}</tbody></table>
+      </details>
+    </div>
+
+    <div class="section-h"><h3>Wortschatz je Stufe</h3><span class="small muted">${learnedCount()} Wörter</span></div>
+    <div class="card lvbars">
+      ${lv.map((x) => `<div class="lvrow lv-${x.L}">
+        <span class="tag lv-${x.L}">${x.L}</span>
+        <div class="lvbar" role="img" aria-label="${x.L}: ${x.known} von ${x.total} Wörtern, ${x.sure} davon sicher"><i style="width:${x.total ? (100 * x.known) / x.total : 0}%"></i><b style="width:${x.total ? (100 * x.sure) / x.total : 0}%"></b></div>
+        <span class="small num">${x.known}/${x.total}</span>
+      </div>`).join("")}
+      <p class="small muted legend"><i class="k-sure"></i>sicher (Wiederholung alle 16+ Tage) <i class="k-known"></i>gelernt</p>
+    </div>
+
+    <div class="section-h"><h3>Fortschritt</h3></div>
+    <ul class="set">
+      <li><span>Einheiten fertig</span><b>${unitsDoneCount()} / ${UNITS.length}</b></li>
+      <li><span>Grammatik-Lektionen</span><b>${gDone} / ${allG.length}</b></li>
+      <li><span>Dialoge</span><b>${cnt(S.dialogs)}</b></li>
+      <li><span>Lesetexte</span><b>${cnt(S.reading)}</b></li>
+      <li><span>Hörtexte</span><b>${cnt(S.listening)} / ${POD().length}</b></li>
+      <li><span>Schreibaufgaben</span><b>${cnt(S.writing)}</b></li>
+      <li><span>Übungsrunden</span><b>${st.n}</b></li>
+    </ul>
+  </div>`;
+  $("#back").onclick = () => { view = null; render(); window.scrollTo(0, 0); };
+  app.querySelectorAll("[data-m]").forEach((b) => (b.onclick = () => { statMetric = b.dataset.m; renderStats(); }));
+  app.querySelectorAll(".chart .col").forEach((c) => {
+    const pick = () => { statSel = +c.dataset.i; renderStats(); const n = app.querySelector(`.chart .col[data-i="${statSel}"]`); if (n) n.focus({ preventScroll: true }); };
+    c.onclick = pick;
+    c.onkeydown = (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); statSel = Math.max(0, Math.min(13, statSel + (e.key === "ArrowLeft" ? -1 : 1))); renderStats(); app.querySelector(`.chart .col[data-i="${statSel}"]`).focus({ preventScroll: true }); }
+    };
+  });
+}
+
 // ---------- Home ----------
 function renderHome() {
   const plan = todayPlan();
@@ -588,11 +723,11 @@ function renderHome() {
       <div class="steps">${stepGrammar}${stepWords}${stepRead}${stepDialog}${stepTest}</div>
     </div>
 
-    <div class="stats">
+    <button class="stats" id="open-stats" aria-label="Statistik öffnen">
       <div class="stat streak"><b>${stk}</b><span>${stk === 1 ? "Tag" : "Tage"} in Folge</span></div>
       <div class="stat"><b>${learnedCount()}</b><span>Wörter gelernt</span></div>
       <div class="stat"><b>${unitsDoneCount()}</b><span>Einheiten fertig</span></div>
-    </div>
+    </button>
 
     <div class="section-h"><h3>Tagesziel</h3><span class="small muted">${xp} / ${goal} XP</span></div>
     <div class="card">
@@ -617,6 +752,7 @@ function renderHome() {
   app.querySelectorAll("[data-read]").forEach((b) => (b.onclick = () => openReading(b.dataset.read)));
   const ut = $("#unit-test"); if (ut) ut.onclick = () => startSession("test", { unit: cu.id });
   const hw = $("#hero-weak"); if (hw) hw.onclick = () => startSession("weak");
+  $("#open-stats").onclick = openStats;
   const ht = $("#hero-test"); if (ht) ht.onclick = () => startSession("test", { unit: cu.id });
 }
 
@@ -2006,6 +2142,10 @@ function renderMore() {
     <h1 class="page-title">Mehr</h1>
     <p class="sub">Einstellungen, Test und Datensicherung</p>
 
+    <ul class="set">
+      <li class="tap" id="stats-open"><span>${icon("stats", "ic")} Statistik<small>Verlauf, Treffer, Wortschatz je Stufe</small></span></li>
+    </ul>
+
     <div class="section-h"><h3>Lernen</h3></div>
     <ul class="set">
       <li><span>Neue Wörter pro Tag</span>${step("newPerDay", 3, 20, 1)}</li>
@@ -2049,6 +2189,7 @@ function renderMore() {
   const un = $("#unsnooze"); if (un) un.onclick = () => { S.speakSnooze = 0; save(); renderMore(); };
   $("#voicetest").onclick = () => speak("Hello! Nice to meet you. Let's learn English together.");
   $("#retest").onclick = startTest;
+  $("#stats-open").onclick = openStats;
   $("#reports").onclick = reportsSheet;
   $("#export").onclick = exportData;
   $("#import").onclick = () => $("#file").click();
