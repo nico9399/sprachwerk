@@ -1,5 +1,5 @@
 // Sprachwerk – Inhalte Englisch (Lernpfad)
-// Wort: [englisch, deutsch, Beispiel EN, Beispiel DE]. grammar/extra → id in data/en-grammar.js
+// Wort: [englisch, deutsch, Beispiel EN, Beispiel DE, Bedeutung (optional, bei gleich geschriebenen Wörtern)]. grammar/extra → id in data/en-grammar.js
 window.SW_LANGS = window.SW_LANGS || {};
 window.SW_LANGS.en = {
   code: "en", name: "Englisch", flag: "🇬🇧", voices: { us: "en-US", uk: "en-GB" },
@@ -75,7 +75,7 @@ window.SW_LANGS.en = {
       ["a little","ein bisschen","I speak a little English.","Ich spreche ein bisschen Englisch."],
       ["really","wirklich / echt","It's really cold today.","Heute ist es echt kalt."],
       ["nice","nett / schön","Your friend is very nice.","Dein Freund ist sehr nett."],
-      ["fine","gut / in Ordnung","Everything is fine.","Alles ist in Ordnung."],
+      ["fine","gut / in Ordnung","Everything is fine.","Alles ist in Ordnung.","Befinden"],
       ["OK","okay / in Ordnung","Is that OK for you?","Ist das okay für dich?"],
       ["everyone","jeder / alle","Hello, everyone!","Hallo zusammen!"],
       ["everything","alles","Everything is OK.","Alles ist okay."],
@@ -171,7 +171,7 @@ window.SW_LANGS.en = {
       ["guest","der Gast","We have guests tonight.","Wir haben heute Abend Gäste."],
       ["Christmas","Weihnachten","We spend Christmas with my family.","Weihnachten verbringen wir mit meiner Familie."],
       ["Easter","Ostern","Happy Easter!","Frohe Ostern!"],
-      ["present","das Geschenk","Thanks for the present!","Danke für das Geschenk!"],
+      ["present","das Geschenk","Thanks for the present!","Danke für das Geschenk!","Geschenk"],
       ["to hug","umarmen","She hugged her brother.","Sie umarmte ihren Bruder."],
       ["home","das Zuhause","Home is where your family is.","Zuhause ist, wo die Familie ist."],
       ["house-warming party","die Einweihungsfeier","We're having a house-warming party.","Wir machen eine Einweihungsfeier."],
@@ -282,7 +282,8 @@ window.SW_LANGS.en = {
       ["a lot","viel","I like you a lot.","Ich mag dich sehr."],
       ["quite","ziemlich","The film was quite good.","Der Film war ziemlich gut."],
       ["false","falsch","Is this true or false?","Stimmt das oder ist es falsch?"],
-      ["May","Mai","My birthday is in May.","Ich habe im Mai Geburtstag."]
+      ["May","Mai","My birthday is in May.","Ich habe im Mai Geburtstag."],
+      ["letter","der Buchstabe","The word has five letters.","Das Wort hat fünf Buchstaben.","Alphabet"]
     ]},
     { id: "u04", level: "A1", title: "Zuhause", emoji: "🏠", grammar: "there", words: [
       ["house","das Haus","Their house has a garden.","Ihr Haus hat einen Garten."],
@@ -292,12 +293,12 @@ window.SW_LANGS.en = {
       ["bathroom","das Badezimmer","Where is the bathroom?","Wo ist das Badezimmer?"],
       ["door","die Tür","Please close the door.","Bitte mach die Tür zu."],
       ["window","das Fenster","Open the window, please.","Mach bitte das Fenster auf."],
-      ["table","der Tisch","The keys are on the table.","Die Schlüssel liegen auf dem Tisch."],
+      ["table","der Tisch","The keys are on the table.","Die Schlüssel liegen auf dem Tisch.","Möbel"],
       ["chair","der Stuhl","Take a chair and sit down.","Nimm dir einen Stuhl und setz dich."],
       ["bed","das Bett","I go to bed at ten.","Ich gehe um zehn ins Bett."],
-      ["key","der Schlüssel","I can't find my key.","Ich finde meinen Schlüssel nicht."],
+      ["key","der Schlüssel","I can't find my key.","Ich finde meinen Schlüssel nicht.","Schloss"],
       ["cupboard","der Schrank","The cups are in the cupboard.","Die Tassen sind im Schrank."],
-      ["light","das Licht","Turn off the light, please.","Mach bitte das Licht aus."],
+      ["light","das Licht","Turn off the light, please.","Mach bitte das Licht aus.","Lampe"],
       ["neighbour","der Nachbar","Our neighbour is very nice.","Unser Nachbar ist sehr nett."],
       ["rent","die Miete","The rent is due on Monday.","Die Miete ist am Montag fällig."],
       ["living room","das Wohnzimmer","We watch TV in the living room.","Wir schauen im Wohnzimmer fern."],
@@ -342,7 +343,7 @@ window.SW_LANGS.en = {
       ["dishwasher","die Spülmaschine","Can you empty the dishwasher?","Kannst du die Spülmaschine ausräumen?"],
       ["kettle","der Wasserkocher","Put the kettle on.","Mach den Wasserkocher an."],
       ["bin","der Mülleimer","Put it in the bin.","Wirf es in den Mülleimer."],
-      ["rubbish","der Müll","Can you take out the rubbish?","Kannst du den Müll rausbringen?"],
+      ["rubbish","der Müll","Can you take out the rubbish?","Kannst du den Müll rausbringen?","Abfall"],
       ["socket","die Steckdose","Is there a socket near the bed?","Gibt es eine Steckdose am Bett?"],
       ["plug","der Stecker","Pull out the plug.","Zieh den Stecker."],
       ["light bulb","die Glühbirne","The light bulb is broken.","Die Glühbirne ist kaputt."],
@@ -425,7 +426,8 @@ window.SW_LANGS.en = {
       ["shutters","die Fensterläden, die Rollläden","Open the shutters.","Mach die Rollläden auf."],
       ["vase","die Vase","Put the flowers in a vase.","Stell die Blumen in eine Vase."],
       ["frame","der Rahmen","I bought a frame for the photo.","Ich habe einen Rahmen für das Foto gekauft."],
-      ["rug","der Teppich (Vorleger)","There's a rug in front of the sofa.","Vor dem Sofa liegt ein Teppich."]
+      ["rug","der Teppich (Vorleger)","There's a rug in front of the sofa.","Vor dem Sofa liegt ein Teppich."],
+      ["fan","der Ventilator","Turn on the fan, it's hot.","Mach den Ventilator an, es ist heiß.","Gerät"]
     ]},
     { id: "u05", level: "A1", title: "Tagesablauf", emoji: "⏰", grammar: "present-simple", extra: ["reflexive"], words: [
       ["to wake up","aufwachen","I wake up at five.","Ich wache um fünf auf."],
@@ -615,7 +617,7 @@ window.SW_LANGS.en = {
       ["waiter","der Kellner","The waiter was very friendly.","Der Kellner war sehr freundlich."],
       ["fresh","frisch","The bread is fresh.","Das Brot ist frisch."],
       ["sour","sauer","The milk is sour.","Die Milch ist sauer."],
-      ["salty","salzig","The soup is too salty.","Die Suppe ist zu salzig."],
+      ["salty","salzig","The soup is too salty.","Die Suppe ist zu salzig.","Geschmack"],
       ["breakfast cereal","das Müsli / die Frühstücksflocken","I have cereal for breakfast.","Zum Frühstück esse ich Müsli."],
       ["toast","der Toast","Two slices of toast, please.","Zwei Scheiben Toast, bitte."],
       ["slice","die Scheibe","A slice of bread.","Eine Scheibe Brot."],
@@ -732,7 +734,7 @@ window.SW_LANGS.en = {
       ["euro","der Euro","That's five euros fifty.","Das macht fünf Euro fünfzig."],
       ["cash","das Bargeld","Can I pay in cash?","Kann ich bar bezahlen?"],
       ["card","die Karte","Do you take cards?","Nehmen Sie Karte?"],
-      ["change","das Wechselgeld","Keep the change.","Stimmt so."],
+      ["change","das Wechselgeld","Keep the change.","Stimmt so.","Geld"],
       ["cashier","der Kassierer / die Kassiererin","The cashier was very friendly.","Die Kassiererin war sehr freundlich."],
       ["checkout","die Kasse","Please go to checkout three.","Bitte gehen Sie zu Kasse drei."],
       ["queue","die Schlange (Warteschlange)","The queue is very long.","Die Schlange ist sehr lang."],
@@ -768,7 +770,7 @@ window.SW_LANGS.en = {
       ["to suit","stehen (Kleidung)","That colour suits you.","Die Farbe steht dir."],
       ["changing room","die Umkleidekabine","Where's the changing room?","Wo ist die Umkleide?"],
       ["coin","die Münze","I need a coin for the trolley.","Ich brauche eine Münze für den Einkaufswagen."],
-      ["note","der Geldschein","Do you have a ten-euro note?","Hast du einen Zehn-Euro-Schein?"],
+      ["note","der Geldschein","Do you have a ten-euro note?","Hast du einen Zehn-Euro-Schein?","Geld"],
       ["PIN","die PIN / Geheimzahl","Please enter your PIN.","Bitte geben Sie Ihre PIN ein."],
       ["contactless","kontaktlos","Can I pay contactless?","Kann ich kontaktlos zahlen?"],
       ["parcel","das Paket","Your parcel has arrived.","Dein Paket ist angekommen."],
@@ -806,12 +808,13 @@ window.SW_LANGS.en = {
       ["to pay in cash","bar bezahlen","Can I pay in cash?","Kann ich bar bezahlen?"],
       ["to pay by card","mit Karte bezahlen","I'd like to pay by card.","Ich möchte mit Karte zahlen."],
       ["on sale","im Angebot; erhältlich","These shoes are on sale.","Diese Schuhe sind im Angebot."],
-      ["for sale","zu verkaufen","The house is for sale.","Das Haus steht zum Verkauf."]
+      ["for sale","zu verkaufen","The house is for sale.","Das Haus steht zum Verkauf."],
+      ["stamp","die Briefmarke","I need a stamp for this letter.","Ich brauche eine Briefmarke für diesen Brief.","Post"]
     ]},
     { id: "u08", level: "A1", title: "Kleidung & Wetter", emoji: "🧥", grammar: "present-continuous", words: [
       ["clothes","die Kleidung","Your clothes are in the cupboard.","Deine Kleidung ist im Schrank."],
       ["warm","warm","It is warm in here.","Hier drin ist es warm."],
-      ["cold","kalt","The water is cold.","Das Wasser ist kalt."],
+      ["cold","kalt","The water is cold.","Das Wasser ist kalt.","Temperatur"],
       ["weather","das Wetter","The weather is great today.","Das Wetter ist heute super."],
       ["jacket","die Jacke","Take a jacket, it's cold.","Nimm eine Jacke mit, es ist kalt."],
       ["shoes","die Schuhe","These shoes are new.","Diese Schuhe sind neu."],
@@ -832,7 +835,7 @@ window.SW_LANGS.en = {
       ["boots","die Stiefel","I need new work boots.","Ich brauche neue Arbeitsstiefel."],
       ["socks","die Socken","Where are my socks?","Wo sind meine Socken?"],
       ["to put on","anziehen","Put on your jacket.","Zieh deine Jacke an."],
-      ["to take off","ausziehen","Please take off your shoes.","Bitte zieh deine Schuhe aus."],
+      ["to take off","ausziehen","Please take off your shoes.","Bitte zieh deine Schuhe aus.","Kleidung"],
       ["sunny","sonnig","It's sunny today.","Heute ist es sonnig."],
       ["cloudy","bewölkt","It's cloudy but dry.","Es ist bewölkt, aber trocken."],
       ["to rain","regnen","It's raining again.","Es regnet schon wieder."],
@@ -841,7 +844,7 @@ window.SW_LANGS.en = {
       ["wet","nass","My shoes are wet.","Meine Schuhe sind nass."],
       ["dry","trocken","Is the washing dry?","Ist die Wäsche trocken?"],
       ["temperature","die Temperatur","The temperature is ten degrees.","Die Temperatur liegt bei zehn Grad."],
-      ["spring","der Frühling","Spring is my favourite season.","Der Frühling ist meine liebste Jahreszeit."],
+      ["spring","der Frühling","Spring is my favourite season.","Der Frühling ist meine liebste Jahreszeit.","Jahreszeit"],
       ["summer","der Sommer","We go to the lake in summer.","Im Sommer fahren wir an den See."],
       ["autumn","der Herbst","The leaves fall in autumn.","Im Herbst fallen die Blätter."],
       ["winter","der Winter","Winter is very long here.","Der Winter ist hier sehr lang."],
@@ -889,7 +892,7 @@ window.SW_LANGS.en = {
       ["swimsuit","der Badeanzug","Don't forget your swimsuit.","Vergiss deinen Badeanzug nicht."],
       ["purple","lila","I like purple flowers.","Ich mag lila Blumen."],
       ["wind","der Wind","The wind is very strong.","Der Wind ist sehr stark."],
-      ["cool","kühl","The evenings are cool.","Die Abende sind kühl."],
+      ["cool","kühl","The evenings are cool.","Die Abende sind kühl.","Temperatur"],
       ["hail","der Hagel","The hail damaged the cars.","Der Hagel beschädigte die Autos."],
       ["frost","der Frost","There was frost this morning.","Heute Morgen gab es Frost."],
       ["drizzle","der Nieselregen","It's only a light drizzle.","Es ist nur leichter Nieselregen."],
@@ -900,7 +903,8 @@ window.SW_LANGS.en = {
       ["chilly","kühl, frisch","It's a bit chilly this evening.","Heute Abend ist es etwas frisch."],
       ["boiling","glühend heiß","It's boiling in here!","Hier drin ist es brütend heiß!"],
       ["stormy","stürmisch","It was a stormy night.","Es war eine stürmische Nacht."],
-      ["icy","eisig, vereist","The roads are icy.","Die Straßen sind vereist."]
+      ["icy","eisig, vereist","The roads are icy.","Die Straßen sind vereist."],
+      ["boot","der Stiefel","I wear boots in winter.","Im Winter trage ich Stiefel.","Kleidung"]
     ]},
     { id: "u09", level: "A1", title: "Freizeit & Hobbys", emoji: "⚽", grammar: "can-like", words: [
       ["to like","mögen","I like this song.","Ich mag dieses Lied."],
@@ -952,9 +956,9 @@ window.SW_LANGS.en = {
       ["skiing","das Skifahren","We go skiing every winter.","Wir fahren jeden Winter Ski."],
       ["yoga","das Yoga","I do yoga in the evening.","Abends mache ich Yoga."],
       ["club","der Verein","I'm in a football club.","Ich bin in einem Fußballverein."],
-      ["match","das Spiel (Sport)","The match starts at three.","Das Spiel beginnt um drei."],
+      ["match","das Spiel (Sport)","The match starts at three.","Das Spiel beginnt um drei.","Sport"],
       ["to score a goal","ein Tor schießen","He scored two goals.","Er hat zwei Tore geschossen."],
-      ["fan","der Fan","I'm a big fan of the team.","Ich bin ein großer Fan der Mannschaft."],
+      ["fan","der Fan","I'm a big fan of the team.","Ich bin ein großer Fan der Mannschaft.","Sport"],
       ["stadium","das Stadion","The stadium was full.","Das Stadion war voll."],
       ["series","die Serie","Have you seen the new series?","Hast du die neue Serie gesehen?"],
       ["episode","die Folge","Just one more episode!","Nur noch eine Folge!"],
@@ -983,7 +987,7 @@ window.SW_LANGS.en = {
       ["field","das Feld","There are cows in the field.","Auf dem Feld sind Kühe."],
       ["sky","der Himmel","The sky is blue today.","Der Himmel ist heute blau."],
       ["moon","der Mond","The moon is bright tonight.","Der Mond ist heute Nacht hell."],
-      ["star","der Stern","I can see a lot of stars.","Ich kann viele Sterne sehen."],
+      ["star","der Stern","I can see a lot of stars.","Ich kann viele Sterne sehen.","Himmel"],
       ["stone","der Stein","He throws a stone into the water.","Er wirft einen Stein ins Wasser."],
       ["sand","der Sand","The sand is hot.","Der Sand ist heiß."],
       ["nature","die Natur","I love nature.","Ich liebe die Natur."],
@@ -994,7 +998,7 @@ window.SW_LANGS.en = {
       ["pig","das Schwein","The pig is in the mud.","Das Schwein ist im Schlamm."],
       ["sheep","das Schaf","There are many sheep on the hill.","Auf dem Hügel sind viele Schafe."],
       ["duck","die Ente","The ducks swim on the lake.","Die Enten schwimmen auf dem See."],
-      ["mouse","die Maus","The cat is chasing a mouse.","Die Katze jagt eine Maus."],
+      ["mouse","die Maus","The cat is chasing a mouse.","Die Katze jagt eine Maus.","Tier"],
       ["rabbit","das Kaninchen","My sister has a rabbit.","Meine Schwester hat ein Kaninchen."],
       ["bear","der Bär","Bears sleep in winter.","Bären schlafen im Winter."],
       ["lion","der Löwe","The lion is the king of animals.","Der Löwe ist der König der Tiere."],
@@ -1022,11 +1026,13 @@ window.SW_LANGS.en = {
       ["ball","der Ball","Throw me the ball!","Wirf mir den Ball zu!"],
       ["doll","die Puppe","She plays with her doll.","Sie spielt mit ihrer Puppe."],
       ["card game","das Kartenspiel","We play a card game.","Wir spielen ein Kartenspiel."],
-      ["camera","die Kamera","My camera is new.","Meine Kamera ist neu."]
+      ["camera","die Kamera","My camera is new.","Meine Kamera ist neu."],
+      ["fly","die Fliege","There's a fly in my soup.","In meiner Suppe ist eine Fliege."],
+      ["to fish","angeln","My dad likes to fish.","Mein Vater angelt gern."]
     ]},
     { id: "u10", level: "A1", title: "In der Stadt", emoji: "🗺️", grammar: "prepositions-place", words: [
-      ["left","links","Turn left at the corner.","Bieg an der Ecke links ab."],
-      ["right","rechts","The bank is on the right.","Die Bank ist rechts."],
+      ["left","links","Turn left at the corner.","Bieg an der Ecke links ab.","Richtung"],
+      ["right","rechts","The bank is on the right.","Die Bank ist rechts.","Richtung"],
       ["straight on","geradeaus","Go straight on for 200 metres.","Geh 200 Meter geradeaus."],
       ["far","weit","Is it far from here?","Ist es weit von hier?"],
       ["near","nah / in der Nähe","Is there a pharmacy near here?","Gibt es hier in der Nähe eine Apotheke?"],
@@ -1040,8 +1046,8 @@ window.SW_LANGS.en = {
       ["town","die (Klein-)Stadt","I live in a small town.","Ich wohne in einer kleinen Stadt."],
       ["village","das Dorf","My parents live in a village.","Meine Eltern wohnen in einem Dorf."],
       ["centre","das Zentrum","The shop is in the town centre.","Der Laden ist im Stadtzentrum."],
-      ["square","der Platz","Let's meet in the main square.","Treffen wir uns auf dem Marktplatz."],
-      ["bank","die Bank","Is there a bank near here?","Gibt es hier in der Nähe eine Bank?"],
+      ["square","der Platz","Let's meet in the main square.","Treffen wir uns auf dem Marktplatz.","Ort"],
+      ["bank","die Bank","Is there a bank near here?","Gibt es hier in der Nähe eine Bank?","Geld"],
       ["hospital","das Krankenhaus","The hospital is on the left.","Das Krankenhaus ist links."],
       ["school","die Schule","The school is next to the church.","Die Schule ist neben der Kirche."],
       ["church","die Kirche","Turn right at the church.","Bieg an der Kirche rechts ab."],
@@ -1284,7 +1290,7 @@ window.SW_LANGS.en = {
       ["to dress","anziehen","I dressed quickly.","Ich habe mich schnell angezogen."],
       ["to hurry","sich beeilen","We hurried to the station.","Wir haben uns zum Bahnhof beeilt."],
       ["to lift","heben","He lifted the heavy box.","Er hat die schwere Kiste gehoben."],
-      ["to pick","pflücken / aussuchen","We picked strawberries.","Wir haben Erdbeeren gepflückt."],
+      ["to pick","pflücken / aussuchen","We picked strawberries.","Wir haben Erdbeeren gepflückt.","auswählen"],
       ["to push","drücken / schieben","We pushed the car.","Wir haben das Auto geschoben."],
       ["to pull","ziehen","Pull the door.","Zieh die Tür."],
       ["to receive","erhalten","I received your letter.","Ich habe deinen Brief erhalten."],
@@ -1294,7 +1300,7 @@ window.SW_LANGS.en = {
       ["to point","zeigen (mit Finger)","He pointed at the map.","Er zeigte auf die Karte."],
       ["blackboard","die Tafel","The teacher wrote it on the blackboard.","Der Lehrer schrieb es an die Tafel."],
       ["classroom","das Klassenzimmer","The classroom is on the first floor.","Das Klassenzimmer ist im ersten Stock."],
-      ["pupil","der Schüler, die Schülerin","The school has 500 pupils.","Die Schule hat 500 Schüler."],
+      ["pupil","der Schüler, die Schülerin","The school has 500 pupils.","Die Schule hat 500 Schüler.","Schule"],
       ["headteacher","der Schulleiter, die Schulleiterin","The headteacher wants to see you.","Die Schulleiterin will dich sprechen."],
       ["semester","das Semester","The semester starts in October.","Das Semester beginnt im Oktober."],
       ["lecture","die Vorlesung","I have a lecture at nine.","Ich habe um neun eine Vorlesung."],
@@ -1312,7 +1318,7 @@ window.SW_LANGS.en = {
       ["art","die Kunst","She studies art in London.","Sie studiert Kunst in London."],
       ["textbook","das Lehrbuch","Open your textbooks at page 20.","Schlagt eure Bücher auf Seite 20 auf."],
       ["ruler","das Lineal","Draw a line with a ruler.","Zieh eine Linie mit dem Lineal."],
-      ["rubber","der Radiergummi","Can I borrow your rubber?","Kann ich mir deinen Radiergummi leihen?"],
+      ["rubber","der Radiergummi","Can I borrow your rubber?","Kann ich mir deinen Radiergummi leihen?","Schule"],
       ["pencil case","das Mäppchen","My pencil case is full of pens.","Mein Mäppchen ist voller Stifte."],
       ["calculator","der Taschenrechner","You can use a calculator.","Ihr dürft einen Taschenrechner benutzen."],
       ["highlighter","der Textmarker","Mark the key words with a highlighter.","Markier die Schlüsselwörter mit Textmarker."],
@@ -1466,7 +1472,7 @@ window.SW_LANGS.en = {
       ["I'm not sure.","Ich bin mir nicht sicher.","I'm not sure. Let me check.","Ich bin mir nicht sicher. Ich schaue nach."],
       ["Is that right?","Stimmt das?","You start at six – is that right?","Du fängst um sechs an – stimmt das?"],
       ["word","das Wort","I don't know this word.","Ich kenne dieses Wort nicht."],
-      ["sentence","der Satz","Read the first sentence.","Lies den ersten Satz."],
+      ["sentence","der Satz","Read the first sentence.","Lies den ersten Satz.","Grammatik"],
       ["example","das Beispiel","Can you give me an example?","Kannst du mir ein Beispiel geben?"],
       ["clear","klar / deutlich","Is everything clear?","Ist alles klar?"],
       ["exactly","genau","Exactly, that's right.","Genau, das stimmt."],
@@ -1544,7 +1550,9 @@ window.SW_LANGS.en = {
       ["in general","im Allgemeinen","In general, people are friendly here.","Im Allgemeinen sind die Leute hier freundlich."],
       ["how come","wieso, wie kommt's","How come you're so late?","Wieso bist du so spät?"],
       ["it doesn't matter","das macht nichts","It doesn't matter if you're late.","Es macht nichts, wenn du zu spät kommst."],
-      ["it depends","es kommt darauf an","Are you coming? – It depends.","Kommst du? – Kommt drauf an."]
+      ["it depends","es kommt darauf an","Are you coming? – It depends.","Kommst du? – Kommt drauf an."],
+      ["left","übrig","Is there any cake left?","Ist noch Kuchen übrig?","Rest"],
+      ["kind","die Art, die Sorte","What kind of music do you like?","Welche Art von Musik magst du?","Sorte"]
     ]},
     { id: "u15", level: "A2", title: "Pläne", emoji: "📅", grammar: "going-to", words: [
       ["Do you have any plans?","Hast du schon Pläne?","Do you have any plans for the weekend?","Hast du schon Pläne fürs Wochenende?"],
@@ -1733,7 +1741,8 @@ window.SW_LANGS.en = {
       ["pedestrian","der Fußgänger","Watch out for pedestrians.","Achte auf Fußgänger."],
       ["zebra crossing","der Zebrastreifen","Cross at the zebra crossing.","Geh über den Zebrastreifen."],
       ["driving test","die Fahrprüfung","I passed my driving test!","Ich habe die Fahrprüfung bestanden!"],
-      ["car wash","die Waschanlage","The car needs to go through the car wash.","Das Auto muss in die Waschanlage."]
+      ["car wash","die Waschanlage","The car needs to go through the car wash.","Das Auto muss in die Waschanlage."],
+      ["case","der Koffer, die Hülle","Put your glasses in the case.","Leg deine Brille in das Etui.","Behälter"]
     ]},
     { id: "u17", level: "A2", title: "Vergleichen", emoji: "⚖️", grammar: "comparison", extra: ["too-enough"], words: [
       ["easy","einfach / leicht","This exercise is easy.","Diese Übung ist einfach."],
@@ -1812,7 +1821,8 @@ window.SW_LANGS.en = {
       ["public","öffentlich","Is there a public toilet here?","Gibt es hier eine öffentliche Toilette?"],
       ["private","privat","This is a private beach.","Das ist ein Privatstrand."],
       ["out of date","veraltet; abgelaufen","This information is out of date.","Diese Information ist veraltet."],
-      ["up to date","aktuell","Keep your software up to date.","Halte deine Software aktuell."]
+      ["up to date","aktuell","Keep your software up to date.","Halte deine Software aktuell."],
+      ["light","leicht (Gewicht)","The bag is very light.","Die Tasche ist sehr leicht.","Gewicht"]
     ]},
     { id: "u18", level: "A2", title: "Gesundheit", emoji: "🩺", grammar: "modals-must", words: [
       ["doctor","der Arzt / die Ärztin","I need to see a doctor.","Ich muss zum Arzt."],
@@ -1898,7 +1908,7 @@ window.SW_LANGS.en = {
       ["to swallow","schlucken","It hurts when I swallow.","Es tut beim Schlucken weh."],
       ["to breathe","atmen","Breathe deeply.","Atmen Sie tief ein."],
       ["to faint","ohnmächtig werden","She fainted at work.","Sie ist auf der Arbeit ohnmächtig geworden."],
-      ["sick","krank","I feel sick.","Mir ist schlecht."],
+      ["sick","krank","I feel sick.","Mir ist schlecht.","Gesundheit"],
       ["illness","die Krankheit","He has a serious illness.","Er hat eine schwere Krankheit."],
       ["stomachache","die Bauchschmerzen","I have a stomachache.","Ich habe Bauchschmerzen."],
       ["sore throat","die Halsschmerzen","I have a sore throat.","Ich habe Halsschmerzen."],
@@ -1935,7 +1945,9 @@ window.SW_LANGS.en = {
       ["therapy","die Therapie","She's in therapy.","Sie macht eine Therapie."],
       ["to catch a cold","sich erkälten","I caught a cold last week.","Ich habe mich letzte Woche erkältet."],
       ["to get worse","schlimmer werden","The pain is getting worse.","Die Schmerzen werden schlimmer."],
-      ["to get tired","müde werden","I get tired very quickly.","Ich werde sehr schnell müde."]
+      ["to get tired","müde werden","I get tired very quickly.","Ich werde sehr schnell müde."],
+      ["cold","die Erkältung","I've got a cold.","Ich bin erkältet.","Krankheit"],
+      ["pupil","die Pupille","Her pupils were large.","Ihre Pupillen waren groß.","Auge"]
     ]},
     { id: "u19", level: "A2", title: "Termine & Telefon", emoji: "📞", grammar: "prepositions-time", words: [
       ["meeting","die Besprechung","The meeting starts at nine.","Die Besprechung beginnt um neun."],
@@ -1958,7 +1970,7 @@ window.SW_LANGS.en = {
       ["to postpone","verschieben","We have to postpone the meeting.","Wir müssen die Besprechung verschieben."],
       ["to confirm","bestätigen","Can you confirm the date?","Können Sie den Termin bestätigen?"],
       ["available","verfügbar / erreichbar","Are you available on Monday?","Hast du am Montag Zeit?"],
-      ["date","das Datum","What's the date today?","Welches Datum ist heute?"],
+      ["date","das Datum","What's the date today?","Welches Datum ist heute?","Kalender"],
       ["on time","pünktlich","Please be on time.","Bitte sei pünktlich."],
       ["in time","rechtzeitig","We arrived just in time.","Wir sind gerade rechtzeitig angekommen."],
       ["until","bis","I work until two.","Ich arbeite bis zwei."],
@@ -2020,7 +2032,10 @@ window.SW_LANGS.en = {
       ["application form","das Antragsformular","Fill in the application form.","Füll das Antragsformular aus."],
       ["to make a phone call","telefonieren, anrufen","I need to make a phone call.","Ich muss kurz telefonieren."],
       ["to make a complaint","sich beschweren","I'd like to make a complaint.","Ich möchte mich beschweren."],
-      ["to have a word","kurz sprechen","Can I have a word with you?","Kann ich kurz mit dir reden?"]
+      ["to have a word","kurz sprechen","Can I have a word with you?","Kann ich kurz mit dir reden?"],
+      ["note","die Notiz","I left you a note.","Ich habe dir eine Notiz hinterlassen.","Notiz"],
+      ["mouse","die Maus (Computer)","Click with the left mouse button.","Klick mit der linken Maustaste.","Computer"],
+      ["key","die Taste","Press any key.","Drück eine beliebige Taste.","Tastatur"]
     ]},
     { id: "u20", level: "A2", title: "Small Talk", emoji: "💬", grammar: "question-words", extra: ["question-tags"], words: [
       ["What do you do?","Was machst du beruflich?","So, what do you do?","Und, was machst du beruflich?"],
@@ -2123,7 +2138,8 @@ window.SW_LANGS.en = {
       ["I don't mind","mir egal, macht mir nichts aus","Tea or coffee? – I don't mind.","Tee oder Kaffee? – Ist mir egal."],
       ["sounds good","klingt gut","Pizza tonight? – Sounds good!","Heute Abend Pizza? – Klingt gut!"],
       ["no way","auf keinen Fall; echt jetzt?","You won the lottery? No way!","Du hast im Lotto gewonnen? Echt jetzt?"],
-      ["by heart","auswendig","I know the poem by heart.","Ich kann das Gedicht auswendig."]
+      ["by heart","auswendig","I know the poem by heart.","Ich kann das Gedicht auswendig."],
+      ["net","das Netz","The ball hit the net.","Der Ball traf das Netz.","Sport"]
     ]},
     { id: "u21", level: "A2", title: "Gefühle", emoji: "🙂", grammar: "adverbs-manner", extra: ["ed-ing"], words: [
       ["happy","glücklich / froh","I'm happy with the result.","Ich bin mit dem Ergebnis zufrieden."],
@@ -2199,7 +2215,8 @@ window.SW_LANGS.en = {
       ["to be in a hurry","es eilig haben","Sorry, I'm in a hurry.","Sorry, ich habe es eilig."],
       ["to tell the truth","die Wahrheit sagen","Please tell me the truth.","Bitte sag mir die Wahrheit."],
       ["to tell a lie","lügen","He told a lie to his parents.","Er hat seine Eltern angelogen."],
-      ["to keep a secret","ein Geheimnis bewahren","Can you keep a secret?","Kannst du ein Geheimnis für dich behalten?"]
+      ["to keep a secret","ein Geheimnis bewahren","Can you keep a secret?","Kannst du ein Geheimnis für dich behalten?"],
+      ["date","die Verabredung, das Date","They went on a date.","Sie hatten ein Date.","Treffen"]
     ]},
     { id: "u22", level: "B1", title: "Erfahrungen", emoji: "🌍", grammar: "present-perfect", words: [
       ["experience","die Erfahrung","She has a lot of experience.","Sie hat viel Erfahrung."],
@@ -2397,7 +2414,8 @@ window.SW_LANGS.en = {
       ["to do your best","sein Bestes geben","Just do your best.","Gib einfach dein Bestes."],
       ["to do a favour","einen Gefallen tun","Could you do me a favour?","Könntest du mir einen Gefallen tun?"],
       ["to break the law","gegen das Gesetz verstoßen","He broke the law.","Er hat gegen das Gesetz verstoßen."],
-      ["to make a mistake","einen Fehler machen","Everyone makes mistakes.","Jeder macht Fehler."]
+      ["to make a mistake","einen Fehler machen","Everyone makes mistakes.","Jeder macht Fehler."],
+      ["right","das Recht","Everyone has the right to vote.","Jeder hat das Wahlrecht.","Recht"]
     ]},
     { id: "u24", level: "B1", title: "Missgeschicke", emoji: "💥", grammar: "past-continuous", extra: ["so-such"], words: [
       ["maybe","vielleicht","Maybe we can meet tomorrow.","Vielleicht können wir uns morgen treffen."],
@@ -2409,7 +2427,7 @@ window.SW_LANGS.en = {
       ["to drop","fallen lassen","I dropped my phone.","Mir ist das Handy runtergefallen."],
       ["while","während","While I was cooking, he called.","Während ich gekocht habe, hat er angerufen."],
       ["to slip","ausrutschen","I slipped on the ice.","Ich bin auf dem Eis ausgerutscht."],
-      ["to crash","zusammenstoßen / abstürzen","My computer crashed.","Mein Computer ist abgestürzt."],
+      ["to crash","zusammenstoßen / abstürzen","My computer crashed.","Mein Computer ist abgestürzt.","Unfall"],
       ["to burn","verbrennen / anbrennen","I burned the dinner.","Ich habe das Essen anbrennen lassen."],
       ["to cut","schneiden","I cut my finger.","Ich habe mir in den Finger geschnitten."],
       ["to spill","verschütten","I spilled coffee on my shirt.","Ich habe Kaffee auf mein Hemd verschüttet."],
@@ -2521,7 +2539,8 @@ window.SW_LANGS.en = {
       ["shock","der Schock","The news came as a shock.","Die Nachricht war ein Schock."],
       ["suspect","der/die Verdächtige; vermuten","The police have arrested a suspect.","Die Polizei hat einen Verdächtigen festgenommen."],
       ["trap","die Falle","It was a trap!","Es war eine Falle!"],
-      ["trouble","der Ärger, die Schwierigkeiten","Are you in trouble?","Steckst du in Schwierigkeiten?"]
+      ["trouble","der Ärger, die Schwierigkeiten","Are you in trouble?","Steckst du in Schwierigkeiten?"],
+      ["fine","die Geldstrafe","He got a fine for speeding.","Er bekam eine Strafe wegen zu schnellen Fahrens.","Strafe"]
     ]},
     { id: "u25", level: "B1", title: "Wenn & Falls", emoji: "🔀", grammar: "conditional-1", words: [
       ["problem","das Problem","No problem at all.","Überhaupt kein Problem."],
@@ -2614,7 +2633,7 @@ window.SW_LANGS.en = {
       ["metal","das Metall","The chair is made of metal.","Der Stuhl ist aus Metall."],
       ["natural","natürlich","She has natural talent.","Sie hat ein natürliches Talent."],
       ["planet","der Planet","We only have one planet.","Wir haben nur einen Planeten."],
-      ["rock","der Fels, der Stein","We sat on a big rock.","Wir saßen auf einem großen Felsen."],
+      ["rock","der Fels, der Stein","We sat on a big rock.","Wir saßen auf einem großen Felsen.","Natur"],
       ["root","die Wurzel","The tree has deep roots.","Der Baum hat tiefe Wurzeln."],
       ["seed","der Samen","Plant the seeds in spring.","Säe die Samen im Frühling."],
       ["shade","der Schatten","Let's sit in the shade.","Setzen wir uns in den Schatten."],
@@ -2624,7 +2643,9 @@ window.SW_LANGS.en = {
       ["soil","die Erde, der Boden","The soil here is very good.","Die Erde hier ist sehr gut."],
       ["space","der Weltraum; der Platz","He wants to travel to space.","Er will ins Weltall reisen."],
       ["steam","der Dampf","Steam came out of the pot.","Dampf kam aus dem Topf."],
-      ["tide","die Gezeiten, die Flut","The tide is coming in.","Die Flut kommt."]
+      ["tide","die Gezeiten, die Flut","The tide is coming in.","Die Flut kommt."],
+      ["match","das Streichholz","Do you have a match?","Hast du ein Streichholz?","Feuer"],
+      ["bank","das Ufer","We sat on the river bank.","Wir saßen am Flussufer.","Fluss"]
     ]},
     { id: "u26", level: "B1", title: "Träume", emoji: "💭", grammar: "conditional-2", words: [
       ["dream","der Traum","It's my dream to live by the sea.","Es ist mein Traum, am Meer zu wohnen."],
@@ -2734,7 +2755,9 @@ window.SW_LANGS.en = {
       ["talent","das Talent","She has a real talent for music.","Sie hat echtes Musiktalent."],
       ["theme","das Thema","The theme of the party is the 80s.","Das Motto der Party sind die 80er."],
       ["tragedy","die Tragödie","It was a terrible tragedy.","Es war eine schreckliche Tragödie."],
-      ["tune","die Melodie","I can't get that tune out of my head.","Die Melodie geht mir nicht aus dem Kopf."]
+      ["tune","die Melodie","I can't get that tune out of my head.","Die Melodie geht mir nicht aus dem Kopf."],
+      ["rock","die Rockmusik","I love rock.","Ich liebe Rockmusik.","Musik"],
+      ["star","der Star","She's a movie star.","Sie ist ein Filmstar.","Promi"]
     ]},
     { id: "u27", level: "B1", title: "Produktion & Prozesse", emoji: "⚙️", grammar: "passive", extra: ["have-done"], words: [
       ["quality","die Qualität","Quality is very important.","Qualität ist sehr wichtig."],
@@ -2928,7 +2951,7 @@ window.SW_LANGS.en = {
       ["welding","das Schweißen","Welding requires special training.","Schweißen erfordert eine spezielle Ausbildung."],
       ["drilling","das Bohren","Drilling makes a lot of noise.","Bohren macht viel Lärm."],
       ["grinding","das Schleifen","Wear goggles when grinding.","Trag beim Schleifen eine Schutzbrille."],
-      ["mould","die Form, die Gussform","The plastic is poured into a mould.","Der Kunststoff wird in eine Form gegossen."],
+      ["mould","die Form, die Gussform","The plastic is poured into a mould.","Der Kunststoff wird in eine Form gegossen.","Technik"],
       ["finished product","das Fertigprodukt","The finished product goes to the warehouse.","Das Fertigprodukt geht ins Lager."],
       ["packaging","die Verpackung","The packaging is damaged.","Die Verpackung ist beschädigt."],
       ["time clock","die Stempeluhr","Clock in at the time clock.","Stempel an der Stempeluhr ein."],
@@ -2945,7 +2968,7 @@ window.SW_LANGS.en = {
       ["friendly","freundlich","The staff were very friendly.","Das Personal war sehr freundlich."],
       ["helpful","hilfsbereit","Thanks, you've been very helpful.","Danke, Sie waren sehr hilfreich."],
       ["funny","lustig","He's a really funny guy.","Er ist ein echt lustiger Typ."],
-      ["kind","nett / freundlich","That's very kind of you.","Das ist sehr nett von dir."],
+      ["kind","nett / freundlich","That's very kind of you.","Das ist sehr nett von dir.","Charakter"],
       ["polite","höflich","Be polite to customers.","Sei höflich zu Kunden."],
       ["rude","unhöflich","He was really rude.","Er war echt unhöflich."],
       ["honest","ehrlich","To be honest, I don't like it.","Ehrlich gesagt mag ich es nicht."],
@@ -3491,7 +3514,7 @@ window.SW_LANGS.en = {
       ["to grow up in","aufwachsen in","I grew up in a small village.","Ich bin in einem kleinen Dorf aufgewachsen."],
       ["countryside","das Land / die Landschaft","We lived in the countryside.","Wir lebten auf dem Land."],
       ["cassette","die Kassette","We used to listen to cassettes.","Früher haben wir Kassetten gehört."],
-      ["letter","der Brief","People used to write letters.","Früher hat man Briefe geschrieben."],
+      ["letter","der Brief","People used to write letters.","Früher hat man Briefe geschrieben.","Post"],
       ["phone box","die Telefonzelle","We used to call from a phone box.","Früher haben wir aus der Telefonzelle angerufen."],
       ["to remember doing","sich erinnern, etwas getan zu haben","I remember playing in the snow.","Ich erinnere mich, im Schnee gespielt zu haben."],
       ["memories","die Erinnerungen","I have good memories of my childhood.","Ich habe gute Erinnerungen an meine Kindheit."],
@@ -3551,7 +3574,9 @@ window.SW_LANGS.en = {
       ["royal","königlich","The royal family lives in London.","Die Königsfamilie lebt in London."],
       ["tribe","der Stamm","The tribe lives in the rainforest.","Der Stamm lebt im Regenwald."],
       ["troops","die Truppen","The troops left the country.","Die Truppen verließen das Land."],
-      ["war","der Krieg","His grandfather fought in the war.","Sein Großvater kämpfte im Krieg."]
+      ["war","der Krieg","His grandfather fought in the war.","Sein Großvater kämpfte im Krieg."],
+      ["present","die Gegenwart","Live in the present.","Lebe in der Gegenwart.","Zeit"],
+      ["change","die Veränderung","We need a change.","Wir brauchen eine Veränderung.","Wandel"]
     ]},
     { id: "u32", level: "B2", title: "Rückblick", emoji: "🔙", grammar: "past-perfect", words: [
       ["eventually","schließlich / irgendwann","Eventually, he found a new job.","Schließlich fand er einen neuen Job."],
@@ -3803,7 +3828,8 @@ window.SW_LANGS.en = {
       ["protester","der Demonstrant","Protesters blocked the road.","Demonstranten blockierten die Straße."],
       ["proverb","das Sprichwort","an old proverb","ein altes Sprichwort"],
       ["province","die Provinz","the province of Quebec","die Provinz Quebec"],
-      ["pyramid","die Pyramide","the pyramids of Egypt","die Pyramiden von Ägypten"]
+      ["pyramid","die Pyramide","the pyramids of Egypt","die Pyramiden von Ägypten"],
+      ["sentence","die Strafe (Urteil)","He got a two-year sentence.","Er bekam zwei Jahre Haft.","Gericht"]
     ]},
     { id: "u33", level: "B2", title: "Bedauern", emoji: "😔", grammar: "conditional-3", words: [
       ["to achieve","erreichen","We achieved our goal.","Wir haben unser Ziel erreicht."],
@@ -4412,7 +4438,7 @@ window.SW_LANGS.en = {
       ["attention","die Aufmerksamkeit","May I have your attention, please?","Darf ich um Ihre Aufmerksamkeit bitten?"],
       ["aware","bewusst","Are you aware of the risks?","Sind Sie sich der Risiken bewusst?"],
       ["brief","kurz","Here's a brief summary.","Hier ist eine kurze Zusammenfassung."],
-      ["case","der Fall","In that case, we'll wait.","In diesem Fall warten wir."],
+      ["case","der Fall","In that case, we'll wait.","In diesem Fall warten wir.","allgemein"],
       ["central","zentral","The hotel is very central.","Das Hotel liegt sehr zentral."],
       ["charge","die Gebühr; berechnen","Is there a charge for parking?","Kostet das Parken etwas?"],
       ["closely","genau, eng","Read the contract closely.","Lies den Vertrag genau."],
@@ -4873,7 +4899,10 @@ window.SW_LANGS.en = {
       ["prey","die Beute","The eagle caught its prey.","Der Adler fing seine Beute."],
       ["probe","die Sonde; untersuchen","a space probe","eine Raumsonde"],
       ["pulse","der Puls","Check his pulse.","Fühl seinen Puls."],
-      ["obesity","die Fettleibigkeit","Obesity is a growing problem.","Übergewicht ist ein wachsendes Problem."]
+      ["obesity","die Fettleibigkeit","Obesity is a growing problem.","Übergewicht ist ein wachsendes Problem."],
+      ["square","das Quadrat","Draw a square.","Zeichne ein Quadrat.","Form"],
+      ["table","die Tabelle","The figures are in the table.","Die Zahlen stehen in der Tabelle.","Daten"],
+      ["volume","das Volumen","the volume of the tank","das Volumen des Tanks","Menge"]
     ]},
     { id: "u38", level: "C1", title: "Karriere & Führung", emoji: "💼", grammar: "future-perfect", words: [
       ["career path","der Berufsweg","I'm rethinking my career path.","Ich überdenke meinen Berufsweg."],

@@ -114,12 +114,13 @@ const dlgCount = () => Object.keys(DLG()).reduce((a, u) => a + dlgList(u).length
 
 // ---------- Inhalte ----------
 let WORDS = [], WMAP = {}, UNITS = [], GMAP = {}, PACKS = [], PACKW = {};
+let EN_SET = new Set();
 function buildContent() {
   UNITS = L().units;
   GMAP = Object.fromEntries([...G(), ...MK().map((g) => ({ ...g, mk: true }))].map((g) => [g.id, g]));
   WORDS = [];
   UNITS.forEach((u, ui) => u.words.forEach((w, wi) => {
-    WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
+    WORDS.push({ id: u.id + ":" + w[0], unit: u.id, ui, core: wi < CORE, level: u.level, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "", sense: w[4] || "" });
   }));
   S.custom.forEach((c) => WORDS.push({ id: "custom:" + c.id, unit: "custom", ui: -1, level: "A1", en: c.en, de: c.de, ex: c.ex || "", exde: c.exde || "" }));
   // Themenpakete: neue Wörter bekommen eigene IDs, Verweise ("englisch") nutzen das vorhandene Wort (gemeinsamer Lernstand)
@@ -129,11 +130,13 @@ function buildContent() {
   PACKS.forEach((p, pi) => p.words.forEach((w) => {
     if (typeof w === "string") return;
     const id = "pack:" + p.id + ":" + w[0];
-    WORDS.push({ id, unit: "pack:" + p.id, ui: 1000 + pi * 10, level: "B1", core: false, pack: p.id, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "" });
-    if (!byEn[w[0].toLowerCase()]) byEn[w[0].toLowerCase()] = id;
+    WORDS.push({ id, unit: "pack:" + p.id, ui: 1000 + pi * 10, level: "B1", core: false, pack: p.id, en: w[0], de: w[1], ex: w[2] || "", exde: w[3] || "", sense: w[4] || "" });
+    if (!w[4] && !byEn[w[0].toLowerCase()]) byEn[w[0].toLowerCase()] = id;
   }));
   PACKW = {};
-  PACKS.forEach((p) => { PACKW[p.id] = [...new Set(p.words.map((w) => byEn[(typeof w === "string" ? w : w[0]).toLowerCase()]).filter(Boolean))]; });
+  PACKS.forEach((p) => { PACKW[p.id] = [...new Set(p.words.map((w) => (typeof w !== "string" && w[4] ? "pack:" + p.id + ":" + w[0] : byEn[(typeof w === "string" ? w : w[0]).toLowerCase()])).filter(Boolean))]; });
+  // Gleich geschriebene Wörter (für strengere Tippfehlerprüfung)
+  EN_SET = new Set(WORDS.map((w) => baseEn(w.en)));
   WMAP = Object.fromEntries(WORDS.map((w) => [w.id, w]));
 }
 buildContent();
@@ -1648,7 +1651,7 @@ function distractors(w, field, n = 3) {
   for (const strict of [true, false]) {
     for (const pool of [same, near, other]) for (const x of pool) {
       if (out.length >= n) break;
-      if (sameMeaning(x, w)) continue;
+      if (sameMeaning(x, w) || baseEn(x.en) === baseEn(w.en)) continue;
       if (strict && ((x.en.split(" ").length >= 3) !== isPhrase || x.en.startsWith("to ") !== isVerb)) continue;
       const v = x[field]; if (seen.has(v.toLowerCase())) continue;
       seen.add(v.toLowerCase()); out.push(v);
@@ -1689,7 +1692,7 @@ function tIntro(task, w) {
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     <span class="new-badge">NEUES WORT</span>
     <div class="card intro-card pop">
-      <div class="en">${esc(w.en)}</div>
+      <div class="en">${esc(w.en)}${senseTag(w)}</div>
       <div class="de">${esc(w.de)}</div>
       ${speakBtn(w.en)}
       ${w.ex ? `<div class="example"><div class="t"><b>${esc(w.ex)}</b><span>${esc(w.exde)}</span></div>${speakBtn(w.ex)}</div>` : ""}
@@ -1736,9 +1739,9 @@ function tMc(task, w) {
   const listen = task.t === "listen";
   const head = listen
     ? `<div class="prompt-label">Hör zu – was bedeutet das?</div>
-       <div class="listen-big">${speakBtn(w.en)}<button class="speak slow" data-say="${esc(w.en)}" data-slow="1" aria-label="Langsam">🐢</button></div>`
+       <div class="listen-big">${speakBtn(w.en)}<button class="speak slow" data-say="${esc(w.en)}" data-slow="1" aria-label="Langsam">🐢</button></div>${w.sense ? `<p class="muted center small">Bereich: ${esc(w.sense)}</p>` : ""}`
     : enToDe
-      ? `<div class="prompt-label">Was bedeutet das?</div><div class="prompt">${speakBtn(w.en)}<div class="big">${esc(w.en)}</div></div>`
+      ? `<div class="prompt-label">Was bedeutet das?</div><div class="prompt">${speakBtn(w.en)}<div class="big">${esc(w.en)}${senseTag(w)}</div></div>`
       : `<div class="prompt-label">Wie sagt man das auf ${esc(L().name)}?</div><div class="prompt"><div class="big">${esc(w.de)}</div></div>`;
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
     ${task.quick ? `<span class="new-badge blue">${icon("bolt", "ic eb")} SCHNELLCHECK</span>` : ""}
@@ -1771,6 +1774,9 @@ function lev(a, b) {
     d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
   return d[m][n];
 }
+function baseEn(s) { return norm(s).replace(/^(to|a|an|the) /, ""); }
+// Bedeutungs-Hinweis bei gleich geschriebenen Wörtern (z. B. spring · Technik)
+const senseTag = (w) => (w && w.sense ? ` <span class="sense">${esc(w.sense)}</span>` : "");
 function checkTyped(input, en) {
   const a = expand(norm(input)).replace(/^(a|an|the) /, "");
   const vs = variants(en).flatMap((v) => [v, v.replace(/^(a|an|the) /, "")]);
@@ -1778,7 +1784,8 @@ function checkTyped(input, en) {
   if (vs.includes(a) || vs.includes(aNoTo)) return "ok";
   const best = Math.min(...vs.map((v) => lev(aNoTo, v.replace(/^to /, ""))));
   const len = en.length;
-  if ((len >= 4 && best <= 1) || (len >= 9 && best <= 2)) return "typo";
+  // ein anderes echtes Wort (quite statt quiet, then statt than) ist kein Tippfehler
+  if (((len >= 4 && best <= 1) || (len >= 9 && best <= 2)) && !EN_SET.has(aNoTo)) return "typo";
   return "no";
 }
 
@@ -2256,7 +2263,7 @@ function wordListHtml(list) {
   return `<ul class="wl">${list.map((w) => {
     const s = st(w.id); const b = s ? s.b : 0;
     const tag = w.unit === "custom" ? `<span class="tag">Eigen</span>` : w.pack ? `<span class="tag">Paket</span>` : `<span class="tag lv-${w.level}">${w.level}</span>`;
-    return `<li>${speakBtn(w.en)}<button class="w" data-w="${esc(w.id)}" aria-label="${esc(w.en)} – ${esc(w.de)}, Details"><b>${esc(w.en)}</b><span>${esc(w.de)}</span></button>
+    return `<li>${speakBtn(w.en)}<button class="w" data-w="${esc(w.id)}" aria-label="${esc(w.en)}${w.sense ? " (" + esc(w.sense) + ")" : ""} – ${esc(w.de)}, Details"><b>${esc(w.en)}${senseTag(w)}</b><span>${esc(w.de)}</span></button>
       ${tag}<div class="dots" role="img" aria-label="Lernstand ${s ? Math.min(b, 5) : 0} von 5">${[1, 2, 3, 4, 5].map((k) => `<i class="${s && b >= k ? "on" : ""}"></i>`).join("")}</div></li>`;
   }).join("")}</ul>`;
 }
@@ -2289,7 +2296,7 @@ function wordSheet(id) {
     : `Nächste Wiederholung am ${fmt(s.due)}`;
   sheet(`<div class="wd">
     <div class="wd-h">${w.unit === "custom" ? `<span class="tag">Eigen</span>` : `<span class="tag lv-${w.level}">${w.level}</span>`}<span class="small muted">${where}</span></div>
-    <div class="wd-word">${speakBtn(w.en)}<div><h2 id="sheet-title">${esc(w.en)}</h2><p>${esc(w.de)}</p></div></div>
+    <div class="wd-word">${speakBtn(w.en)}<div><h2 id="sheet-title">${esc(w.en)}${senseTag(w)}</h2><p>${esc(w.de)}</p></div></div>
     ${w.ex ? `<div class="wd-ex">${speakBtn(w.ex, "speak sm")}<div><b>${esc(w.ex)}</b>${w.exde ? `<span>${esc(w.exde)}</span>` : ""}</div></div>` : ""}
     <ul class="set wd-stats">
       <li><span>Status</span><b>${status}</b></li>

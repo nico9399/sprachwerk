@@ -634,3 +634,5 @@ button.stats:active .stat { transform: scale(.98); }
 .ftable td:last-child { text-align: right; width: 1%; white-space: nowrap; }
 details.tbl.card { padding: 6px 12px; }
 details.tbl.card .ftable td:last-child { text-align: left; white-space: normal; width: auto; }
+.sense { display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 7px; border-radius: 6px; background: var(--surface-2); color: var(--muted); font-family: var(--body); font-size: .75rem; font-weight: 650; letter-spacing: 0; line-height: 1.5; }
+.big .sense, .en .sense { font-size: .8125rem; }

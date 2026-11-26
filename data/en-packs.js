@@ -1,5 +1,5 @@
 // Sprachwerk – Themenpakete Englisch (frei zuschaltbar)
-// Wort: [englisch, deutsch, Beispiel EN, Beispiel DE] oder "englisch" = Verweis auf ein vorhandenes Wort
+// Wort: [englisch, deutsch, Beispiel EN, Beispiel DE, Bedeutung (optional)] oder "englisch" = Verweis auf ein vorhandenes Wort
 window.SW_PACKS = window.SW_PACKS || {};
 window.SW_PACKS.en = [
 { id: "auto", title: "Auto & Werkstatt", emoji: "🚗", desc: "Werkstatt, Panne, Inspektion, Verkehr", words: [
@@ -12,7 +12,7 @@ window.SW_PACKS.en = [
   ["windscreen","Windschutzscheibe","A stone cracked the windscreen.","Ein Stein hat die Windschutzscheibe beschädigt."],
   ["windscreen wiper","Scheibenwischer","The windscreen wipers need replacing.","Die Scheibenwischer müssen ersetzt werden."],
   ["bonnet","Motorhaube","Open the bonnet, please.","Mach bitte die Motorhaube auf."],
-  ["boot","Kofferraum","Put the bags in the boot.","Leg die Taschen in den Kofferraum."],
+  ["boot","Kofferraum","Put the bags in the boot.","Leg die Taschen in den Kofferraum.","Auto"],
   ["bumper","Stoßstange","Someone dented my bumper in the car park.","Jemand hat mir auf dem Parkplatz die Stoßstange verbeult."],
   ["headlight","Scheinwerfer","One of your headlights isn't working.","Einer deiner Scheinwerfer geht nicht."],
   ["indicator","Blinker","Use your indicator before turning.","Setz den Blinker, bevor du abbiegst."],
@@ -140,7 +140,7 @@ window.SW_PACKS.en = [
   ["to reject","ablehnen","The request was rejected.","Der Antrag wurde abgelehnt."],
   ["appeal","Widerspruch","You can lodge an appeal within a month.","Sie können innerhalb eines Monats Widerspruch einlegen."],
   ["administrative fee","Verwaltungsgebühr","There's an administrative fee of 30 euros.","Es fällt eine Verwaltungsgebühr von 30 Euro an."],
-  ["stamp","Stempel","The form needs an official stamp.","Das Formular braucht einen amtlichen Stempel."],
+  ["stamp","Stempel","The form needs an official stamp.","Das Formular braucht einen amtlichen Stempel.","Amt"],
   ["civil servant","Beamter","He works as a civil servant.","Er arbeitet als Beamter."],
   ["tax ID","Steuer-Identifikationsnummer","Your employer needs your tax ID.","Dein Arbeitgeber braucht deine Steuer-ID."],
   ["social security number","Sozialversicherungsnummer","You'll find the social security number on the letter.","Die Sozialversicherungsnummer steht auf dem Brief."],
@@ -202,7 +202,7 @@ window.SW_PACKS.en = [
   ["to restart","neu starten","Have you tried restarting it?","Hast du schon versucht, es neu zu starten?"],
   ["to reset","zurücksetzen","I had to reset my phone.","Ich musste mein Handy zurücksetzen."],
   ["virus","Virus","The computer has a virus.","Der Computer hat einen Virus."],
-  ["volume","Lautstärke","Turn the volume up.","Mach lauter."],
+  ["volume","Lautstärke","Turn the volume up.","Mach lauter.","Lautstärke"],
   ["ringtone","Klingelton","I changed my ringtone.","Ich habe meinen Klingelton geändert."],
   ["contacts","Kontakte","Save her number in your contacts.","Speicher ihre Nummer in deinen Kontakten."],
   ["mobile data","mobile Daten","Turn off mobile data abroad.","Schalt im Ausland die mobilen Daten aus."],
@@ -490,7 +490,8 @@ window.SW_PACKS.en = [
   ["DIY","das Heimwerken","He loves DIY.","Er heimwerkt gern."],
   "mortgage",
   ["homeowner","der Eigentümer","Homeowners pay property tax.","Eigentümer zahlen Grundsteuer."],
-  ["household insurance","die Hausratversicherung","Do you have household insurance?","Hast du eine Hausratversicherung?"]
+  ["household insurance","die Hausratversicherung","Do you have household insurance?","Hast du eine Hausratversicherung?"],
+  ["mould","der Schimmel","There's mould on the bedroom wall.","An der Schlafzimmerwand ist Schimmel.","Wohnung"]
 ]},
 { id: "med", title: "Arzt & Krankenhaus", emoji: "🩺", desc: "Termin, Beschwerden, Untersuchung, Krankenhaus, Apotheke", words: [
   ["surgery hours","die Sprechzeiten","What are the surgery hours?","Wann sind die Sprechzeiten?"],
@@ -544,7 +545,8 @@ window.SW_PACKS.en = [
   ["contraction","die Wehe","The contractions are five minutes apart.","Die Wehen kommen alle fünf Minuten."],
   ["maternity ward","die Entbindungsstation","She's on the maternity ward.","Sie liegt auf der Entbindungsstation."],
   "vaccination",
-  ["over the counter","rezeptfrei","You can buy it over the counter.","Das gibt es rezeptfrei."]
+  ["over the counter","rezeptfrei","You can buy it over the counter.","Das gibt es rezeptfrei."],
+  ["scan","die Untersuchung (MRT, CT)","You need a scan of your back.","Sie brauchen eine Untersuchung Ihres Rückens."]
 ]},
 { id: "buero", title: "Büro & Arbeit", emoji: "💼", desc: "Meetings, E-Mails, Telefon, Bewerbung, Gehalt, Kollegen", words: [
   ["to schedule a meeting","ein Meeting ansetzen","Let's schedule a meeting for Monday.","Lass uns ein Meeting für Montag ansetzen."],
@@ -574,7 +576,7 @@ window.SW_PACKS.en = [
   "probation period",
   "payslip",
   ["gross","brutto","My gross salary is 3,000 euros.","Mein Bruttogehalt beträgt 3.000 Euro."],
-  ["net","netto","What's that net?","Was ist das netto?"],
+  ["net","netto","What's that net?","Was ist das netto?","Gehalt"],
   "pay rise",
   "bonus",
   "appraisal",
@@ -701,7 +703,12 @@ window.SW_PACKS.en = [
   "target",
   ["key figure","die Kennzahl","Which key figures do you report?","Welche Kennzahlen meldest du?"],
   ["ERP system","das ERP-System","All orders are entered in the ERP system.","Alle Aufträge werden im ERP-System erfasst."],
-  ["spreadsheet","die Tabelle (Excel)","I keep the figures in a spreadsheet.","Ich führe die Zahlen in einer Tabelle."]
+  ["spreadsheet","die Tabelle (Excel)","I keep the figures in a spreadsheet.","Ich führe die Zahlen in einer Tabelle."],
+  ["spring","die Feder","The spring is broken.","Die Feder ist gebrochen.","Technik"],
+  ["rubber","das Gummi","Replace the rubber seal.","Tausch die Gummidichtung aus.","Material"],
+  ["seal","die Dichtung","The seal is leaking.","Die Dichtung ist undicht."],
+  ["to pick","kommissionieren","We pick the orders in the morning.","Morgens kommissionieren wir die Aufträge.","Lager"],
+  ["to bend","biegen","Bend the sheet to 90 degrees.","Bieg das Blech auf 90 Grad."]
 ]},
 { id: "slang", title: "Umgangssprache & Slang", emoji: "😎", desc: "Wie Muttersprachler wirklich reden – britisch und amerikanisch", words: [
   "mate",
@@ -754,7 +761,13 @@ window.SW_PACKS.en = [
   ["to get it","kapieren","I don't get it.","Ich kapier's nicht."],
   ["no clue","keine Ahnung","I have no clue.","Ich hab keine Ahnung."],
   ["same here","geht mir genauso","I'm tired. – Same here.","Ich bin müde. – Ich auch."],
-  ["fair play","Respekt, gut gemacht (brit.)","You ran a marathon? Fair play!","Du bist einen Marathon gelaufen? Respekt!"]
+  ["fair play","Respekt, gut gemacht (brit.)","You ran a marathon? Fair play!","Du bist einen Marathon gelaufen? Respekt!"],
+  ["sick","krass, geil (ugs.)","That trick was sick!","Der Trick war krass!","Slang"],
+  ["cool","cool, okay","Is that cool with you?","Ist das okay für dich?","Slang"],
+  ["salty","angefressen (Jugendsprache)","Why are you so salty?","Warum bist du so angefressen?","Slang"],
+  ["to crash","pennen, übernachten","Can I crash at your place?","Kann ich bei dir pennen?","Slang"],
+  ["rubbish","Quatsch (brit.)","That's rubbish!","Das ist Quatsch!","Umgangssprache"],
+  ["to ghost","ghosten (Kontakt abbrechen)","He just ghosted me.","Er hat mich einfach geghostet."]
 ]},
 { id: "reise", title: "Reisen & Urlaub", emoji: "✈️", desc: "Flughafen, Hotel, Restaurant, Sightseeing, Probleme unterwegs", words: [
   ["departures","die Abflüge","Check the departures board.","Schau auf die Abflugtafel."],
@@ -804,6 +817,7 @@ window.SW_PACKS.en = [
   ["to exchange money","Geld wechseln","Where can I exchange money?","Wo kann ich Geld wechseln?"],
   ["plug adapter","der Reisestecker","You need a plug adapter in the UK.","In Großbritannien braucht man einen Adapter."],
   ["to get a refund","Geld zurückbekommen","We got a refund for the cancelled flight.","Wir bekamen das Geld für den gestrichenen Flug zurück."],
-  ["fully booked","ausgebucht","The hotel is fully booked.","Das Hotel ist ausgebucht."]
+  ["fully booked","ausgebucht","The hotel is fully booked.","Das Hotel ist ausgebucht."],
+  ["to take off","abheben","The plane took off on time.","Das Flugzeug hob pünktlich ab.","Flugzeug"]
 ]}
 ];
