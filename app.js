@@ -126,7 +126,7 @@ function buildContent() {
   // Themenpakete: neue Wörter bekommen eigene IDs, Verweise ("englisch") nutzen das vorhandene Wort (gemeinsamer Lernstand)
   PACKS = (window.SW_PACKS || {})[S.lang] || [];
   const byEn = {};
-  WORDS.forEach((w) => { const k = w.en.toLowerCase(); if (w.unit !== "custom" && !byEn[k]) byEn[k] = w.id; });
+  WORDS.forEach((w) => { const k = w.en.toLowerCase(); if (w.unit !== "custom" && !byEn[k]) byEn[k] = w.id; if (w.sense) byEn[k + "#" + w.sense.toLowerCase()] = w.id; });
   PACKS.forEach((p, pi) => p.words.forEach((w) => {
     if (typeof w === "string") return;
     const id = "pack:" + p.id + ":" + w[0];
@@ -1484,7 +1484,8 @@ function renderReading(uid) {
     speak(word);
     const known = hit && hit.w && st(hit.w.id);
     sheet(`<h2 style="margin-bottom:4px">${esc(word)}</h2>
-      <p style="font-size:1.1875rem;margin:0 0 14px">${hit ? esc(hit.de) : '<span class="muted">Nicht im Wörterbuch. Tipp: „Übersetzung zeigen“.</span>'}</p>
+      <p style="font-size:1.1875rem;margin:0 0 14px">${hit ? esc(hit.de) + (hit.w && hit.w.sense ? senseTag(hit.w) : "") : '<span class="muted">Nicht im Wörterbuch. Tipp: „Übersetzung zeigen“.</span>'}</p>
+      ${hit && hit.w && hit.w.sense ? `<p class="small muted" style="margin:-8px 0 14px">Auch: ${WORDS.filter((x) => x !== hit.w && x.en.toLowerCase() === hit.w.en.toLowerCase()).map((x) => esc(x.de) + (x.sense ? " (" + esc(x.sense) + ")" : "")).join(", ")} – welche Bedeutung passt, zeigt der Zusammenhang.</p>` : ""}
       <div class="stack">
         <button class="btn ghost" id="lx-say">🔊 Anhören</button>
         ${hit && !known && !(hit.w && hit.w.unit === "custom") && !(lexicon()[word.toLowerCase()] || {}).common ? `<button class="btn" id="lx-add">＋ Zu meinen Wörtern</button>` : known ? `<p class="small muted center">Schon in deinem Lernstand ✓</p>` : ""}
@@ -2279,8 +2280,8 @@ function searchWords(q) {
   const out = [];
   WORDS.forEach((w) => {
     let best = 9;
-    for (const t of [w.en, ...w.de.split(/[,;/]/)]) {
-      const x = fold(t); if (!x) continue;
+    if (!w._f) w._f = [w.en, ...w.de.split(/[,;/]/)].map(fold).filter(Boolean);
+    for (const x of w._f) {
       const r = x === f ? 0 : x.startsWith(f) ? 1 : (" " + x).includes(" " + f) ? 2 : x.includes(f) ? 3 : 9;
       if (r < best) best = r;
     }

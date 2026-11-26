@@ -65,7 +65,7 @@ window.SW_PACKS.en = [
   "roundabout",
   "motorway",
   "driving licence",
-  "fine"
+  "fine#Strafe"
 ]},
 { id: "bank", title: "Bank & Geld", emoji: "🏦", desc: "Konto, Überweisung, Karte, Kredit", words: [
   ["bank account","Bankkonto","I opened a bank account online.","Ich habe online ein Bankkonto eröffnet."],
