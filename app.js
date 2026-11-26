@@ -42,6 +42,7 @@ const IC = {
   bolt: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>',
   lock: '<rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   shield: '<path d="M12 3.5 5 6.5v5c0 4.3 3 7.6 7 9 4-1.4 7-4.7 7-9v-5z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   words: '<path d="M5 6h14M5 12h14M5 18h9"/>',
   practice: '<path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/>',
 };
@@ -67,6 +68,9 @@ const DEFAULT = {
   writing: {},   // Schreibaufgabe -> { draft, checks, done, score, date }
   listening: {}, // Hörtext -> { done, best }
   stats: {},     // Tag -> { r: richtig, w: falsch, ms: Lernzeit, n: Einheiten }
+  shields: 0,    // Serienschutz (max. 2), je 7 Tage Serie einer
+  frozen: {},    // Tage, die ein Serienschutz gerettet hat
+  shieldLast: "",
   custom: [],
   days: {},
   reports: [],
@@ -157,6 +161,7 @@ function migrate() {
   if (!S.writing) { S.writing = {}; changed = true; }
   if (!S.listening) { S.listening = {}; changed = true; }
   if (!S.stats) { S.stats = {}; changed = true; }
+  if (typeof S.shields !== "number") { S.shields = 0; S.frozen = {}; S.shieldLast = ""; changed = true; }
   if (S.v !== 2) { S.v = 2; changed = true; }
   if (changed) save();
 }
@@ -259,12 +264,28 @@ function todayPlan() {
 
 // ---------- Statistik ----------
 const xpToday = () => S.days[today()] || 0;
-function addXp(n) { const t = today(); S.days[t] = (S.days[t] || 0) + n; }
+const MAX_SHIELDS = 2;
+let shieldNews = null; // "earned" | Anzahl geretteter Tage – einmal anzeigen
+function addXp(n) {
+  const t = today(); S.days[t] = (S.days[t] || 0) + n;
+  const k = streak();
+  if (n > 0 && k > 0 && k % 7 === 0 && S.shieldLast !== t) { S.shieldLast = t; if (S.shields < MAX_SHIELDS) { S.shields++; shieldNews = "earned"; } }
+}
+// Serie: Lerntage zählen, gerettete Tage (Serienschutz) halten sie nur zusammen
 function streak() {
   let n = 0; const d = new Date();
   if (!S.days[dayKey(d)]) d.setDate(d.getDate() - 1);
-  while (S.days[dayKey(d)]) { n++; d.setDate(d.getDate() - 1); }
+  for (;;) { const k = dayKey(d); if (S.days[k]) n++; else if (!(S.frozen || {})[k]) break; d.setDate(d.getDate() - 1); }
   return n;
+}
+// Beim Öffnen: verpasste Tage seit dem letzten Lerntag mit Serienschutz überbrücken, wenn genug da sind
+function applyShields() {
+  if (!S.shields) return;
+  const active = (k) => S.days[k] || S.frozen[k];
+  const gap = []; const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - 1);
+  for (let i = 0; i < 30 && !active(dayKey(d)); i++) { gap.push(dayKey(d)); d.setDate(d.getDate() - 1); }
+  if (!gap.length || !active(dayKey(d)) || gap.length > S.shields) return;
+  gap.forEach((k) => (S.frozen[k] = 1)); S.shields -= gap.length; shieldNews = gap.length; save();
 }
 // Schwächen: schon mal falsch und seitdem keine 3× richtig in Folge
 function weakWords() {
@@ -389,6 +410,8 @@ document.addEventListener("click", (e) => {
 function render() {
   document.onkeydown = null;
   if (!S.onboarded) return renderWelcome();
+  applyShields();
+  if (typeof shieldNews === "number") { toast(shieldNews === 1 ? "Serienschutz hat deine Serie gerettet 🛡️" : `Serienschutz hat ${shieldNews} verpasste Tage überbrückt 🛡️`); shieldNews = null; }
   if (view && view.type === "unit") return renderUnit(view.id);
   if (view && view.type === "grammar") return renderGrammar(view.id);
   if (view && view.type === "dialog") return renderDialog(view.id);
@@ -513,11 +536,12 @@ function finishTest() {
 // ---------- Statistik-Seite ----------
 let statMetric = "xp", statSel = 13;
 function longestStreak() {
-  const ks = Object.keys(S.days).filter((k) => S.days[k] > 0).sort();
+  const ks = [...new Set([...Object.keys(S.days).filter((k) => S.days[k] > 0), ...Object.keys(S.frozen || {})])].sort();
   let best = 0, run = 0, prev = null;
   ks.forEach((k) => {
     const d = new Date(k + "T12:00:00");
-    run = prev && Math.round((d - prev) / 86400000) === 1 ? run + 1 : 1;
+    if (!(prev && Math.round((d - prev) / 86400000) === 1)) run = 0;
+    if (S.days[k] > 0) run++;
     best = Math.max(best, run); prev = d;
   });
   return best;
@@ -597,6 +621,7 @@ function renderStats() {
       <div class="stat"><b>${acc === null ? "–" : acc + " %"}</b><span>Treffer</span></div>
       <div class="stat"><b>${fmtMin(st.ms).replace(" Min.", "<small> Min.</small>").replace(" Std.", "<small> Std.</small>")}</b><span>Lernzeit</span></div>
     </div>
+    <div class="card shield-card">${icon("shield", "ic")}<div><b>Serienschutz: ${S.shields} von ${MAX_SHIELDS}</b><span>Für je 7 Tage am Stück gibt es einen. Verpasst du einen Tag, springt er automatisch ein und deine Serie bleibt.${Object.keys(S.frozen).length ? ` Bisher ${plural(Object.keys(S.frozen).length, "Tag", "Tage")} gerettet.` : ""}</span></div></div>
     ${statsSince ? `<p class="small muted note">Treffer und Lernzeit werden seit ${new Date(statsSince + "T12:00:00").toLocaleDateString("de-DE")} gezählt.</p>` : ""}
 
     <div class="section-h"><h3>Letzte 14 Tage</h3></div>
@@ -653,7 +678,7 @@ function renderHome() {
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const v = S.days[dayKey(d)] || 0;
-    days.push({ l: d.toLocaleDateString("de-DE", { weekday: "short" }).slice(0, 2), cls: v >= goal ? "on" : v > 0 ? "part" : "", today: i === 0 });
+    days.push({ l: d.toLocaleDateString("de-DE", { weekday: "short" }).slice(0, 2), cls: v >= goal ? "on" : v > 0 ? "part" : S.frozen[dayKey(d)] ? "frz" : "", today: i === 0 });
   }
   const total = plan.due.length + plan.fresh.length + plan.quick.length + plan.gram.length;
   const ci = currentUnitIndex();
@@ -724,7 +749,7 @@ function renderHome() {
     </div>
 
     <button class="stats" id="open-stats" aria-label="Statistik öffnen">
-      <div class="stat streak"><b>${stk}</b><span>${stk === 1 ? "Tag" : "Tage"} in Folge</span></div>
+      <div class="stat streak"><b>${stk}${S.shields ? `<span class="shields" aria-label="${S.shields} Serienschutz">${icon("shield", "ic")}${S.shields > 1 ? "×2" : ""}</span>` : ""}</b><span>${stk === 1 ? "Tag" : "Tage"} in Folge</span></div>
       <div class="stat"><b>${learnedCount()}</b><span>Wörter gelernt</span></div>
       <div class="stat"><b>${unitsDoneCount()}</b><span>Einheiten fertig</span></div>
     </button>
@@ -738,7 +763,7 @@ function renderHome() {
           <div class="small muted">10 XP pro richtiger Antwort</div>
         </div>
       </div>
-      <div class="week">${days.map((d) => `<div><i class="${d.cls} ${d.today ? "today" : ""}"></i>${d.l}</div>`).join("")}</div>
+      <div class="week">${days.map((d) => `<div><i class="${d.cls} ${d.today ? "today" : ""}" ${d.cls === "frz" ? 'aria-label="durch Serienschutz gerettet"' : ""}>${d.cls === "frz" ? icon("shield", "ic") : ""}</i>${d.l}</div>`).join("")}</div>
     </div>
 
     ${total && learnedCount() >= 4 ? `<div style="margin-top:12px"><button class="btn ghost" id="extra">Freies Üben (ohne Plan)</button></div>` : ""}
@@ -770,10 +795,11 @@ function renderPath() {
       const p = unitProgress(i);
       const open = unitUnlocked(i);
       const state = p.done ? "done" : i === ci ? "now" : !open ? "locked" : p.quick ? "quick" : "open";
-      const icon = { done: "✓", now: u.emoji, locked: "🔒", quick: "⚡", open: u.emoji }[state];
+      const dotIc = { done: icon("check", "ic"), now: u.emoji, locked: icon("lock", "ic"), quick: icon("bolt", "ic"), open: u.emoji }[state];
+      const stateTxt = { done: "erledigt", now: "aktuelle Einheit", locked: "gesperrt", quick: "Schnellcheck", open: "offen" }[state];
       const pctW = p.coreTotal ? Math.round((p.coreSeen / p.coreTotal) * 100) : 0;
-      html += `<button class="node ${state}" data-unit="${u.id}">
-        <span class="dot">${icon}</span>
+      html += `<button class="node ${state}" data-unit="${u.id}" aria-label="Einheit ${i + 1}: ${esc(u.title)}, ${stateTxt}">
+        <span class="dot" aria-hidden="true">${dotIc}</span>
         <span class="node-t"><b>${i + 1}. ${esc(u.title)}</b><small>${esc(GMAP[u.grammar].title)}</small>
           <span class="bar"><i style="width:${p.done ? 100 : pctW}%"></i></span></span>
       </button>`;
@@ -1175,9 +1201,9 @@ function renderUnit(uid) {
     <div class="subtop"><button class="back" id="back">‹ Zurück</button></div>
     <div class="unit-hero">
       <div class="em big">${u.emoji}</div>
-      <div><div class="small muted">Einheit ${i + 1} · <span class="tag lv-${u.level}">${u.level}</span>${p.quick ? " · ⚡ Schnellcheck" : ""}</div><h1 class="page-title" style="margin:2px 0 0">${esc(u.title)}</h1></div>
+      <div><div class="small muted">Einheit ${i + 1} · <span class="tag lv-${u.level}">${u.level}</span>${p.quick ? ` · ${icon("bolt", "ic eb")} Schnellcheck` : ""}</div><h1 class="page-title" style="margin:2px 0 0">${esc(u.title)}</h1></div>
     </div>
-    ${!open ? `<div class="card note">🔒 Diese Einheit ist noch gesperrt. Schließ zuerst die vorige Einheit ab. Die Grammatik kannst du dir trotzdem schon ansehen.</div>` : ""}
+    ${!open ? `<div class="card note">${icon("lock", "ic eb")} Diese Einheit ist noch gesperrt. Schließ zuerst die vorige Einheit ab. Die Grammatik kannst du dir trotzdem schon ansehen.</div>` : ""}
     ${p.done ? `<div class="card note good">✓ Bestanden mit ${rec.score} % am ${new Date(rec.date).toLocaleDateString("de-DE")}</div>` : ""}
 
     <div class="section-h"><h3>Grammatik</h3></div>
@@ -1591,7 +1617,7 @@ function tMc(task, w) {
       ? `<div class="prompt-label">Was bedeutet das?</div><div class="prompt">${speakBtn(w.en)}<div class="big">${esc(w.en)}</div></div>`
       : `<div class="prompt-label">Wie sagt man das auf ${esc(L().name)}?</div><div class="prompt"><div class="big">${esc(w.de)}</div></div>`;
   app.innerHTML = `<div class="s-body fadein">${sessionTop()}
-    ${task.quick ? `<span class="new-badge blue">⚡ SCHNELLCHECK</span>` : ""}
+    ${task.quick ? `<span class="new-badge blue">${icon("bolt", "ic eb")} SCHNELLCHECK</span>` : ""}
     ${head}${optionsHtml(opts)}
   </div>${footCheck}`;
   bindClose();
@@ -2074,9 +2100,10 @@ function renderResult() {
     </div>
     ${newN ? `<p>✨ ${plural(newN, "neues Wort", "neue Wörter")} gelernt</p>` : ""}
     <p class="small muted">🔥 ${streak()} ${streak() === 1 ? "Tag" : "Tage"} in Folge</p>
+    ${shieldNews === "earned" ? `<p class="shield-win">${icon("shield", "ic")} Serienschutz verdient! Verpasst du mal einen Tag, rettet er deine Serie.</p>` : ""}
     ${btn}
   </div>`;
-  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : mode === "one" ? "words" : "home"; render(); window.scrollTo(0, 0); };
+  $("#done").onclick = () => { if (mode === "dialog" && opt.uid) { view = { type: "unit", id: opt.uid }; } else if (mode === "pack") { view = { type: "pack", id: opt.pid }; } else if (mode === "read") { view = { type: "unit", id: opt.uid }; } else if (mode === "sound") { view = { type: "sound", id: opt.sid }; } else if (mode === "pod") { view = { type: "pod", id: opt.pid }; } else if (mode === "grammar" && GMAP[opt.gid] && GMAP[opt.gid].mk) { view = { type: "mlist" }; } else if (mode !== "plan" && mode !== "free") view = null; tab = mode === "weak" ? "practice" : mode === "one" ? "words" : "home"; if (shieldNews === "earned") shieldNews = null; render(); window.scrollTo(0, 0); };
   const r = $("#retry"); if (r) r.onclick = () => startSession(mode, opt);
 }
 

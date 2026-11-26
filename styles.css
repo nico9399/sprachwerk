@@ -604,3 +604,22 @@ button.stats:active .stat { transform: scale(.98); }
 .wd-stats li > span { font-weight: 500; color: var(--muted); }
 .wd-stats li > b { text-align: right; font-weight: 650; }
 .btn.danger { color: var(--bad-ink); }
+
+/* Pfad-Icons */
+.node .dot .ic { width: 22px; height: 22px; stroke-width: 2.2; }
+.node.done .dot .ic { stroke-width: 2.8; }
+.node.quick .dot { background: var(--accent-soft); color: var(--accent); }
+.node.locked .dot { color: var(--muted); }
+.new-badge .ic.eb, .note .ic.eb { stroke-width: 2.4; }
+
+/* Serienschutz */
+.stat b .shields { display: inline-flex; align-items: center; gap: 1px; margin-left: 6px; font-size: .8125rem; font-weight: 750; color: var(--accent); vertical-align: middle; }
+.stat b .shields .ic { width: 18px; height: 18px; stroke-width: 2.2; }
+.week i.frz { background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.week i.frz .ic { width: 16px; height: 16px; stroke-width: 2.2; }
+.shield-card { display: flex; gap: 12px; align-items: flex-start; margin-top: 10px; padding: 14px; }
+.shield-card > .ic { color: var(--accent); width: 26px; height: 26px; margin-top: 1px; }
+.shield-card b { display: block; }
+.shield-card span { display: block; font-size: .8125rem; color: var(--muted); margin-top: 2px; }
+.shield-win { display: inline-flex; gap: 8px; align-items: center; margin: 10px auto 0; padding: 8px 12px; border-radius: 12px; background: var(--accent-soft); color: var(--ink); font-size: .875rem; font-weight: 600; text-align: left; }
+.shield-win .ic { color: var(--accent); width: 20px; height: 20px; flex: none; }
